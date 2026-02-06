@@ -13,34 +13,52 @@
     <style>
         body { font-family: 'Roboto', sans-serif; padding: 20px; background: #f0f2f5; margin: 0; }
         
+        /* HEADER DASHBOARD */
         .header { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
         h1 { margin: 0; color: #d32f2f; font-size: 24px; }
-        .badge { background: #e3f2fd; color: #0d47a1; padding: 5px 10px; border-radius: 4px; font-size: 12px; font-weight: bold; }
-
+        
+        /* TABLE STYLES */
         .table-container { overflow-x: auto; background: white; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-        
-        table { width: 100%; border-collapse: collapse; min-width: 1200px; } /* Min-width biar bisa scroll samping di HP */
-        
+        table { width: 100%; border-collapse: collapse; min-width: 1200px; }
         thead { background: #d32f2f; color: white; }
         th, td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; font-size: 13px; vertical-align: top; }
-        th { font-weight: 600; text-transform: uppercase; font-size: 12px; letter-spacing: 0.5px; }
-        
         tr:hover { background: #fafafa; }
         
-        .user-info strong { display: block; color: #333; font-size: 14px; margin-bottom: 2px; }
+        /* BUTTONS */
+        .btn-action {
+            display: inline-block; padding: 6px 12px; margin-top: 5px;
+            background: #333; color: white; border: none; border-radius: 4px;
+            font-size: 12px; cursor: pointer; text-decoration: none;
+        }
+        .btn-action:hover { background: #000; }
+        .btn-wa { background: #25D366; color: white; text-decoration: none; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 11px; display: inline-block; margin-top: 5px;}
+        
+        .user-info strong { display: block; color: #333; font-size: 14px; }
         .user-info span { color: #666; font-size: 12px; }
 
-        .btn-link {
-            display: inline-block; padding: 4px 8px; margin: 2px;
-            background: #fff; border: 1px solid #ddd; color: #555;
-            text-decoration: none; border-radius: 4px; font-size: 11px; transition: 0.2s;
+        /* PRINT STYLES (Hanya muncul pas nge-print) */
+        @media print {
+            body * { visibility: hidden; }
+            #printArea, #printArea * { visibility: visible; }
+            #printArea { position: absolute; left: 0; top: 0; width: 100%; padding: 20px; background: white; }
+            @page { size: A4; margin: 10mm; }
         }
-        .btn-link:hover { background: #007bff; color: white; border-color: #007bff; }
-        
-        .btn-maps { background: #e8f5e9; color: #2e7d32; border-color: #c8e6c9; }
-        .btn-wa { background: #25D366; color: white; border: none; font-weight: bold; }
 
-        .group-header { font-weight: bold; color: #d32f2f; font-size: 11px; margin-top: 5px; display: block; }
+        /* AREA PRINT TERSEMBUNYI (Template PDF) */
+        #printArea { display: none; }
+        .print-header { text-align: center; border-bottom: 3px solid #000; padding-bottom: 10px; margin-bottom: 20px; }
+        .print-title { font-size: 24px; font-weight: bold; margin: 0; }
+        .print-subtitle { font-size: 14px; }
+        .print-section { margin-top: 20px; margin-bottom: 10px; font-weight: bold; background: #eee; padding: 5px; border-bottom: 1px solid #000; }
+        .print-row { display: flex; margin-bottom: 8px; border-bottom: 1px dashed #ddd; padding-bottom: 5px; }
+        .print-label { width: 180px; font-weight: bold; }
+        .print-value { flex: 1; }
+        
+        .print-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
+        .print-img-box { text-align: center; border: 1px solid #ccc; padding: 5px; break-inside: avoid; }
+        .print-img-box img { max-width: 100%; max-height: 250px; object-fit: contain; }
+        .print-img-label { display: block; font-size: 12px; margin-bottom: 5px; font-weight: bold; background: #ddd; }
+
     </style>
 </head>
 <body>
@@ -48,32 +66,33 @@
     <div class="header">
         <div>
             <h1>ADMIN - SEMIL ALFA N3</h1>
-            <span style="font-size:12px; color:#666;">Data Realtime dari Database gadingfc22</span>
+            <span style="font-size:12px; color:#666;">Data Realtime gadingfc22</span>
         </div>
-        <div class="badge" id="totalCount">Total: 0 Pendaftar</div>
+        <div id="totalCount" style="font-weight:bold;">Total: 0</div>
     </div>
 
-    <div id="loading" style="text-align: center; padding: 20px;">Mengambil data...</div>
-
     <div class="table-container">
-        <table id="dataTable" style="display: none;">
+        <table id="dataTable">
             <thead>
                 <tr>
-                    <th width="10%">Tanggal</th>
-                    <th width="5%">Ref</th>
-                    <th width="20%">Data Diri</th>
-                    <th width="20%">Alamat & Status</th>
-                    <th width="15%">Kontak Darurat</th>
-                    <th width="30%">Dokumen (Klik untuk Buka)</th>
+                    <th>Tgl Daftar</th>
+                    <th>Ref</th>
+                    <th>Nama & Kontak</th>
+                    <th>Status & Alamat</th>
+                    <th>Aksi Admin</th>
                 </tr>
             </thead>
             <tbody id="tableBody">
-                </tbody>
+                <tr><td colspan="5" style="text-align:center; padding:20px;">Memuat data...</td></tr>
+            </tbody>
         </table>
     </div>
 
+    <div id="printArea">
+        </div>
+
 <script>
-    // --- KONFIGURASI SAMA DENGAN FORM ---
+    // --- DATABASE CONFIG ---
     const firebaseConfig = {
       apiKey: "AIzaSyAk3G5aQUBVe_g7_peVu1F6xllP_RejGq0",
       authDomain: "rtomaka-e67b5.firebaseapp.com",
@@ -86,85 +105,127 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
+    // Global Variable buat nyimpen data sementara
+    window.dbData = {}; 
+
     const tbody = document.getElementById('tableBody');
-    const loading = document.getElementById('loading');
-    const table = document.getElementById('dataTable');
     const totalCount = document.getElementById('totalCount');
 
+    // 1. TARIK DATA DARI FIREBASE
     db.collection("gadingfc22").orderBy("submittedAt", "desc").onSnapshot((snapshot) => {
         tbody.innerHTML = "";
-        loading.style.display = "none";
-        table.style.display = "table";
         totalCount.innerText = `Total: ${snapshot.size} Pendaftar`;
 
         if (snapshot.empty) {
-            tbody.innerHTML = "<tr><td colspan='6' style='text-align:center; padding:30px;'>Belum ada data masuk.</td></tr>";
+            tbody.innerHTML = "<tr><td colspan='5' style='text-align:center; padding:20px;'>Belum ada data.</td></tr>";
             return;
         }
 
         snapshot.forEach((doc) => {
             const data = doc.data();
+            const id = doc.id;
             
+            // Simpan ke variabel global biar bisa dipanggil fungsi print
+            window.dbData[id] = data;
+
             // Format Tanggal
             let tanggal = "-";
             if (data.submittedAt) {
-                const dateObj = data.submittedAt.toDate();
-                tanggal = dateObj.toLocaleString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute:'2-digit' });
+                tanggal = data.submittedAt.toDate().toLocaleString('id-ID');
             }
 
-            // Generate Link Foto Utama
-            let docsHtml = '<span class="group-header">IDENTITAS</span>';
-            const mainDocs = [
-                {k: 'ktp_url', n: 'KTP Asli'}, {k: 'ktp_pasangan_url', n: 'KTP Pasangan'}, 
-                {k: 'sim_url', n: 'SIM C'}, {k: 'kk_url', n: 'KK'}, 
-                {k: 'selfie_url', n: 'Selfie'}, {k: 'domisili_url', n: 'S. Domisili'}
-            ];
-            mainDocs.forEach(f => {
-                if(data[f.k]) docsHtml += `<a href="${data[f.k]}" target="_blank" class="btn-link">${f.n}</a> `;
-            });
-
-            // Generate Link Bukti Pendapatan
-            docsHtml += '<span class="group-header" style="margin-top:8px;">PENDAPATAN & KERJA</span>';
-            const incDocs = [
-                {k: 'ojol_profile_url', n: 'Profil Ojol'},
-                {k: 'pendapatan1_url', n: 'Gaji Bln 1'},
-                {k: 'pendapatan2_url', n: 'Gaji Bln 2'},
-                {k: 'pendapatan3_url', n: 'Gaji Bln 3'}
-            ];
-            incDocs.forEach(f => {
-                if(data[f.k]) docsHtml += `<a href="${data[f.k]}" target="_blank" class="btn-link" style="border-color:#d32f2f; color:#d32f2f;">${f.n}</a> `;
-            });
-
-            // Tombol WA
-            const waLink = `https://wa.me/62${data.wa.replace(/^0/, '')}`; // Ubah 08 jadi 628
+            // Link WA
+            const waLink = `https://wa.me/62${data.wa.replace(/^0/, '')}`;
 
             const row = `
                 <tr>
                     <td>${tanggal}</td>
-                    <td style="font-weight:bold; color:red;">${data.referral || '-'}</td>
+                    <td style="color:red; font-weight:bold;">${data.referral}</td>
                     <td class="user-info">
                         <strong>${data.nama}</strong>
                         <span>Email: ${data.email}</span><br>
-                        <span>TTL: ${data.ttl}</span><br>
-                        <a href="${waLink}" target="_blank" class="btn-link btn-wa">Chat WA: ${data.wa}</a>
+                        <span>WA: ${data.wa}</span><br>
+                        <a href="${waLink}" target="_blank" class="btn-wa">Chat WA</a>
                     </td>
                     <td class="user-info">
-                        <strong>Status: ${data.statusNikah}</strong>
-                        <hr style="border:0; border-top:1px dashed #ddd; margin:5px 0;">
-                        <span>KTP: ${data.alamatKtp}</span><br><br>
+                        <strong>${data.statusNikah}</strong>
                         <span>Domisili: ${data.alamatDomisili}</span>
                     </td>
-                    <td class="user-info">
-                        <strong>${data.emergencyName}</strong>
-                        <span>${data.emergencyPhone}</span><br>
-                        <a href="${data.locationLink}" target="_blank" class="btn-link btn-maps">📍 Buka Maps</a>
+                    <td>
+                        <button class="btn-action" onclick="printPendaftar('${id}')">🖨️ Cetak PDF</button>
                     </td>
-                    <td>${docsHtml}</td>
                 </tr>
             `;
             tbody.innerHTML += row;
         });
     });
+
+    // 2. FUNGSI CETAK PDF (GENERATE TAMPILAN SURAT)
+    function printPendaftar(id) {
+        const d = window.dbData[id];
+        if(!d) return alert("Data tidak ditemukan!");
+
+        const printArea = document.getElementById('printArea');
+        
+        // Buat Template Surat
+        let html = `
+            <div class="print-header">
+                <div class="print-title">FORMULIR REGISTRASI SEMIL ALFA N3</div>
+                <div class="print-subtitle">Database Ref: gadingfc22 | Referral: <strong>${d.referral}</strong></div>
+            </div>
+
+            <div class="print-section">A. DATA PRIBADI</div>
+            <div class="print-row"><div class="print-label">Nama Lengkap</div><div class="print-value">: ${d.nama}</div></div>
+            <div class="print-row"><div class="print-label">Email</div><div class="print-value">: ${d.email}</div></div>
+            <div class="print-row"><div class="print-label">Nomor WhatsApp</div><div class="print-value">: ${d.wa}</div></div>
+            <div class="print-row"><div class="print-label">Tempat/Tgl Lahir</div><div class="print-value">: ${d.ttl}</div></div>
+            <div class="print-row"><div class="print-label">Status Pernikahan</div><div class="print-value">: ${d.statusNikah}</div></div>
+            
+            <div class="print-section">B. ALAMAT & KONTAK DARURAT</div>
+            <div class="print-row"><div class="print-label">Alamat KTP</div><div class="print-value">: ${d.alamatKtp}</div></div>
+            <div class="print-row"><div class="print-label">Alamat Domisili</div><div class="print-value">: ${d.alamatDomisili}</div></div>
+            <div class="print-row"><div class="print-label">Kontak Darurat</div><div class="print-value">: ${d.emergencyName} (${d.emergencyPhone})</div></div>
+            <div class="print-row"><div class="print-label">Lokasi Rumah (Maps)</div><div class="print-value">: ${d.locationLink}</div></div>
+
+            <div class="print-section">C. LAMPIRAN DOKUMEN</div>
+            <div class="print-grid">
+        `;
+
+        // Helper untuk tambah gambar
+        const addImg = (label, url) => {
+            if(url) {
+                html += `
+                    <div class="print-img-box">
+                        <span class="print-img-label">${label}</span>
+                        <img src="${url}" crossorigin="anonymous">
+                    </div>
+                `;
+            }
+        };
+
+        addImg("KTP Asli", d.ktp_url);
+        addImg("KTP Pasangan", d.ktp_pasangan_url);
+        addImg("SIM C", d.sim_url);
+        addImg("Kartu Keluarga", d.kk_url);
+        addImg("Surat Domisili", d.domisili_url);
+        addImg("Foto Selfie", d.selfie_url);
+        addImg("Profil Ojol", d.ojol_profile_url);
+        addImg("Bukti Pendapatan 1", d.pendapatan1_url);
+        addImg("Bukti Pendapatan 2", d.pendapatan2_url);
+        addImg("Bukti Pendapatan 3", d.pendapatan3_url);
+
+        html += `</div>`; // Tutup Grid
+
+        // Masukkan ke area print
+        printArea.innerHTML = html;
+        printArea.style.display = 'block'; // Munculkan sebentar untuk dibaca browser
+
+        // Trigger Print
+        setTimeout(() => {
+            window.print();
+            printArea.style.display = 'none'; // Sembunyikan lagi setelah dialog print muncul
+        }, 500); // Delay 0.5 detik biar gambar sempat load dikit
+    }
 </script>
 
 </body>
