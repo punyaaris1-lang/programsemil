@@ -12,177 +12,50 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 
     <style>
-        :root {
-            --primary: #d32f2f; /* Merah Semil */
-            --text-dark: #333;
-            --locked: #e9ecef;
-            --danger: #b71c1c;
-        }
-
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: #f4f6f8;
-            margin: 0;
-            padding: 20px;
-            color: var(--text-dark);
-        }
-
-        .container {
-            max-width: 700px;
-            margin: 0 auto;
-            background: white;
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-            border-top: 5px solid var(--primary);
-        }
-
+        :root { --primary: #d32f2f; --text-dark: #333; --locked: #e9ecef; --danger: #b71c1c; }
+        body { font-family: 'Poppins', sans-serif; background: #f4f6f8; margin: 0; padding: 20px; color: var(--text-dark); }
+        .container { max-width: 700px; margin: 0 auto; background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border-top: 5px solid var(--primary); }
         .header { text-align: center; margin-bottom: 30px; }
         .header h1 { margin: 0; color: var(--primary); font-size: 26px; text-transform: uppercase; letter-spacing: 1px; }
-        
-        .form-section {
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            border: 1px solid #e0e0e0;
-            margin-bottom: 25px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
-        }
-        .section-label {
-            font-size: 15px;
-            font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 15px;
-            display: block;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            border-bottom: 2px solid #f0f0f0;
-            padding-bottom: 8px;
-        }
-
+        .form-section { background: #fff; padding: 20px; border-radius: 8px; border: 1px solid #e0e0e0; margin-bottom: 25px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+        .section-label { font-size: 15px; font-weight: 700; color: var(--primary); margin-bottom: 15px; display: block; text-transform: uppercase; border-bottom: 2px solid #f0f0f0; padding-bottom: 8px; }
         .form-group { margin-bottom: 15px; }
         label { display: block; margin-bottom: 6px; font-weight: 500; font-size: 13px; }
-        
-        input, textarea, select {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-            font-size: 14px;
-        }
-        input:focus, textarea:focus, select:focus {
-            border-color: var(--primary);
-            outline: none;
-            background: #fffafa;
-        }
-
-        .input-locked {
-            background-color: var(--locked) !important;
-            color: #555;
-            font-weight: bold;
-            cursor: not-allowed;
-            border: 1px solid #ddd !important;
-        }
-
-        .checkbox-wrapper {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-            font-size: 13px;
-            color: #555;
-            cursor: pointer;
-        }
+        input, textarea, select { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-family: 'Poppins', sans-serif; font-size: 14px; }
+        input:focus, textarea:focus, select:focus { border-color: var(--primary); outline: none; background: #fffafa; }
+        .input-locked { background-color: var(--locked) !important; color: #555; font-weight: bold; cursor: not-allowed; border: 1px solid #ddd !important; }
+        .checkbox-wrapper { display: flex; align-items: center; margin-bottom: 10px; font-size: 13px; color: #555; cursor: pointer; }
         .checkbox-wrapper input { width: auto; margin-right: 8px; }
-
-        /* Upload Styles */
-        .upload-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
+        .upload-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         @media (max-width: 600px) { .upload-grid { grid-template-columns: 1fr; } }
-
-        .upload-card {
-            border: 2px dashed #ccc;
-            border-radius: 8px;
-            padding: 12px;
-            text-align: center;
-            background: #fafafa;
-            transition: 0.2s;
-        }
-        .upload-card:hover { border-color: var(--primary); background: #fff5f5; }
-        .upload-label { font-size: 12px; font-weight: 600; display: block; margin-bottom: 8px; color: #444; }
-        
-        .preview-img {
-            width: 100%;
-            height: 120px;
-            object-fit: cover;
-            border-radius: 4px;
-            margin-top: 8px;
-            display: none;
-            border: 1px solid #ddd;
-        }
-
-        .btn-submit {
-            background: var(--primary);
-            color: white;
-            padding: 16px;
-            width: 100%;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 700;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(211, 47, 47, 0.3);
-            transition: 0.3s;
-        }
+        .upload-card { border: 2px dashed #ccc; border-radius: 8px; padding: 12px; text-align: center; background: #fafafa; transition: 0.2s; }
+        .preview-img { width: 100%; height: 120px; object-fit: cover; border-radius: 4px; margin-top: 8px; display: none; border: 1px solid #ddd; }
+        .btn-submit { background: var(--primary); color: white; padding: 16px; width: 100%; border: none; border-radius: 8px; font-size: 16px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 10px rgba(211, 47, 47, 0.3); transition: 0.3s; }
         .btn-submit:hover { background: #b71c1c; transform: translateY(-1px); }
-        .btn-submit:disabled { background: #ccc; cursor: not-allowed; transform: none; box-shadow: none; }
-
-        .alert-error {
-            display: none;
-            background: #ffebee; color: var(--danger); 
-            padding: 12px; border-radius: 6px; 
-            text-align: center; margin-bottom: 20px; border: 1px solid #ffcdd2; font-size: 13px; font-weight: 600;
-        }
+        .btn-submit:disabled { background: #ccc; cursor: not-allowed; }
+        .alert-error { display: none; background: #ffebee; color: var(--danger); padding: 12px; border-radius: 6px; text-align: center; margin-bottom: 20px; border: 1px solid #ffcdd2; font-size: 13px; font-weight: 600; }
+        .opt-label { color: #28a745; font-weight: normal; font-size: 11px; margin-left: 5px; }
+        
+        /* Loading Bar Style */
+        #progressContainer { display: none; margin-top: 15px; }
+        #progressBar { width: 0%; height: 5px; background: #d32f2f; transition: width 0.3s; border-radius: 5px; }
+        #progressText { font-size: 12px; color: #666; text-align: center; margin-top: 5px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="header">
-        <h1>REGISTRASI SEMIL ALFA N3</h1>
-    </div>
+    <div class="header"><h1>REGISTRASI SEMIL ALFA N3</h1></div>
 
     <form id="alfaForm">
-        
-        <div class="form-group">
-            <label style="color: var(--primary);">Kode Referral (Wajib)</label>
-            <input type="text" id="referral" value="Apri" class="input-locked" readonly>
-        </div>
+        <div class="form-group"><label style="color: var(--primary);">Kode Referral (Wajib)</label><input type="text" id="referral" value="Apri" class="input-locked" readonly></div>
 
         <div class="form-section">
             <span class="section-label">1. Identitas Diri</span>
-            
-            <div class="form-group">
-                <label>Nama Lengkap (Sesuai KTP)</label>
-                <input type="text" id="nama" required placeholder="Tulis nama lengkap...">
-            </div>
-
-            <div class="form-group">
-                <label>Nomor WhatsApp (WA)</label>
-                <input type="number" id="wa" required placeholder="Contoh: 081234567890">
-            </div>
-
-            <div class="form-group">
-                <label>Tempat & Tanggal Lahir</label>
-                <input type="text" id="ttl" required placeholder="Contoh: Jakarta, 17 Agustus 1995">
-            </div>
-
-            <div class="form-group">
-                <label>Status Pernikahan</label>
+            <div class="form-group"><label>Nama Lengkap</label><input type="text" id="nama" required></div>
+            <div class="form-group"><label>Nomor WhatsApp (WA)</label><input type="number" id="wa" required></div>
+            <div class="form-group"><label>Tempat & Tanggal Lahir</label><input type="text" id="ttl" required></div>
+            <div class="form-group"><label>Status Pernikahan</label>
                 <select id="statusNikah" required>
                     <option value="">-- Pilih Status --</option>
                     <option value="Belum Menikah">Belum Menikah</option>
@@ -190,94 +63,56 @@
                     <option value="Cerai">Cerai</option>
                 </select>
             </div>
-
-            <div class="form-group">
-                <label>Alamat Sesuai KTP</label>
-                <textarea id="alamatKtp" rows="2" required placeholder="Jalan, RT/RW, Kelurahan, Kecamatan..."></textarea>
-            </div>
-
-            <div class="form-group">
-                <label>Alamat Domisili (Tempat Tinggal Sekarang)</label>
-                <div class="checkbox-wrapper">
-                    <input type="checkbox" id="checkSama" onchange="copyAlamat()"> 
-                    <span>Sama dengan Alamat KTP</span>
-                </div>
-                <textarea id="alamatDomisili" rows="2" required placeholder="Tulis alamat tempat tinggal sekarang..."></textarea>
+            <div class="form-group"><label>Alamat Sesuai KTP</label><textarea id="alamatKtp" rows="2" required></textarea></div>
+            <div class="form-group"><label>Alamat Domisili</label>
+                <div class="checkbox-wrapper"><input type="checkbox" id="checkSama" onchange="copyAlamat()"><span>Sama dengan Alamat KTP</span></div>
+                <textarea id="alamatDomisili" rows="2" required></textarea>
             </div>
         </div>
 
         <div class="form-section">
             <span class="section-label">2. Kontak & Lokasi</span>
-
-            <div class="form-group">
-                <label>Email Aktif</label>
-                <input type="email" id="email" required placeholder="nama@email.com">
-            </div>
-            
-            <div class="form-group">
-                <label>Nama Kontak Darurat</label>
-                <input type="text" id="emergencyName" required placeholder="Nama Kerabat/Keluarga">
-            </div>
-            
-            <div class="form-group">
-                <label>Nomor Kontak Darurat</label>
-                <input type="number" id="emergencyPhone" required placeholder="08xxxxxxxxxx">
-            </div>
-            
-            <div class="form-group">
-                <label>Shareloc Rumah (Link Google Maps)</label>
-                <textarea id="locationLink" rows="2" required placeholder="Tempel link maps di sini..."></textarea>
-            </div>
+            <div class="form-group"><label>Email Aktif</label><input type="email" id="email" required></div>
+            <div class="form-group"><label>Nama Kontak Darurat</label><input type="text" id="emergencyName" required></div>
+            <div class="form-group"><label>Nomor Kontak Darurat</label><input type="number" id="emergencyPhone" required></div>
+            <div class="form-group"><label>Shareloc Rumah (Opsional)</label><textarea id="locationLink" rows="2"></textarea></div>
         </div>
 
         <div class="form-section">
             <span class="section-label">3. Dokumen Persyaratan</span>
-            <p style="font-size: 11px; color: #666; margin-bottom: 15px;">
-                *Pastikan semua kolom foto terisi (Total 10 Foto).
-            </p>
-            
             <div class="upload-grid">
                 <script>
                     const docs = [
-                        {id: 'ktp', label: '1. Foto KTP Asli'},
-                        {id: 'ktp_pasangan', label: '2. Foto KTP Pasangan'},
-                        {id: 'sim', label: '3. Foto SIM C'},
-                        {id: 'domisili', label: '4. Surat Domisili'},
-                        {id: 'kk', label: '5. Kartu Keluarga'},
-                        {id: 'selfie', label: '6. Foto Selfie'},
-                        {id: 'ojol_profile', label: '7. SS Profil Ojol'},
-                        
-                        // 3 FILE BUKTI PENDAPATAN
-                        {id: 'pendapatan1', label: '8a. Bukti Pendapatan (Bln 1)'},
-                        {id: 'pendapatan2', label: '8b. Bukti Pendapatan (Bln 2)'},
-                        {id: 'pendapatan3', label: '8c. Bukti Pendapatan (Bln 3)'}
+                        {id: 'ktp', label: '1. Foto KTP Asli', r: true}, {id: 'ktp_pasangan', label: '2. Foto KTP Pasangan', r: true},
+                        {id: 'sim', label: '3. Foto SIM C', r: true}, {id: 'domisili', label: '4. Surat Domisili <br><span class="opt-label">(Boleh Menyusul)</span>', r: false},
+                        {id: 'kk', label: '5. Kartu Keluarga', r: true}, {id: 'selfie', label: '6. Foto Selfie', r: true},
+                        {id: 'ojol_profile', label: '7. SS Profil Ojol', r: true},
+                        {id: 'pendapatan1', label: '8a. Bukti Pendapatan 1', r: true}, {id: 'pendapatan2', label: '8b. Bukti Pendapatan 2', r: true}, {id: 'pendapatan3', label: '8c. Bukti Pendapatan 3', r: true}
                     ];
-
-                    docs.forEach(doc => {
-                        document.write(`
-                            <div class="upload-card">
-                                <span class="upload-label">${doc.label}</span>
-                                <input type="file" id="${doc.id}" accept="image/*" onchange="previewImage(this, 'prev_${doc.id}')" required>
-                                <img id="prev_${doc.id}" class="preview-img">
-                            </div>
-                        `);
+                    docs.forEach(d => {
+                        const req = d.r ? 'required' : '';
+                        document.write(`<div class="upload-card"><span class="upload-label">${d.label}</span><input type="file" id="${d.id}" accept="image/*" onchange="previewImage(this, 'prev_${d.id}')" ${req}><img id="prev_${d.id}" class="preview-img"></div>`);
                     });
                 </script>
             </div>
         </div>
 
-        <div id="errorMsg" class="alert-error">Mohon lengkapi semua kolom dan foto!</div>
-
+        <div id="errorMsg" class="alert-error">Mohon lengkapi semua kolom wajib!</div>
+        
         <button type="submit" class="btn-submit" id="btnKirim">KIRIM DATA REGISTRASI</button>
-        <p id="loadingText" style="text-align: center; display: none; color: #666; font-size:12px; margin-top: 10px;">
-            Sedang mengupload data... Mohon jangan tutup halaman ini.
-        </p>
-
+        
+        <div id="progressContainer">
+            <div style="background:#ddd; height:5px; border-radius:5px;"><div id="progressBar"></div></div>
+            <p id="progressText">Menyiapkan foto...</p>
+        </div>
     </form>
 </div>
 
 <script>
-    // --- KONFIGURASI FIREBASE ---
+    // --- TELEGRAM CONFIG ---
+    const TELEGRAM_TOKEN = "MASUKAN_TOKEN_BOT_DISINI"; 
+    const TELEGRAM_CHAT_ID = "MASUKAN_CHAT_ID_DISINI";       
+
     const firebaseConfig = {
       apiKey: "AIzaSyAk3G5aQUBVe_g7_peVu1F6xllP_RejGq0",
       authDomain: "rtomaka-e67b5.firebaseapp.com",
@@ -291,66 +126,81 @@
     const db = firebase.firestore();
     const storage = firebase.storage();
 
-    // --- AUTO COPY ALAMAT ---
-    function copyAlamat() {
-        const check = document.getElementById('checkSama');
-        const alamatKtp = document.getElementById('alamatKtp');
-        const alamatDom = document.getElementById('alamatDomisili');
+    // VARIABEL PENJAGA REFRESH
+    let isUploading = false;
 
-        if (check.checked) {
-            alamatDom.value = alamatKtp.value;
-            alamatDom.readOnly = true;
-            alamatDom.style.backgroundColor = "#e9ecef";
-        } else {
-            alamatDom.value = "";
-            alamatDom.readOnly = false;
-            alamatDom.style.backgroundColor = "white";
+    // EVENT LISTENER: Peringatan saat mau Refresh/Tutup Tab
+    window.addEventListener('beforeunload', function (e) {
+        if (isUploading) {
+            e.preventDefault(); 
+            e.returnValue = ''; // Standard Browser supaya muncul popup
         }
+    });
+
+    function copyAlamat() {
+        const c = document.getElementById('checkSama'), d = document.getElementById('alamatDomisili'), k = document.getElementById('alamatKtp');
+        if (c.checked) { d.value = k.value; d.readOnly = true; d.style.backgroundColor = "#e9ecef"; } else { d.value = ""; d.readOnly = false; d.style.backgroundColor = "white"; }
     }
 
-    // --- PREVIEW ---
     function previewImage(input, imgId) {
         if (input.files && input.files[0]) {
             var reader = new FileReader();
-            reader.onload = function(e) {
-                var img = document.getElementById(imgId);
-                img.src = e.target.result;
-                img.style.display = 'block';
-            }
+            reader.onload = function(e) { document.getElementById(imgId).src = e.target.result; document.getElementById(imgId).style.display = 'block'; }
             reader.readAsDataURL(input.files[0]);
         }
     }
 
-    // --- SUBMIT ---
+    // KOMPRES GAMBAR
+    function compressImage(file) {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = (event) => {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 1200; 
+                    const scaleSize = MAX_WIDTH / img.width;
+                    canvas.width = MAX_WIDTH;
+                    canvas.height = img.height * scaleSize;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    canvas.toBlob((blob) => { resolve(blob); }, 'image/jpeg', 0.7);
+                }
+            }
+        });
+    }
+
+    async function sendTelegramNotification(nama, wa, email) {
+        if(TELEGRAM_TOKEN.includes("MASUKAN")) return;
+        const msg = `🔔 *PENDAFTAR BARU ALFA N3*\n--------------------\n👤 ${nama}\n📱 ${wa}\n📧 ${email}\n--------------------\nCek Admin Dashboard!`;
+        try { await fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage?chat_id=${TELEGRAM_CHAT_ID}&text=${encodeURIComponent(msg)}&parse_mode=Markdown`); } catch (e) {}
+    }
+
     document.getElementById('alfaForm').addEventListener('submit', async function(e) {
         e.preventDefault();
-        
         const btn = document.getElementById('btnKirim');
-        const loadingText = document.getElementById('loadingText');
+        const pCont = document.getElementById('progressContainer');
+        const pBar = document.getElementById('progressBar');
+        const pText = document.getElementById('progressText');
         const errorMsg = document.getElementById('errorMsg');
         
         errorMsg.style.display = 'none';
 
-        // Validasi
         const inputs = document.querySelectorAll('input[required], textarea[required], select[required]');
         let isValid = true;
-        inputs.forEach(input => {
-            if (!input.value) isValid = false;
-        });
+        inputs.forEach(input => { if (!input.value) { isValid = false; input.style.borderColor = "red"; } else { input.style.borderColor = "#ccc"; } });
 
-        if (!isValid) {
-            errorMsg.style.display = 'block';
-            errorMsg.innerText = "Mohon lengkapi SEMUA kolom data diri dan upload 10 foto!";
-            window.scrollTo(0, 0);
-            return;
-        }
+        if (!isValid) { errorMsg.style.display = 'block'; errorMsg.innerText = "Data belum lengkap! Cek kolom merah."; window.scrollTo(0,0); return; }
 
-        btn.disabled = true;
-        btn.innerText = "MENGIRIM DATA...";
-        loadingText.style.display = "block";
+        // AKTIFKAN MODE UPLOAD (Supaya gak bisa direfresh sembarangan)
+        isUploading = true;
+        
+        btn.disabled = true; btn.style.display = "none"; 
+        pCont.style.display = "block"; 
 
         try {
-            // Data Input
             const formData = {
                 referral: document.getElementById('referral').value,
                 nama: document.getElementById('nama').value,
@@ -367,48 +217,54 @@
                 status: "Baru"
             };
 
-            // List File ID Terbaru
-            const fileIds = [
-                'ktp', 'ktp_pasangan', 'sim', 'domisili', 'kk', 'selfie', 'ojol_profile',
-                'pendapatan1', 'pendapatan2', 'pendapatan3' // 3 File Pendapatan
-            ];
-            
+            const fileIds = ['ktp', 'ktp_pasangan', 'sim', 'domisili', 'kk', 'selfie', 'ojol_profile', 'pendapatan1', 'pendapatan2', 'pendapatan3'];
             const uploadPromises = [];
+            
+            let fileCount = 0;
+            fileIds.forEach(id => { if(document.getElementById(id).files.length > 0) fileCount++; });
+            let uploadedCount = 0;
 
-            // Upload Loop
             for (let id of fileIds) {
                 const fileInput = document.getElementById(id);
                 if (fileInput.files.length > 0) {
-                    const file = fileInput.files[0];
+                    const originalFile = fileInput.files[0];
+                    pText.innerText = `Mengompres & Upload: ${id} ...`;
+                    
+                    const compressedFile = await compressImage(originalFile);
+                    
                     const safeName = formData.nama.replace(/[^a-zA-Z0-9]/g, "_");
                     const storageRef = storage.ref(`gadingfc22/${formData.referral}_${safeName}_${id}.jpg`);
                     
-                    const uploadTask = storageRef.put(file).then(snapshot => {
+                    const uploadTask = storageRef.put(compressedFile);
+                    await uploadTask.then(snapshot => {
                         return snapshot.ref.getDownloadURL().then(url => {
                             formData[id + '_url'] = url;
+                            uploadedCount++;
+                            const percent = (uploadedCount / fileCount) * 100;
+                            pBar.style.width = percent + "%";
                         });
                     });
-                    uploadPromises.push(uploadTask);
                 }
             }
 
-            await Promise.all(uploadPromises);
-
-            // Save to Firestore
+            pText.innerText = "Menyimpan Data...";
             await db.collection("gadingfc22").add(formData);
+            await sendTelegramNotification(formData.nama, formData.wa, formData.email);
 
-            alert("SUKSES! Data pendaftaran SEMIL ALFA N3 berhasil dikirim.");
+            // MATIKAN MODE UPLOAD (Biar bisa reload halaman setelah sukses)
+            isUploading = false;
+
+            alert("SUKSES! Data Terkirim.");
             window.location.reload();
 
         } catch (error) {
             console.error("Error:", error);
-            alert("Gagal Mengirim: " + error.message);
-            btn.disabled = false;
-            btn.innerText = "KIRIM DATA REGISTRASI";
-            loadingText.style.display = "none";
+            alert("Gagal: " + error.message);
+            // Matikan mode upload kalau gagal, biar user bisa benerin
+            isUploading = false;
+            btn.disabled = false; btn.style.display = "block"; pCont.style.display = "none";
         }
     });
 </script>
-
 </body>
 </html>
