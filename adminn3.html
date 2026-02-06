@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Semil Alfa N3</title>
+    
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Roboto', sans-serif; padding: 20px; background: #f0f2f5; margin: 0; }
+        
+        .header { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        h1 { margin: 0; color: #d32f2f; font-size: 24px; }
+        .badge { background: #e3f2fd; color: #0d47a1; padding: 5px 10px; border-radius: 4px; font-size: 12px; font-weight: bold; }
+
+        .table-container { overflow-x: auto; background: white; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        
+        table { width: 100%; border-collapse: collapse; min-width: 1200px; } /* Min-width biar bisa scroll samping di HP */
+        
+        thead { background: #d32f2f; color: white; }
+        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; font-size: 13px; vertical-align: top; }
+        th { font-weight: 600; text-transform: uppercase; font-size: 12px; letter-spacing: 0.5px; }
+        
+        tr:hover { background: #fafafa; }
+        
+        .user-info strong { display: block; color: #333; font-size: 14px; margin-bottom: 2px; }
+        .user-info span { color: #666; font-size: 12px; }
+
+        .btn-link {
+            display: inline-block; padding: 4px 8px; margin: 2px;
+            background: #fff; border: 1px solid #ddd; color: #555;
+            text-decoration: none; border-radius: 4px; font-size: 11px; transition: 0.2s;
+        }
+        .btn-link:hover { background: #007bff; color: white; border-color: #007bff; }
+        
+        .btn-maps { background: #e8f5e9; color: #2e7d32; border-color: #c8e6c9; }
+        .btn-wa { background: #25D366; color: white; border: none; font-weight: bold; }
+
+        .group-header { font-weight: bold; color: #d32f2f; font-size: 11px; margin-top: 5px; display: block; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div>
+            <h1>ADMIN - SEMIL ALFA N3</h1>
+            <span style="font-size:12px; color:#666;">Data Realtime dari Database gadingfc22</span>
+        </div>
+        <div class="badge" id="totalCount">Total: 0 Pendaftar</div>
+    </div>
+
+    <div id="loading" style="text-align: center; padding: 20px;">Mengambil data...</div>
+
+    <div class="table-container">
+        <table id="dataTable" style="display: none;">
+            <thead>
+                <tr>
+                    <th width="10%">Tanggal</th>
+                    <th width="5%">Ref</th>
+                    <th width="20%">Data Diri</th>
+                    <th width="20%">Alamat & Status</th>
+                    <th width="15%">Kontak Darurat</th>
+                    <th width="30%">Dokumen (Klik untuk Buka)</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                </tbody>
+        </table>
+    </div>
+
+<script>
+    // --- KONFIGURASI SAMA DENGAN FORM ---
+    const firebaseConfig = {
+      apiKey: "AIzaSyAk3G5aQUBVe_g7_peVu1F6xllP_RejGq0",
+      authDomain: "rtomaka-e67b5.firebaseapp.com",
+      projectId: "rtomaka-e67b5",
+      storageBucket: "rtomaka-e67b5.firebasestorage.app",
+      messagingSenderId: "472036722228",
+      appId: "1:472036722228:web:11d520f9204db317d02c61"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    const tbody = document.getElementById('tableBody');
+    const loading = document.getElementById('loading');
+    const table = document.getElementById('dataTable');
+    const totalCount = document.getElementById('totalCount');
+
+    db.collection("gadingfc22").orderBy("submittedAt", "desc").onSnapshot((snapshot) => {
+        tbody.innerHTML = "";
+        loading.style.display = "none";
+        table.style.display = "table";
+        totalCount.innerText = `Total: ${snapshot.size} Pendaftar`;
+
+        if (snapshot.empty) {
+            tbody.innerHTML = "<tr><td colspan='6' style='text-align:center; padding:30px;'>Belum ada data masuk.</td></tr>";
+            return;
+        }
+
+        snapshot.forEach((doc) => {
+            const data = doc.data();
+            
+            // Format Tanggal
+            let tanggal = "-";
+            if (data.submittedAt) {
+                const dateObj = data.submittedAt.toDate();
+                tanggal = dateObj.toLocaleString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute:'2-digit' });
+            }
+
+            // Generate Link Foto Utama
+            let docsHtml = '<span class="group-header">IDENTITAS</span>';
+            const mainDocs = [
+                {k: 'ktp_url', n: 'KTP Asli'}, {k: 'ktp_pasangan_url', n: 'KTP Pasangan'}, 
+                {k: 'sim_url', n: 'SIM C'}, {k: 'kk_url', n: 'KK'}, 
+                {k: 'selfie_url', n: 'Selfie'}, {k: 'domisili_url', n: 'S. Domisili'}
+            ];
+            mainDocs.forEach(f => {
+                if(data[f.k]) docsHtml += `<a href="${data[f.k]}" target="_blank" class="btn-link">${f.n}</a> `;
+            });
+
+            // Generate Link Bukti Pendapatan
+            docsHtml += '<span class="group-header" style="margin-top:8px;">PENDAPATAN & KERJA</span>';
+            const incDocs = [
+                {k: 'ojol_profile_url', n: 'Profil Ojol'},
+                {k: 'pendapatan1_url', n: 'Gaji Bln 1'},
+                {k: 'pendapatan2_url', n: 'Gaji Bln 2'},
+                {k: 'pendapatan3_url', n: 'Gaji Bln 3'}
+            ];
+            incDocs.forEach(f => {
+                if(data[f.k]) docsHtml += `<a href="${data[f.k]}" target="_blank" class="btn-link" style="border-color:#d32f2f; color:#d32f2f;">${f.n}</a> `;
+            });
+
+            // Tombol WA
+            const waLink = `https://wa.me/62${data.wa.replace(/^0/, '')}`; // Ubah 08 jadi 628
+
+            const row = `
+                <tr>
+                    <td>${tanggal}</td>
+                    <td style="font-weight:bold; color:red;">${data.referral || '-'}</td>
+                    <td class="user-info">
+                        <strong>${data.nama}</strong>
+                        <span>Email: ${data.email}</span><br>
+                        <span>TTL: ${data.ttl}</span><br>
+                        <a href="${waLink}" target="_blank" class="btn-link btn-wa">Chat WA: ${data.wa}</a>
+                    </td>
+                    <td class="user-info">
+                        <strong>Status: ${data.statusNikah}</strong>
+                        <hr style="border:0; border-top:1px dashed #ddd; margin:5px 0;">
+                        <span>KTP: ${data.alamatKtp}</span><br><br>
+                        <span>Domisili: ${data.alamatDomisili}</span>
+                    </td>
+                    <td class="user-info">
+                        <strong>${data.emergencyName}</strong>
+                        <span>${data.emergencyPhone}</span><br>
+                        <a href="${data.locationLink}" target="_blank" class="btn-link btn-maps">📍 Buka Maps</a>
+                    </td>
+                    <td>${docsHtml}</td>
+                </tr>
+            `;
+            tbody.innerHTML += row;
+        });
+    });
+</script>
+
+</body>
+</html>
