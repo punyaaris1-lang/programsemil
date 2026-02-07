@@ -12,52 +12,39 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 
     <style>
-        :root { --primary: #1976D2; --bg: #f5f7fa; --success: #4CAF50; --warning: #FF9800; --danger: #F44336; }
+        :root { --primary: #2c3e50; --bg: #ecf0f1; --success: #27ae60; --bar: #2980b9; }
         body { font-family: 'Poppins', sans-serif; background: var(--bg); margin: 0; padding: 20px; color: #333; }
-        .container { max-width: 700px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-top: 5px solid var(--primary); }
-        .header h1 { text-align: center; color: var(--primary); margin-bottom: 30px; font-size: 24px; }
-
-        .form-section { background: #fff; border: 1px solid #e0e0e0; border-radius: 8px; padding: 20px; margin-bottom: 20px; }
-        .section-label { font-weight: bold; color: var(--primary); display: block; margin-bottom: 15px; border-bottom: 2px solid #eee; padding-bottom: 5px; }
+        .container { max-width: 700px; margin: 0 auto; background: white; padding: 20px; border-radius: 12px; border-top: 5px solid var(--primary); }
+        .header h1 { text-align: center; color: var(--primary); font-size: 22px; margin-bottom: 20px; }
 
         .form-group { margin-bottom: 15px; }
         label { display: block; margin-bottom: 5px; font-weight: 500; font-size: 13px; }
-        input, textarea, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-family: inherit; }
+        input, textarea, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; box-sizing: border-box; }
         
-        /* GRID UPLOAD DENGAN STATUS */
-        .upload-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        @media (max-width: 600px) { .upload-grid { grid-template-columns: 1fr; } }
-
+        .upload-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .upload-card { 
-            border: 2px dashed #ddd; border-radius: 8px; padding: 10px; text-align: center; 
-            background: #fafafa; position: relative; transition: 0.3s;
+            border: 1px solid #ddd; border-radius: 8px; padding: 10px; text-align: center; 
+            background: #fff; position: relative; 
         }
-        .upload-label { font-size: 12px; font-weight: bold; display: block; margin-bottom: 5px; }
-        .preview-img { width: 100%; height: 100px; object-fit: cover; border-radius: 4px; display: none; margin-top: 5px; border: 1px solid #ccc; }
+        .upload-label { font-size: 11px; font-weight: bold; display: block; margin-bottom: 5px; }
+        .preview-img { width: 100%; height: 80px; object-fit: cover; border-radius: 4px; display: none; margin-top: 5px; border: 1px solid #ccc; }
 
-        /* BADGE STATUS (INDIKATOR) */
-        .status-badge {
-            position: absolute; top: -10px; right: -10px;
-            font-size: 10px; font-weight: bold; color: white;
-            padding: 4px 8px; border-radius: 20px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            display: none; /* Default sembunyi */
-            z-index: 10;
+        /* PROGRESS BAR DI DALAM KARTU */
+        .progress-wrapper {
+            height: 6px; background: #eee; border-radius: 3px; margin-top: 5px; display: none; overflow: hidden;
         }
-        .st-wait { background: #999; display: block; content: "Menunggu"; }
-        .st-process { background: var(--warning); display: block; animation: pulse 1s infinite; }
-        .st-done { background: var(--success); display: block; }
-        .st-fail { background: var(--danger); display: block; }
-
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
-
-        .btn-submit { background: var(--primary); color: white; padding: 15px; width: 100%; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        .btn-submit:disabled { background: #ccc; cursor: not-allowed; }
-
-        #logArea { 
-            background: #333; color: #0f0; font-family: monospace; font-size: 11px; 
-            padding: 10px; border-radius: 5px; margin-top: 20px; height: 120px; overflow-y: auto; display: none; 
+        .progress-fill {
+            height: 100%; background: var(--bar); width: 0%; transition: width 0.2s;
         }
+        .status-text { font-size: 10px; color: #666; margin-top: 3px; display: block; }
+
+        /* STATUS BADGE */
+        .badge-ok { position: absolute; top: 5px; right: 5px; background: var(--success); color: white; padding: 2px 6px; border-radius: 4px; font-size: 9px; display: none; }
+
+        .btn-submit { background: var(--primary); color: white; padding: 15px; width: 100%; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 20px; }
+        .btn-submit:disabled { background: #bdc3c7; cursor: wait; }
+
+        #totalProgress { display:none; margin-top: 15px; text-align: center; font-weight: bold; font-size: 14px; color: var(--primary); }
     </style>
 </head>
 <body>
@@ -68,66 +55,60 @@
     <form id="alfaForm">
         <div class="form-group"><label>Referral</label><input type="text" id="referral" value="Apri" readonly style="background:#eee;"></div>
 
-        <div class="form-section">
-            <span class="section-label">1. Identitas Diri</span>
+        <div style="background:#f9f9f9; padding:15px; border-radius:8px; margin-bottom:15px;">
             <div class="form-group"><label>Nama Lengkap</label><input type="text" id="nama" required></div>
             <div class="form-group"><label>No WhatsApp</label><input type="number" id="wa" required></div>
             <div class="form-group"><label>Tempat, Tgl Lahir</label><input type="text" id="ttl" required></div>
-            <div class="form-group"><label>Status Nikah</label>
-                <select id="statusNikah" required>
-                    <option value="">-- Pilih --</option><option>Belum Menikah</option><option>Menikah</option><option>Cerai</option>
-                </select>
+            <div class="form-group"><label>Status</label>
+                <select id="statusNikah" required><option value="">-- Pilih --</option><option>Belum Menikah</option><option>Menikah</option><option>Cerai</option></select>
             </div>
             <div class="form-group"><label>Alamat KTP</label><textarea id="alamatKtp" rows="2" required></textarea></div>
             <div class="form-group"><label>Alamat Domisili</label>
                 <input type="checkbox" id="checkSama" onchange="copyAlamat()"> Sama dgn KTP
                 <textarea id="alamatDomisili" rows="2" required></textarea>
             </div>
-        </div>
-
-        <div class="form-section">
-            <span class="section-label">2. Kontak & Lokasi</span>
             <div class="form-group"><label>Email</label><input type="email" id="email" required></div>
             <div class="form-group"><label>Nama Kontak Darurat</label><input type="text" id="emergencyName" required></div>
             <div class="form-group"><label>No HP Darurat</label><input type="number" id="emergencyPhone" required></div>
             <div class="form-group"><label>Shareloc (Opsional)</label><textarea id="locationLink" rows="1"></textarea></div>
         </div>
 
-        <div class="form-section">
-            <span class="section-label">3. Upload Dokumen</span>
-            <div class="upload-grid">
-                <script>
-                    const docs = [
-                        {id: 'ktp', label: 'KTP Asli', r: true}, {id: 'ktp_pasangan', label: 'KTP Pasangan', r: true},
-                        {id: 'sim', label: 'SIM C', r: true}, {id: 'domisili', label: 'S. Domisili (Opsional)', r: false},
-                        {id: 'kk', label: 'Kartu Keluarga', r: true}, {id: 'selfie', label: 'Foto Selfie', r: true},
-                        {id: 'ojol_profile', label: 'Profil Ojol', r: true},
-                        {id: 'pendapatan1', label: 'Gaji Bln 1', r: true}, {id: 'pendapatan2', label: 'Gaji Bln 2', r: true}, {id: 'pendapatan3', label: 'Gaji Bln 3', r: true}
-                    ];
-                    
-                    docs.forEach(d => {
-                        const req = d.r ? 'required' : '';
-                        document.write(`
-                            <div class="upload-card" id="card_${d.id}">
-                                <div id="badge_${d.id}" class="status-badge st-wait">Menunggu</div>
-                                
-                                <span class="upload-label">${d.label}</span>
-                                <input type="file" id="${d.id}" accept="image/*" onchange="previewImage(this, 'prev_${d.id}')" ${req}>
-                                <img id="prev_${d.id}" class="preview-img">
+        <div class="upload-grid">
+            <script>
+                const docs = [
+                    {id: 'ktp', label: 'KTP Asli', r: true}, {id: 'ktp_pasangan', label: 'KTP Pasangan', r: true},
+                    {id: 'sim', label: 'SIM C', r: true}, {id: 'domisili', label: 'S. Domisili (Opsional)', r: false},
+                    {id: 'kk', label: 'Kartu Keluarga', r: true}, {id: 'selfie', label: 'Foto Selfie', r: true},
+                    {id: 'ojol_profile', label: 'Profil Ojol', r: true},
+                    {id: 'pendapatan1', label: 'Gaji Bln 1', r: true}, {id: 'pendapatan2', label: 'Gaji Bln 2', r: true}, {id: 'pendapatan3', label: 'Gaji Bln 3', r: true}
+                ];
+                
+                docs.forEach(d => {
+                    const req = d.r ? 'required' : '';
+                    document.write(`
+                        <div class="upload-card">
+                            <span class="badge-ok" id="badge_${d.id}">OK</span>
+                            <span class="upload-label">${d.label}</span>
+                            <input type="file" id="${d.id}" accept="image/*" onchange="previewImage(this, 'prev_${d.id}')" ${req}>
+                            <img id="prev_${d.id}" class="preview-img">
+                            
+                            <div class="progress-wrapper" id="prog_wrap_${d.id}">
+                                <div class="progress-fill" id="prog_fill_${d.id}"></div>
                             </div>
-                        `);
-                    });
-                </script>
-            </div>
+                            <span class="status-text" id="status_${d.id}"></span>
+                        </div>
+                    `);
+                });
+            </script>
         </div>
 
-        <button type="submit" class="btn-submit" id="btnKirim">MULAI UPLOAD DATA</button>
-        <div id="logArea">LOG SYSTEM READY...</div>
+        <div id="totalProgress">Menyiapkan data...</div>
+        <button type="submit" class="btn-submit" id="btnKirim">KIRIM DATA</button>
     </form>
 </div>
 
 <script>
-    // --- SETTING TELEGRAM ---
+    // --- SETTING TELEGRAM & FIREBASE ---
     const TELEGRAM_TOKEN = "MASUKAN_TOKEN_BOT_DISINI"; 
     const TELEGRAM_CHAT_ID = "MASUKAN_CHAT_ID_DISINI";
 
@@ -144,30 +125,13 @@
     const db = firebase.firestore();
     const storage = firebase.storage();
 
-    // MEMORY PENYIMPANAN LINK (Supaya gak upload ulang yg sukses)
     let savedUrls = {}; 
     const fileIds = ['ktp', 'ktp_pasangan', 'sim', 'domisili', 'kk', 'selfie', 'ojol_profile', 'pendapatan1', 'pendapatan2', 'pendapatan3'];
-
-    // Inisialisasi savedUrls null semua
     fileIds.forEach(id => savedUrls[id] = null);
 
-    // Mencegah Refresh
     window.addEventListener('beforeunload', function (e) {
         if (document.getElementById('btnKirim').disabled) { e.preventDefault(); e.returnValue = ''; }
     });
-
-    function log(msg) {
-        const area = document.getElementById('logArea');
-        area.style.display = 'block';
-        area.innerHTML += `> ${msg}<br>`;
-        area.scrollTop = area.scrollHeight;
-    }
-
-    function updateBadge(id, status, text) {
-        const b = document.getElementById(`badge_${id}`);
-        b.className = `status-badge ${status}`; // st-wait, st-process, st-done, st-fail
-        b.innerText = text;
-    }
 
     function copyAlamat() {
         const c = document.getElementById('checkSama'), d = document.getElementById('alamatDomisili'), k = document.getElementById('alamatKtp');
@@ -183,7 +147,7 @@
         }
     }
 
-    // KOMPRES GAMBAR 500px (Ringan)
+    // KOMPRES GAMBAR (Kualitas 0.5, Lebar 600px)
     function compressImage(file) {
         return new Promise((resolve) => {
             const reader = new FileReader();
@@ -193,13 +157,13 @@
                 img.src = e.target.result;
                 img.onload = () => {
                     const canvas = document.createElement('canvas');
-                    const MAX = 500; 
+                    const MAX = 600; 
                     const scale = MAX / img.width;
                     canvas.width = MAX;
                     canvas.height = img.height * scale;
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                    canvas.toBlob((blob) => { resolve(blob); }, 'image/jpeg', 0.6);
+                    canvas.toBlob((blob) => { resolve(blob); }, 'image/jpeg', 0.5);
                 }
             }
         });
@@ -214,64 +178,73 @@
     document.getElementById('alfaForm').addEventListener('submit', async function(e) {
         e.preventDefault();
         const btn = document.getElementById('btnKirim');
-        
+        const info = document.getElementById('totalProgress');
+
         // Validasi
         const inputs = document.querySelectorAll('input[required], textarea[required], select[required]');
         let isValid = true;
-        inputs.forEach(i => { 
-            if (!i.value) { isValid = false; i.style.border = "2px solid red"; } 
-            else { i.style.border = "1px solid #ccc"; } 
-        });
-
-        if (!isValid) { alert("Lengkapi kolom merah!"); return; }
+        inputs.forEach(i => { if (!i.value) { isValid = false; i.style.border = "2px solid red"; } else { i.style.border = "1px solid #ccc"; } });
+        if (!isValid) { alert("Data belum lengkap!"); return; }
 
         btn.disabled = true; 
-        btn.innerText = "SEDANG UPLOAD... JANGAN TUTUP!";
-        
+        btn.innerText = "MOHON TUNGGU...";
+        info.style.display = "block";
+
         try {
             const referral = document.getElementById('referral').value;
             const nama = document.getElementById('nama').value;
 
-            // LOOPING UPLOAD
             for (let id of fileIds) {
                 const fileInput = document.getElementById(id);
+                const statusTxt = document.getElementById(`status_${id}`);
+                const progWrap = document.getElementById(`prog_wrap_${id}`);
+                const progFill = document.getElementById(`prog_fill_${id}`);
+                const badge = document.getElementById(`badge_${id}`);
+
+                if (savedUrls[id] !== null) continue; // Skip kalau udah
+                if (fileInput.files.length === 0) continue; // Skip kosong
+
+                // Tampilan mulai upload
+                progWrap.style.display = "block";
+                statusTxt.innerText = "Mengompres...";
+                statusTxt.style.color = "orange";
                 
-                // 1. SKIP JIKA SUDAH SUKSES SEBELUMNYA
-                if (savedUrls[id] !== null) {
-                    continue; 
-                }
+                const compressed = await compressImage(fileInput.files[0]);
+                const safeName = nama.replace(/[^a-zA-Z0-9]/g, "_");
+                const ref = storage.ref(`gadingfc22/${referral}_${safeName}_${id}.jpg`);
 
-                // 2. SKIP JIKA TIDAK ADA FILE (Utk Opsional)
-                if (fileInput.files.length === 0) continue;
-
-                // 3. PROSES UPLOAD
-                try {
-                    updateBadge(id, 'st-process', 'Mengupload...'); // UBAH BADGE JADI ORANYE
-                    log(`Upload ${id}...`);
-
-                    const compressed = await compressImage(fileInput.files[0]);
-                    const safeName = nama.replace(/[^a-zA-Z0-9]/g, "_");
-                    const ref = storage.ref(`gadingfc22/${referral}_${safeName}_${id}.jpg`);
-
-                    // Upload
-                    const snapshot = await ref.put(compressed);
-                    const url = await snapshot.ref.getDownloadURL();
-                    
-                    // SIMPAN HASIL
-                    savedUrls[id] = url; 
-                    updateBadge(id, 'st-done', '✅ Sukses'); // UBAH BADGE JADI HIJAU
-                    log(`✅ ${id} Selesai.`);
-
-                } catch (err) {
-                    console.error(err);
-                    updateBadge(id, 'st-fail', '❌ Gagal'); // UBAH BADGE JADI MERAH
-                    log(`❌ Gagal di ${id}: ${err.message}`);
-                    throw new Error("Koneksi Terputus"); // Lempar error biar loop berhenti
-                }
+                // UPLOAD DENGAN MONITOR PROGRESS
+                const uploadTask = ref.put(compressed);
+                
+                await new Promise((resolve, reject) => {
+                    uploadTask.on('state_changed', 
+                        (snapshot) => {
+                            // Hitung Persen
+                            var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                            progFill.style.width = progress + "%";
+                            statusTxt.innerText = "Upload: " + Math.floor(progress) + "%";
+                        }, 
+                        (error) => {
+                            statusTxt.innerText = "GAGAL";
+                            statusTxt.style.color = "red";
+                            reject(error);
+                        }, 
+                        () => {
+                            // Sukses
+                            uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                                savedUrls[id] = downloadURL;
+                                statusTxt.innerText = "Selesai";
+                                statusTxt.style.color = "green";
+                                badge.style.display = "block";
+                                progWrap.style.display = "none";
+                                resolve();
+                            });
+                        }
+                    );
+                });
             }
 
-            // SIMPAN DATA TEXT
-            log("Menyimpan data diri...");
+            info.innerText = "Menyimpan Data...";
             const formData = {
                 referral, nama,
                 wa: document.getElementById('wa').value,
@@ -291,14 +264,15 @@
             await db.collection("gadingfc22").add(formData);
             await sendTelegram(nama, formData.wa);
 
-            alert("SUKSES! DATA TERKIRIM.");
+            alert("BERHASIL! Data Terkirim.");
             window.location.reload();
 
         } catch (error) {
             btn.disabled = false;
-            btn.innerText = "Koneksi Gagal. KLIK SINI UTK LANJUT >>";
-            btn.style.background = "#F44336"; // Tombol jadi merah
-            alert("Upload terhenti karena sinyal.\n\nLihat foto mana yang bertanda MERAH (Gagal).\nKlik tombol MERAH di bawah untuk melanjutkan upload sisa file.");
+            btn.innerText = "Koneksi Putus. KLIK UTK LANJUT >>";
+            btn.style.background = "red";
+            info.innerText = "Upload terhenti. Klik tombol Merah di atas.";
+            alert("Koneksi Internet Lemah. Jangan refresh, klik tombol Merah untuk melanjutkan.");
         }
     });
 </script>
