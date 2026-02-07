@@ -124,6 +124,10 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
     const storage = firebase.storage();
+    
+    // SETTINGAN ANTI GAGAL (Tunggu max 2 menit per file)
+    storage.maxUploadRetryTime = 120000; 
+    storage.maxOperationRetryTime = 120000;
 
     let isUploading = false;
     window.addEventListener('beforeunload', function (e) {
@@ -143,7 +147,7 @@
         }
     }
 
-    // KOMPRES EKSTREM (800px, Quality 0.6)
+    // KOMPRES EKSTREM 2.0 (600px - Lebih Kecil Lagi biar Enteng)
     function compressImage(file) {
         return new Promise((resolve) => {
             const reader = new FileReader();
@@ -153,13 +157,13 @@
                 img.src = event.target.result;
                 img.onload = () => {
                     const canvas = document.createElement('canvas');
-                    const MAX_WIDTH = 800; // DIPERKECIL LAGI BIAR NGEBUT
+                    const MAX_WIDTH = 600; // DITURUNKAN KE 600PX
                     const scaleSize = MAX_WIDTH / img.width;
                     canvas.width = MAX_WIDTH;
                     canvas.height = img.height * scaleSize;
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                    canvas.toBlob((blob) => { resolve(blob); }, 'image/jpeg', 0.6); // KUALITAS 60%
+                    canvas.toBlob((blob) => { resolve(blob); }, 'image/jpeg', 0.5); // KUALITAS 50%
                 }
             }
         });
@@ -210,47 +214,37 @@
 
             const fileIds = ['ktp', 'ktp_pasangan', 'sim', 'domisili', 'kk', 'selfie', 'ojol_profile', 'pendapatan1', 'pendapatan2', 'pendapatan3'];
             
-            // SIAPKAN ARRAY UNTUK UPLOAD BARENGAN (PARALLEL)
-            const uploadPromises = [];
+            // LOGIKA UPLOAD ANTRIAN (SATU PER SATU) - LEBIH AMAN BUAT SINYAL JELEK
             let totalFiles = 0;
-            let finishedFiles = 0;
-
-            // Hitung total dulu
             fileIds.forEach(id => { if(document.getElementById(id).files.length > 0) totalFiles++; });
+            let uploadedCount = 0;
 
-            // LOOPING PROSES
             for (let id of fileIds) {
                 const fileInput = document.getElementById(id);
                 if (fileInput.files.length > 0) {
                     const originalFile = fileInput.files[0];
                     
-                    // 1. Kompres (Tetap urut biar HP gak lag)
-                    pText.innerText = `Memproses: ${id}...`;
+                    // Update Text
+                    pText.innerText = `Mengompres & Upload file ke-${uploadedCount + 1} dari ${totalFiles}...`;
+                    
+                    // 1. Kompres
                     const compressedFile = await compressImage(originalFile);
                     
-                    // 2. Upload (JALAN BARENGAN, GAK NUNGGU)
+                    // 2. Upload (DITUNGGU SAMPAI SELESAI BARU LANJUT)
                     const safeName = formData.nama.replace(/[^a-zA-Z0-9]/g, "_");
                     const storageRef = storage.ref(`gadingfc22/${formData.referral}_${safeName}_${id}.jpg`);
                     
-                    // Masukkan ke antrian janji (Promise)
-                    const uploadTask = storageRef.put(compressedFile).then(snapshot => {
+                    await storageRef.put(compressedFile).then(snapshot => {
                         return snapshot.ref.getDownloadURL().then(url => {
                             formData[id + '_url'] = url;
-                            finishedFiles++;
+                            uploadedCount++;
                             // Update Bar
-                            const percent = (finishedFiles / totalFiles) * 100;
+                            const percent = (uploadedCount / totalFiles) * 100;
                             pBar.style.width = percent + "%";
-                            pText.innerText = `Mengupload ${finishedFiles} dari ${totalFiles} foto...`;
                         });
                     });
-                    
-                    uploadPromises.push(uploadTask);
                 }
             }
-
-            // TUNGGU SEMUA UPLOAD SELESAI DI SINI
-            pText.innerText = "Finalisasi Upload (Mohon Tunggu)...";
-            await Promise.all(uploadPromises);
 
             pText.innerText = "Menyimpan Data ke Database...";
             await db.collection("gadingfc22").add(formData);
@@ -262,7 +256,13 @@
 
         } catch (error) {
             console.error("Error:", error);
-            alert("Gagal: " + error.message);
+            // Translate Error biar user paham
+            let msg = error.message;
+            if(error.code === 'storage/retry-limit-exceeded') {
+                msg = "Sinyal internet tidak stabil. Mohon cari sinyal lebih bagus dan coba lagi.";
+            }
+            alert("Gagal: " + msg);
+            
             isUploading = false;
             btn.disabled = false; btn.style.display = "block"; pCont.style.display = "none";
         }
