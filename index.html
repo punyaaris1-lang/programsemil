@@ -3,115 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registrasi Semil Alfa N3</title>
+    <title>Formulir Alfa N3 (Base64 Mode)</title>
     
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
-
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
 
     <style>
-        :root { --primary: #2c3e50; --bg: #ecf0f1; --success: #27ae60; --bar: #2980b9; }
-        body { font-family: 'Poppins', sans-serif; background: var(--bg); margin: 0; padding: 20px; color: #333; }
-        .container { max-width: 700px; margin: 0 auto; background: white; padding: 20px; border-radius: 12px; border-top: 5px solid var(--primary); }
-        .header h1 { text-align: center; color: var(--primary); font-size: 22px; margin-bottom: 20px; }
-
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: 500; font-size: 13px; }
-        input, textarea, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; box-sizing: border-box; }
+        body { font-family: sans-serif; background: #eee; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; }
+        h2 { text-align: center; }
         
-        .upload-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .upload-card { 
-            border: 1px solid #ddd; border-radius: 8px; padding: 10px; text-align: center; 
-            background: #fff; position: relative; 
-        }
-        .upload-label { font-size: 11px; font-weight: bold; display: block; margin-bottom: 5px; }
-        .preview-img { width: 100%; height: 80px; object-fit: cover; border-radius: 4px; display: none; margin-top: 5px; border: 1px solid #ccc; }
+        .input-group { margin-bottom: 10px; }
+        label { display: block; font-weight: bold; font-size: 12px; }
+        input, textarea, select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        
+        .file-box { border: 1px solid #ccc; padding: 10px; margin-bottom: 5px; background: #f9f9f9; }
+        .status { font-size: 11px; font-weight: bold; color: #555; }
+        
+        button { width: 100%; padding: 15px; background: #007bff; color: white; border: none; font-size: 16px; border-radius: 5px; cursor: pointer; margin-top: 10px; }
+        button:disabled { background: #999; }
 
-        /* PROGRESS BAR DI DALAM KARTU */
-        .progress-wrapper {
-            height: 6px; background: #eee; border-radius: 3px; margin-top: 5px; display: none; overflow: hidden;
-        }
-        .progress-fill {
-            height: 100%; background: var(--bar); width: 0%; transition: width 0.2s;
-        }
-        .status-text { font-size: 10px; color: #666; margin-top: 3px; display: block; }
-
-        /* STATUS BADGE */
-        .badge-ok { position: absolute; top: 5px; right: 5px; background: var(--success); color: white; padding: 2px 6px; border-radius: 4px; font-size: 9px; display: none; }
-
-        .btn-submit { background: var(--primary); color: white; padding: 15px; width: 100%; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 20px; }
-        .btn-submit:disabled { background: #bdc3c7; cursor: wait; }
-
-        #totalProgress { display:none; margin-top: 15px; text-align: center; font-weight: bold; font-size: 14px; color: var(--primary); }
+        #debugLog { background: #000; color: #0f0; padding: 10px; font-size: 10px; height: 150px; overflow: scroll; display: none; margin-top: 20px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="header"><h1>FORMULIR ALFA N3</h1></div>
+    <h2>REGISTRASI ALFA N3</h2>
+    <p style="text-align:center; font-size:12px;">Mode: Secure Upload (Base64)</p>
 
-    <form id="alfaForm">
-        <div class="form-group"><label>Referral</label><input type="text" id="referral" value="Apri" readonly style="background:#eee;"></div>
+    <form id="mainForm">
+        <div class="input-group"><label>Referral</label><input type="text" id="referral" value="Apri" readonly></div>
+        <div class="input-group"><label>Nama Lengkap</label><input type="text" id="nama" required></div>
+        <div class="input-group"><label>No WA</label><input type="number" id="wa" required></div>
+        <div class="input-group"><label>TTL</label><input type="text" id="ttl" required></div>
+        <div class="input-group"><label>Status</label><select id="statusNikah" required><option>Belum Menikah</option><option>Menikah</option><option>Cerai</option></select></div>
+        <div class="input-group"><label>Alamat KTP</label><textarea id="alamatKtp" rows="2" required></textarea></div>
+        <div class="input-group"><label>Alamat Domisili</label><textarea id="alamatDomisili" rows="2" required></textarea></div>
+        <div class="input-group"><label>Email</label><input type="email" id="email" required></div>
+        <div class="input-group"><label>Kontak Darurat</label><input type="text" id="emergency" required></div>
+        <div class="input-group"><label>Shareloc (Opsional)</label><input type="text" id="locationLink"></div>
 
-        <div style="background:#f9f9f9; padding:15px; border-radius:8px; margin-bottom:15px;">
-            <div class="form-group"><label>Nama Lengkap</label><input type="text" id="nama" required></div>
-            <div class="form-group"><label>No WhatsApp</label><input type="number" id="wa" required></div>
-            <div class="form-group"><label>Tempat, Tgl Lahir</label><input type="text" id="ttl" required></div>
-            <div class="form-group"><label>Status</label>
-                <select id="statusNikah" required><option value="">-- Pilih --</option><option>Belum Menikah</option><option>Menikah</option><option>Cerai</option></select>
-            </div>
-            <div class="form-group"><label>Alamat KTP</label><textarea id="alamatKtp" rows="2" required></textarea></div>
-            <div class="form-group"><label>Alamat Domisili</label>
-                <input type="checkbox" id="checkSama" onchange="copyAlamat()"> Sama dgn KTP
-                <textarea id="alamatDomisili" rows="2" required></textarea>
-            </div>
-            <div class="form-group"><label>Email</label><input type="email" id="email" required></div>
-            <div class="form-group"><label>Nama Kontak Darurat</label><input type="text" id="emergencyName" required></div>
-            <div class="form-group"><label>No HP Darurat</label><input type="number" id="emergencyPhone" required></div>
-            <div class="form-group"><label>Shareloc (Opsional)</label><textarea id="locationLink" rows="1"></textarea></div>
-        </div>
+        <hr>
+        <div id="fileList"></div>
 
-        <div class="upload-grid">
-            <script>
-                const docs = [
-                    {id: 'ktp', label: 'KTP Asli', r: true}, {id: 'ktp_pasangan', label: 'KTP Pasangan', r: true},
-                    {id: 'sim', label: 'SIM C', r: true}, {id: 'domisili', label: 'S. Domisili (Opsional)', r: false},
-                    {id: 'kk', label: 'Kartu Keluarga', r: true}, {id: 'selfie', label: 'Foto Selfie', r: true},
-                    {id: 'ojol_profile', label: 'Profil Ojol', r: true},
-                    {id: 'pendapatan1', label: 'Gaji Bln 1', r: true}, {id: 'pendapatan2', label: 'Gaji Bln 2', r: true}, {id: 'pendapatan3', label: 'Gaji Bln 3', r: true}
-                ];
-                
-                docs.forEach(d => {
-                    const req = d.r ? 'required' : '';
-                    document.write(`
-                        <div class="upload-card">
-                            <span class="badge-ok" id="badge_${d.id}">OK</span>
-                            <span class="upload-label">${d.label}</span>
-                            <input type="file" id="${d.id}" accept="image/*" onchange="previewImage(this, 'prev_${d.id}')" ${req}>
-                            <img id="prev_${d.id}" class="preview-img">
-                            
-                            <div class="progress-wrapper" id="prog_wrap_${d.id}">
-                                <div class="progress-fill" id="prog_fill_${d.id}"></div>
-                            </div>
-                            <span class="status-text" id="status_${d.id}"></span>
-                        </div>
-                    `);
-                });
-            </script>
-        </div>
-
-        <div id="totalProgress">Menyiapkan data...</div>
-        <button type="submit" class="btn-submit" id="btnKirim">KIRIM DATA</button>
+        <button type="submit" id="btnSubmit">KIRIM DATA</button>
+        <div id="debugLog">LOG SYSTEM START...<br></div>
     </form>
 </div>
 
 <script>
-    // --- SETTING TELEGRAM & FIREBASE ---
-    const TELEGRAM_TOKEN = "MASUKAN_TOKEN_BOT_DISINI"; 
-    const TELEGRAM_CHAT_ID = "MASUKAN_CHAT_ID_DISINI";
-
+    // CONFIG FIREBASE
     const firebaseConfig = {
       apiKey: "AIzaSyAk3G5aQUBVe_g7_peVu1F6xllP_RejGq0",
       authDomain: "rtomaka-e67b5.firebaseapp.com",
@@ -125,156 +68,150 @@
     const db = firebase.firestore();
     const storage = firebase.storage();
 
-    let savedUrls = {}; 
-    const fileIds = ['ktp', 'ktp_pasangan', 'sim', 'domisili', 'kk', 'selfie', 'ojol_profile', 'pendapatan1', 'pendapatan2', 'pendapatan3'];
-    fileIds.forEach(id => savedUrls[id] = null);
+    // LIST FILE
+    const files = [
+        {id:'ktp', n:'KTP Asli'}, {id:'ktp_pasangan', n:'KTP Pasangan'}, 
+        {id:'sim', n:'SIM C'}, {id:'kk', n:'Kartu Keluarga'},
+        {id:'selfie', n:'Selfie'}, {id:'ojol_profile', n:'Profil Ojol'},
+        {id:'p1', n:'Gaji Bln 1'}, {id:'p2', n:'Gaji Bln 2'}, {id:'p3', n:'Gaji Bln 3'},
+        {id:'domisili', n:'Domisili (Opsional)'}
+    ];
 
-    window.addEventListener('beforeunload', function (e) {
-        if (document.getElementById('btnKirim').disabled) { e.preventDefault(); e.returnValue = ''; }
+    // GENERATE HTML INPUT FILE
+    const fileContainer = document.getElementById('fileList');
+    files.forEach(f => {
+        fileContainer.innerHTML += `
+            <div class="file-box">
+                <label>${f.n}</label>
+                <input type="file" id="${f.id}" accept="image/*">
+                <div id="stat_${f.id}" class="status">Menunggu...</div>
+            </div>
+        `;
     });
 
-    function copyAlamat() {
-        const c = document.getElementById('checkSama'), d = document.getElementById('alamatDomisili'), k = document.getElementById('alamatKtp');
-        if (c.checked) { d.value = k.value; d.readOnly = true; d.style.background = "#eee"; } 
-        else { d.value = ""; d.readOnly = false; d.style.background = "white"; }
+    function log(msg) {
+        const d = document.getElementById('debugLog');
+        d.style.display = 'block';
+        d.innerHTML += `> ${msg}<br>`;
+        d.scrollTop = d.scrollHeight;
     }
 
-    function previewImage(input, imgId) {
-        if (input.files && input.files[0]) {
-            const reader = new FileReader();
-            reader.onload = function(e) { document.getElementById(imgId).src = e.target.result; document.getElementById(imgId).style.display = 'block'; }
-            reader.readAsDataURL(input.files[0]);
-        }
-    }
-
-    // KOMPRES GAMBAR (Kualitas 0.5, Lebar 600px)
-    function compressImage(file) {
-        return new Promise((resolve) => {
+    // FUNGSI UBAH GAMBAR JADI STRING (BASE64)
+    // Ini lebih aman dari blokir CORS dibanding upload Blob langsung
+    function getBase64(file) {
+        return new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.readAsDataURL(file);
-            reader.onload = (e) => {
+            reader.onload = () => {
+                // Kita kecilkan dikit resolusinya pake Canvas biar string ga kepanjangan
                 const img = new Image();
-                img.src = e.target.result;
+                img.src = reader.result;
                 img.onload = () => {
                     const canvas = document.createElement('canvas');
-                    const MAX = 600; 
+                    const MAX = 600; // Resolusi aman
                     const scale = MAX / img.width;
                     canvas.width = MAX;
                     canvas.height = img.height * scale;
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                    canvas.toBlob((blob) => { resolve(blob); }, 'image/jpeg', 0.5);
-                }
-            }
+                    // Hasilnya string panjang "data:image/jpeg;base64,....."
+                    resolve(canvas.toDataURL('image/jpeg', 0.6)); 
+                };
+            };
+            reader.onerror = error => reject(error);
         });
     }
 
-    async function sendTelegram(nama, wa) {
-        if(TELEGRAM_TOKEN.includes("MASUKAN")) return;
-        const msg = `🔔 *DATA BARU*\nNama: ${nama}\nWA: ${wa}`;
-        try { await fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage?chat_id=${TELEGRAM_CHAT_ID}&text=${encodeURIComponent(msg)}&parse_mode=Markdown`); } catch(e){}
-    }
-
-    document.getElementById('alfaForm').addEventListener('submit', async function(e) {
+    document.getElementById('mainForm').addEventListener('submit', async (e) => {
         e.preventDefault();
-        const btn = document.getElementById('btnKirim');
-        const info = document.getElementById('totalProgress');
+        const btn = document.getElementById('btnSubmit');
+        
+        // Cek Wajib (Semua kecuali domisili)
+        let ready = true;
+        files.forEach(f => {
+            if(f.id !== 'domisili' && !document.getElementById(f.id).files[0]) ready = false;
+        });
+        if(!ready) { alert("Lengkapi foto wajib!"); return; }
 
-        // Validasi
-        const inputs = document.querySelectorAll('input[required], textarea[required], select[required]');
-        let isValid = true;
-        inputs.forEach(i => { if (!i.value) { isValid = false; i.style.border = "2px solid red"; } else { i.style.border = "1px solid #ccc"; } });
-        if (!isValid) { alert("Data belum lengkap!"); return; }
-
-        btn.disabled = true; 
-        btn.innerText = "MOHON TUNGGU...";
-        info.style.display = "block";
-
+        btn.disabled = true;
+        btn.innerText = "PROSES...";
+        
         try {
-            const referral = document.getElementById('referral').value;
             const nama = document.getElementById('nama').value;
+            const refCode = document.getElementById('referral').value;
+            let urls = {};
 
-            for (let id of fileIds) {
-                const fileInput = document.getElementById(id);
-                const statusTxt = document.getElementById(`status_${id}`);
-                const progWrap = document.getElementById(`prog_wrap_${id}`);
-                const progFill = document.getElementById(`prog_fill_${id}`);
-                const badge = document.getElementById(`badge_${id}`);
-
-                if (savedUrls[id] !== null) continue; // Skip kalau udah
-                if (fileInput.files.length === 0) continue; // Skip kosong
-
-                // Tampilan mulai upload
-                progWrap.style.display = "block";
-                statusTxt.innerText = "Mengompres...";
-                statusTxt.style.color = "orange";
+            // LOOPING UPLOAD
+            for (const f of files) {
+                const input = document.getElementById(f.id);
+                const stat = document.getElementById(`stat_${f.id}`);
                 
-                const compressed = await compressImage(fileInput.files[0]);
-                const safeName = nama.replace(/[^a-zA-Z0-9]/g, "_");
-                const ref = storage.ref(`gadingfc22/${referral}_${safeName}_${id}.jpg`);
+                if (input.files[0]) {
+                    stat.innerText = "Mengubah format...";
+                    stat.style.color = "orange";
+                    
+                    try {
+                        // 1. Ubah ke Base64 String
+                        const base64String = await getBase64(input.files[0]);
+                        
+                        stat.innerText = "Mengupload ke Server...";
+                        log(`Upload ${f.id}...`);
 
-                // UPLOAD DENGAN MONITOR PROGRESS
-                const uploadTask = ref.put(compressed);
-                
-                await new Promise((resolve, reject) => {
-                    uploadTask.on('state_changed', 
-                        (snapshot) => {
-                            // Hitung Persen
-                            var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                            progFill.style.width = progress + "%";
-                            statusTxt.innerText = "Upload: " + Math.floor(progress) + "%";
-                        }, 
-                        (error) => {
-                            statusTxt.innerText = "GAGAL";
-                            statusTxt.style.color = "red";
-                            reject(error);
-                        }, 
-                        () => {
-                            // Sukses
-                            uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
-                                savedUrls[id] = downloadURL;
-                                statusTxt.innerText = "Selesai";
-                                statusTxt.style.color = "green";
-                                badge.style.display = "block";
-                                progWrap.style.display = "none";
-                                resolve();
-                            });
+                        // 2. Upload String (putString) - BUKAN put(file)
+                        // Metode ini seringkali lolos dari isu CORS di hosting gratisan
+                        const storageRef = storage.ref(`gadingfc22/${refCode}_${nama}_${f.id}.jpg`);
+                        
+                        await storageRef.putString(base64String, 'data_url');
+                        const url = await storageRef.getDownloadURL();
+                        
+                        urls[f.id + '_url'] = url;
+                        stat.innerText = "✅ SUKSES";
+                        stat.style.color = "green";
+                        log(`OK: ${f.id}`);
+
+                    } catch (err) {
+                        console.error(err);
+                        stat.innerText = "❌ GAGAL: " + err.code;
+                        stat.style.color = "red";
+                        log(`ERROR ${f.id}: ${err.message}`);
+                        
+                        // Cek jenis error biar tau masalahnya apa
+                        if(err.code === "storage/unauthorized") {
+                            alert("ERROR IZIN (UNAUTHORIZED)!\nMasalahnya ada di Firebase Console > Storage > Rules.\nAnda harus ubah Rules jadi 'allow read, write: if true;'");
+                            btn.disabled = false; return;
                         }
-                    );
-                });
+                    }
+                }
             }
 
-            info.innerText = "Menyimpan Data...";
-            const formData = {
-                referral, nama,
+            log("Simpan Data Teks...");
+            await db.collection("gadingfc22").add({
+                referral: refCode, nama,
                 wa: document.getElementById('wa').value,
                 ttl: document.getElementById('ttl').value,
                 statusNikah: document.getElementById('statusNikah').value,
                 alamatKtp: document.getElementById('alamatKtp').value,
                 alamatDomisili: document.getElementById('alamatDomisili').value,
                 email: document.getElementById('email').value,
-                emergencyName: document.getElementById('emergencyName').value,
-                emergencyPhone: document.getElementById('emergencyPhone').value,
+                emergency: document.getElementById('emergency').value,
                 locationLink: document.getElementById('locationLink').value,
                 submittedAt: firebase.firestore.FieldValue.serverTimestamp(),
                 status: "Baru",
-                ...savedUrls
-            };
+                ...urls
+            });
 
-            await db.collection("gadingfc22").add(formData);
-            await sendTelegram(nama, formData.wa);
-
-            alert("BERHASIL! Data Terkirim.");
+            alert("BERHASIL! SEMUA DATA MASUK.");
             window.location.reload();
 
         } catch (error) {
+            console.error(error);
+            log("FATAL ERROR: " + error.message);
+            alert("Terjadi kesalahan sistem: " + error.message);
             btn.disabled = false;
-            btn.innerText = "Koneksi Putus. KLIK UTK LANJUT >>";
-            btn.style.background = "red";
-            info.innerText = "Upload terhenti. Klik tombol Merah di atas.";
-            alert("Koneksi Internet Lemah. Jangan refresh, klik tombol Merah untuk melanjutkan.");
+            btn.innerText = "COBA LAGI";
         }
     });
 </script>
+
 </body>
 </html>
