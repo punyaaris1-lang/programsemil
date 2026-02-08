@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ADMIN POLYTRON</title>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+    /* TEMA MERAH KHUSUS POLYTRON */
+    :root { --primary: #d90429; --bg: #fff0f3; --text: #1e293b; }
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); margin: 0; padding: 20px; color: var(--text); padding-bottom: 50px; }
+    
+    .navbar { 
+        position: sticky; top: 0; z-index: 100; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(5px);
+        padding: 10px 20px; border-radius: 12px; margin-bottom: 25px; 
+        box-shadow: 0 4px 20px rgba(0,0,0,0.05); border-bottom: 4px solid var(--primary);
+        display: flex; justify-content: space-between; align-items: center;
+    }
+    .btn-back { text-decoration: none; font-size: 20px; margin-right: 15px; cursor: pointer; }
+    .badge-count { background: var(--primary); color: white; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; }
+
+    .card { background: #fff; border-radius: 12px; padding: 20px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.03); border: 1px solid #e2e8f0; border-left: 5px solid #cbd5e1; }
+    .card.acc { border-left-color: #16a34a; background: #f0fdf4; }
+    .card.revisi { border-left-color: #d97706; background: #fffbeb; }
+
+    .driver-name { font-size: 16px; font-weight: 700; margin-bottom: 5px; color: #881337; } /* Nama agak merah */
+    .driver-meta { font-size: 13px; color: #64748b; margin-bottom: 10px; }
+    
+    .emergency-box { background: #f1f5f9; padding: 10px; border-radius: 8px; font-size: 12px; color: #475569; margin-bottom: 10px; border: 1px solid #e2e8f0; }
+    .em-row { display: flex; justify-content: space-between; margin-bottom: 4px; border-bottom: 1px dashed #cbd5e1; padding-bottom: 4px; }
+    
+    .response-box { margin: 10px 0; padding: 10px; border-radius: 8px; font-size: 13px; display: none; }
+    .response-box.show-acc { display: block; background: #dcfce7; color: #14532d; border: 1px solid #86efac; }
+    .response-box.show-revisi { display: block; background: #fef3c7; color: #b45309; border: 1px solid #fcd34d; }
+
+    .actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 15px; }
+    .btn { border: none; padding: 8px 14px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; text-decoration: none; color: #333; }
+    .btn-view { background: #f1f5f9; border: 1px solid #cbd5e1; }
+    .btn-wa { background: var(--primary); color: white; }
+    .status-mini { font-size: 10px; padding: 3px 8px; border-radius: 4px; background: #eee; color: #666; font-weight: bold; float: right; }
+    .status-mini.sent { background: #dcfce7; color: #166534; }
+    .date-header { display: block; text-align: center; margin: 25px 0 10px; font-size: 12px; font-weight: 700; color: #9f1239; }
+</style>
+</head>
+<body>
+
+<div class="navbar">
+    <div style="display:flex; align-items:center">
+        <a href="admin.html" class="btn-back">⬅️</a>
+        <div>
+            <div style="font-weight:700; font-size:16px;">ADMIN POLYTRON</div>
+            <div style="font-size:11px; color:#64748b;">Fox 350 Only</div>
+        </div>
+    </div>
+    <span class="badge-count" id="total">0</span>
+</div>
+
+<div id="container"><p style="text-align:center; color:#64748b; margin-top:50px;">Memuat data Polytron...</p></div>
+
+<script>
+const firebaseConfig = { apiKey: "AIzaSyD-4D5ZC4RYcmcpRyxxScLBo1oqC-oRdYw", authDomain: "sewamilikmolis-e3427.firebaseapp.com", projectId: "sewamilikmolis-e3427", storageBucket: "sewamilikmolis-e3427.firebasestorage.app", messagingSenderId: "934998664118", appId: "1:934998664118:web:602d8ef8053099aa329717" };
+if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+// LINK DETAIL SAMA
+const LINK_DETAIL_ASLI = "https://punyaaris1-lang.github.io/semilalfan3/detail.html"; 
+
+db.collection("pendaftaran_v3").orderBy("timestamp", "desc").onSnapshot(snap => {
+    const div = document.getElementById('container');
+    div.innerHTML = "";
+    
+    let count = 0;
+    let lastDate = "";
+
+    snap.forEach(doc => {
+        const d = doc.data();
+        
+        // --- FILTER: HANYA TAMPILKAN POLYTRON ---
+        if(d.unit !== "POLYTRON FOX 350") return; 
+        
+        count++;
+        const id = doc.id;
+        const finalLink = LINK_DETAIL_ASLI + "?uid=" + id;
+        
+        let currentDate = d.waktu.split(',')[0]; 
+        if(currentDate !== lastDate) { div.innerHTML += `<div class="date-header">📅 ${currentDate}</div>`; lastDate = currentDate; }
+
+        let cardClass = "";
+        let responseHTML = "";
+        if (d.status_verifikasi === 'ACC') { cardClass = "acc"; responseHTML = `<div class="response-box show-acc">✅ <b>DITERIMA PUSAT</b></div>`; }
+        else if (d.status_verifikasi === 'REVISI') { cardClass = "revisi"; responseHTML = `<div class="response-box show-revisi">⚠️ <b>REVISI:</b> "${d.catatan_pusat}"</div>`; }
+        const isSent = d.status_pusat === true;
+
+        div.innerHTML += `
+        <div class="card ${cardClass}">
+            <div class="status-mini ${isSent ? 'sent' : ''}">${isSent ? 'Terkirim' : 'Belum'}</div>
+            <div class="driver-name">${d.nama}</div>
+            <div class="driver-meta">Ref: <b>${d.referral}</b> • WA: ${d.wa}</div>
+            <div class="emergency-box"> <div class="em-row"><span style="font-weight:bold">Email:</span> <span>${d.email}</span></div>
+            </div>
+            ${responseHTML}
+            <div class="actions">
+                <a href="${finalLink}" target="_blank" class="btn btn-view">👁️ Cek Data</a>
+                <button class="btn btn-wa" onclick="shareWA('${id}', '${d.nama}', '${finalLink}')">🚀 Kirim</button>
+            </div>
+        </div>`;
+    });
+    document.getElementById('total').innerText = count;
+});
+
+function shareWA(id, nama, link) {
+    db.collection("pendaftaran_v3").doc(id).update({ status_pusat: true });
+    const text = `*DATA POLYTRON BARU*\n\nNama: ${nama}\nLink: ${link}\n\nMohon dicek.`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+}
+</script>
+</body>
+</html>
