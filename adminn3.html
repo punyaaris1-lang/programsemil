@@ -3,60 +3,59 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ADMIN PUSAT - DOWNLOADER</title>
+<title>ADMIN PANEL (LOCAL)</title>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-    body{font-family:'Segoe UI', sans-serif; background:#eef2f5; padding:20px; color:#444;}
+    body { font-family: 'Inter', sans-serif; background: #f1f5f9; padding: 20px; color: #334155; }
     
-    .navbar {
-        background: #fff; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center;
+    .navbar { 
+        background: #fff; padding: 15px 25px; border-radius: 12px; margin-bottom: 25px; 
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); display: flex; justify-content: space-between; align-items: center;
     }
-    .btn-pdf { background:#e74c3c; color:#fff; border:none; padding:8px 15px; border-radius:4px; cursor:pointer; font-weight:bold; }
-
-    .card {
-        background: #fff; border-radius: 8px; overflow: hidden; margin-bottom: 25px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-left: 5px solid #2980b9;
-    }
-    .header {
-        background: #f8f9fa; padding: 15px 20px; border-bottom: 1px solid #eee;
-        display: flex; justify-content: space-between; align-items: center;
-    }
-    .body { padding: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
     
-    /* Bagian Biodata */
-    .bio-section { padding-right: 20px; border-right: 1px dashed #ddd; }
-    .row { margin-bottom: 8px; border-bottom: 1px solid #f0f0f0; padding-bottom: 4px; }
-    .lbl { font-size: 11px; color: #888; font-weight: bold; display: block; }
-    .val { font-size: 14px; color: #333; font-weight: 500; }
-
-    /* Bagian Gallery Download */
-    .file-section { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; }
-    .file-box { text-align: center; border: 1px solid #eee; padding: 5px; border-radius: 5px; background: #fff; }
-    .file-box img { width: 100%; height: 80px; object-fit: cover; border-radius: 4px; margin-bottom: 5px; }
-    
-    .btn-down {
-        background: #27ae60; color: white; border: none; padding: 5px; width: 100%;
-        border-radius: 3px; font-size: 10px; cursor: pointer; display: flex; 
-        align-items: center; justify-content: center; gap: 5px;
+    .card { 
+        background: #fff; border-radius: 12px; padding: 20px; margin-bottom: 15px; 
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; flex-wrap: wrap; gap: 15px; justify-content: space-between; align-items: center;
+        border-left: 5px solid #cbd5e1; transition: 0.3s;
     }
-    .btn-down:hover { background: #219150; }
+    .card.done { border-left-color: #22c55e; background: #f0fdf4; } /* Warna Hijau kalau sudah dikirim */
 
-    @media (max-width: 768px) { .body { grid-template-columns: 1fr; } .bio-section { border-right: none; border-bottom: 1px dashed #ddd; padding-bottom: 20px; margin-bottom: 10px; } }
+    .info { flex: 1; min-width: 250px; }
+    .info h3 { margin: 0 0 5px 0; font-size: 16px; color: #1e293b; }
+    .date { font-size: 12px; color: #64748b; display: flex; gap: 10px; align-items: center; }
+
+    .actions { display: flex; gap: 10px; align-items: center; }
+    
+    /* BADGE STATUS */
+    .status-badge {
+        font-size: 11px; padding: 5px 10px; border-radius: 20px; font-weight: bold; cursor: pointer;
+        background: #e2e8f0; color: #64748b; border: 1px solid #cbd5e1;
+    }
+    .status-badge.sent { background: #dcfce7; color: #166534; border-color: #86efac; }
+
+    /* TOMBOL SHARE */
+    .btn-share {
+        background: #2563eb; color: white; border: none; padding: 8px 15px;
+        border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 13px;
+        display: flex; align-items: center; gap: 5px;
+    }
+    .btn-share:hover { background: #1d4ed8; }
+
 </style>
 </head>
 <body>
 
 <div class="navbar">
-    <b>PANEL ADMIN PUSAT</b>
-    <span style="font-size:12px">Total: <span id="total">0</span> Driver</span>
+    <b>ADMIN PANEL (CONTROL)</b>
+    <span style="font-size:12px">Total Data: <span id="total">0</span></span>
 </div>
 
-<div id="container">Loading data...</div>
+<div id="container">Memuat data...</div>
 
 <script>
-// CONFIG (SAMA SEPERTI FORMULIR)
+// CONFIG FIREBASE (Sama seperti form)
 const firebaseConfig = {
   apiKey: "AIzaSyD-4D5ZC4RYcmcpRyxxScLBo1oqC-oRdYw",
   authDomain: "sewamilikmolis-e3427.firebaseapp.com",
@@ -69,80 +68,67 @@ const firebaseConfig = {
 if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-// RENDER DATA
-db.collection("pendaftaran_hemat").orderBy("waktu", "desc").onSnapshot(snap => {
+// GANTI URL INI DENGAN LINK GITHUB KAMU NANTI
+// Contoh: https://username.github.io/detail.html
+const BASE_URL_DETAIL = window.location.href.replace('admin.html', 'detail.html');
+
+db.collection("pendaftaran_v3").orderBy("timestamp", "desc").onSnapshot(snap => {
     const div = document.getElementById('container');
     document.getElementById('total').innerText = snap.size;
     div.innerHTML = "";
 
-    if(snap.empty) { div.innerHTML = "<center>Data kosong.</center>"; return; }
+    if(snap.empty) { div.innerHTML = "<p style='text-align:center'>Belum ada data.</p>"; return; }
 
     snap.forEach(doc => {
         const d = doc.data();
-        const safeName = d.nama.replace(/\s+/g, '_'); // Nama untuk file
-
+        const id = doc.id;
+        const isSent = d.status_pusat === true; // Cek status apakah sudah dikirim
+        
         div.innerHTML += `
-        <div class="card">
-            <div class="header">
-                <div>
-                    <b style="font-size:16px">${d.nama.toUpperCase()}</b>
-                    <div style="font-size:11px; color:#777">${d.waktu}</div>
+        <div class="card ${isSent ? 'done' : ''}">
+            <div class="info">
+                <h3>${d.nama}</h3>
+                <div class="date">
+                    <span>📅 ${d.waktu}</span>
+                    <span>• Ref: <b>${d.referral}</b></span>
                 </div>
-                <div style="text-align:right">
-                    <small>Ref: <b>${d.referral}</b></small>
-                </div>
+                <div style="font-size:12px; margin-top:5px; color:#475569">WA: ${d.wa}</div>
             </div>
-            
-            <div class="body">
-                <div class="bio-section">
-                    <div class="row"><span class="lbl">WhatsApp</span><span class="val">${d.wa}</span></div>
-                    <div class="row"><span class="lbl">TTL</span><span class="val">${d.ttl}</span></div>
-                    <div class="row"><span class="lbl">Status</span><span class="val">${d.status}</span></div>
-                    <div class="row"><span class="lbl">Domisili</span><span class="val">${d.alamatDomisili}</span></div>
-                    <div class="row"><span class="lbl">Kontak Darurat</span><span class="val">${d.darurat}</span></div>
-                    <div class="row"><span class="lbl">Lokasi Maps</span><a href="${d.maps}" target="_blank" style="font-size:12px">Buka Maps ↗</a></div>
+
+            <div class="actions">
+                <div class="status-badge ${isSent ? 'sent' : ''}" onclick="toggleStatus('${id}', ${!isSent})">
+                    ${isSent ? '✅ SUDAH DIKIRIM' : '⏳ BELUM DIKIRIM'}
                 </div>
 
-                <div>
-                    <span class="lbl" style="margin-bottom:10px">FILE DOKUMEN (KLIK TOMBOL HIJAU UNTUK DOWNLOAD)</span>
-                    <div class="file-section">
-                        ${renderDownloader(d.ktp, 'KTP', safeName)}
-                        ${renderDownloader(d.sim, 'SIM', safeName)}
-                        ${renderDownloader(d.kk, 'KK', safeName)}
-                        ${renderDownloader(d.selfie, 'SELFIE', safeName)}
-                        ${renderDownloader(d.ojol, 'PROFIL', safeName)}
-                        ${renderDownloader(d.gaji1, 'GAJI_1', safeName)}
-                    </div>
-                </div>
+                <button class="btn-share" onclick="shareToPusat('${id}', '${d.nama}')">
+                    🚀 Kirim ke Pusat
+                </button>
             </div>
         </div>`;
     });
 });
 
-// FUNGSI RENDER TOMBOL DOWNLOAD
-function renderDownloader(base64, jenis, namaUser){
-    if(!base64) return "";
-    
-    // Kita buat tombol yang memanggil fungsi download
-    return `
-    <div class="file-box">
-        <img src="${base64}">
-        <button class="btn-down" onclick="downloadImg('${base64}', '${namaUser}_${jenis}.jpg')">
-            ⬇️ SIMPAN
-        </button>
-    </div>`;
+// FUNGSI UBAH STATUS
+function toggleStatus(id, newStatus) {
+    db.collection("pendaftaran_v3").doc(id).update({
+        status_pusat: newStatus
+    });
 }
 
-// FUNGSI DOWNLOAD OTOMATIS
-function downloadImg(dataUrl, filename) {
-    const link = document.createElement('a');
-    link.href = dataUrl;
-    link.download = filename;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+// FUNGSI SHARE KE WA
+function shareToPusat(id, nama) {
+    // 1. Update status jadi dikirim dulu
+    toggleStatus(id, true);
+
+    // 2. Buat Link Khusus
+    const link = `${BASE_URL_DETAIL}?uid=${id}`;
+    
+    // 3. Buat Teks WA
+    const text = `*DATA DRIVER BARU*\n\nNama: ${nama}\nLink Data: ${link}\n\nMohon segera diproses.`;
+    
+    // 4. Buka WA
+    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
 }
 </script>
-
 </body>
 </html>
