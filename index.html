@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Sewa Milik Molis - Official</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --primary: #3b82f6; --primary-glow: rgba(59, 130, 246, 0.5);
+        --poly-red: #e11d48; --red-glow: rgba(225, 29, 72, 0.5);
+        --dark-bg: #0f172a; --card-bg: #1e293b; --text: #f8fafc;
+        --warning: #facc15; /* Warna Kuning Terang */
+    }
+
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    body {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        background: radial-gradient(circle at top, #1e293b, #0f172a); 
+        color: var(--text);
+        margin: 0; padding: 20px;
+        min-height: 100vh;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        overflow-x: hidden;
+    }
+
+    /* --- CUSTOM SCROLLBAR --- */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #0f172a; }
+    ::-webkit-scrollbar-thumb { background: #475569; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+    /* HEADER */
+    .header { text-align: center; margin-bottom: 40px; animation: fadeIn 1s ease; position: relative; z-index: 10; }
+    .header h1 { 
+        font-size: 28px; margin: 0; 
+        background: linear-gradient(to right, #60a5fa, #c084fc); 
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent; 
+        text-transform: uppercase; letter-spacing: 1px; line-height: 1.2;
+    }
+    .header p { color: #94a3b8; margin-top: 8px; font-size: 13px; }
+
+    /* GRID CONTAINER */
+    .grid-container {
+        display: grid; grid-template-columns: 1fr; gap: 40px;
+        width: 100%; max-width: 900px; margin-bottom: 50px;
+    }
+    @media (min-width: 768px) { .grid-container { grid-template-columns: 1fr 1fr; } }
+
+    /* CARD DESIGN */
+    .card {
+        background: rgba(30, 41, 59, 0.6);
+        border-radius: 24px; 
+        border: 1px solid rgba(255,255,255,0.1);
+        padding: 0 20px 25px;
+        position: relative;
+        transition: 0.4s;
+        display: flex; flex-direction: column; align-items: center;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+        backdrop-filter: blur(10px);
+    }
+    .card:hover { 
+        transform: translateY(-10px); 
+        border-color: rgba(255,255,255,0.3); 
+        background: rgba(30, 41, 59, 0.8);
+    }
+
+    /* MOTOR IMAGE */
+    .motor-wrapper {
+        position: relative;
+        width: 100%; height: 220px;
+        display: flex; justify-content: center; align-items: center;
+        margin-top: -40px; margin-bottom: 10px;
+    }
+    .motor-img {
+        width: 120%; max-width: 300px;
+        object-fit: contain;
+        filter: drop-shadow(0 15px 15px rgba(0,0,0,0.4));
+        animation: floatMotor 4s ease-in-out infinite;
+        z-index: 2;
+    }
+    .motor-shadow {
+        position: absolute; bottom: 25px;
+        width: 160px; height: 15px;
+        background: #000; border-radius: 50%;
+        opacity: 0.5; filter: blur(10px);
+        animation: shadowScale 4s ease-in-out infinite;
+        z-index: 1;
+    }
+    @keyframes floatMotor { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-15px); } }
+    @keyframes shadowScale { 0%, 100% { transform: scale(1); opacity: 0.5; } 50% { transform: scale(0.8); opacity: 0.2; } }
+
+    .badge { font-size: 10px; font-weight: 800; padding: 6px 12px; border-radius: 20px; text-transform: uppercase; margin-bottom: 10px; letter-spacing: 1px; }
+    .bg-blue { background: #3b82f6; color: white; }
+    .bg-red { background: #e11d48; color: white; }
+
+    h2 { margin: 0 0 10px 0; font-size: 24px; text-align: center; font-weight: 800; }
+    
+    .specs-row { 
+        display: flex; gap: 10px; justify-content: center; margin: 10px 0 20px; 
+        background: rgba(0,0,0,0.2); padding: 10px; border-radius: 12px; width: 100%;
+    }
+    .spec-item { font-size: 10px; color: #94a3b8; display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; border-right: 1px solid rgba(255,255,255,0.1); }
+    .spec-item:last-child { border: none; }
+    .spec-val { color: #fff; font-weight: 700; font-size: 12px; }
+
+    /* BUTTONS */
+    .btn-group { width: 100%; display: grid; grid-template-columns: 1fr 1.5fr; gap: 10px; margin-top: auto; }
+    .btn {
+        padding: 14px; border-radius: 12px; font-weight: 700; font-size: 13px;
+        text-align: center; cursor: pointer; border: none; transition: 0.3s; text-decoration: none;
+    }
+    .btn-outline { background: rgba(255,255,255,0.05); color: #cbd5e1; border: 1px solid rgba(255,255,255,0.2); }
+    .btn-primary { background: linear-gradient(to right, #2563eb, #3b82f6); color: white; box-shadow: 0 5px 15px var(--primary-glow); }
+    .btn-danger { background: linear-gradient(to right, #be123c, #e11d48); color: white; box-shadow: 0 5px 15px var(--red-glow); }
+
+    /* --- MODAL POPUP (DETAIL) --- */
+    .modal-overlay {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px);
+        z-index: 10000; display: none; 
+        align-items: center; justify-content: center; 
+        padding: 20px; opacity: 0; transition: opacity 0.3s ease;
+    }
+    .modal-overlay.active { display: flex; opacity: 1; }
+
+    .modal-box {
+        background: #1e293b; width: 100%; max-width: 450px; 
+        max-height: 85vh;
+        border-radius: 20px; border: 1px solid rgba(255,255,255,0.1);
+        display: flex; flex-direction: column; position: relative;
+        box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+        animation: zoomIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .modal-header {
+        flex-shrink: 0; padding: 15px 20px; background: #1e293b;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        display: flex; justify-content: space-between; align-items: center;
+        border-radius: 20px 20px 0 0; z-index: 5;
+    }
+    .close-btn { background: none; border: none; color: #94a3b8; font-size: 28px; cursor: pointer; line-height: 1; padding: 0 5px; }
+
+    .modal-body {
+        flex-grow: 1; overflow-y: auto; padding: 20px;
+        color: #cbd5e1; font-size: 13px; line-height: 1.6;
+        scroll-behavior: smooth;
+    }
+    
+    /* SCROLL INDICATOR */
+    .scroll-hint {
+        text-align: center; font-size: 10px; color: var(--primary); font-weight: 800;
+        margin-bottom: 15px; animation: pulse 1.5s infinite; letter-spacing: 1px;
+        border: 1px dashed rgba(59, 130, 246, 0.3); padding: 5px; border-radius: 8px;
+    }
+
+    /* DISCLAIMER STYLE (BARU) */
+    .disclaimer-box {
+        margin-top: 25px; margin-bottom: 10px;
+        padding: 12px;
+        background: rgba(250, 204, 21, 0.1); /* Kuning Transparan */
+        border: 1px dashed var(--warning);
+        color: var(--warning);
+        font-size: 12px; font-weight: 700;
+        text-align: center;
+        border-radius: 10px;
+        line-height: 1.4;
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse { 0% { opacity: 0.7; } 50% { opacity: 1; } 100% { opacity: 0.7; } }
+
+    .modal-footer {
+        flex-shrink: 0; padding: 15px 20px; background: #0f172a;
+        border-top: 1px solid rgba(255,255,255,0.1);
+        border-radius: 0 0 20px 20px; z-index: 5;
+        box-shadow: 0 -10px 20px rgba(0,0,0,0.3);
+    }
+
+    /* KONTEN DALAM MODAL */
+    .modal-body h3 { color: #fff; margin: 20px 0 10px; font-size: 13px; border-left: 3px solid var(--primary); padding-left: 10px; text-transform: uppercase; }
+    .modal-body ul { padding-left: 20px; margin: 0; }
+    .modal-body li { margin-bottom: 6px; }
+    .price-box { border: 1px dashed #475569; padding: 15px; border-radius: 12px; background: rgba(0,0,0,0.3); text-align: center; margin-bottom: 10px; }
+    .main-price { font-size: 20px; font-weight: 800; color: #fff; display: block; margin-bottom: 3px; }
+    .sub-price { font-size: 11px; color: #94a3b8; }
+    .btn-full { width: 100%; display: block; padding: 16px; font-size: 15px; border-radius: 12px; border:none; color:white; font-weight:bold; cursor:pointer;}
+
+    /* --- CUSTOM ALERT & CONFIRM DIALOG --- */
+    #customAlertBox {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.8); z-index: 20000;
+        display: none; align-items: center; justify-content: center;
+        backdrop-filter: blur(5px);
+    }
+    .alert-content {
+        background: #1e293b; width: 85%; max-width: 320px;
+        padding: 25px; border-radius: 20px; text-align: center;
+        border: 1px solid rgba(255,255,255,0.1);
+        box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+        animation: popUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .alert-title { font-size: 18px; font-weight: 800; margin-bottom: 10px; color: #fff; }
+    .alert-msg { font-size: 13px; color: #cbd5e1; margin-bottom: 20px; line-height: 1.5; }
+    .alert-btn-row { display: flex; gap: 10px; justify-content: center; }
+    .alert-btn {
+        padding: 12px 25px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; flex: 1; font-size: 14px;
+    }
+    .btn-yes { background: var(--primary); color: white; }
+    .btn-no { background: #334155; color: white; }
+
+    @keyframes popUp { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    @keyframes zoomIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+</style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>SEWA MILIK MOLIS</h1>
+        <p>Pilih unit impianmu. Proses cepat, syarat mudah.</p>
+    </div>
+
+    <div class="grid-container">
+        
+        <div class="card">
+            <div class="motor-wrapper">
+                <img src="n3.png" class="motor-img" alt="Alva N3">
+                <div class="motor-shadow"></div>
+            </div>
+            
+            <span class="badge bg-blue">SEWA MILIK</span>
+            <h2>ALVA N3</h2>
+            
+            <div class="specs-row">
+                <div class="spec-item"><span class="spec-val">140 KM</span><span>Jarak</span></div>
+                <div class="spec-item"><span class="spec-val">80 KM/H</span><span>Speed</span></div>
+                <div class="spec-item"><span class="spec-val">BOOST</span><span>Charge</span></div>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn btn-outline" onclick="openModal('modalAlfa')">ℹ️ DETAIL</button>
+                <button class="btn btn-primary" onclick="konfirmasiPilih('ALVA N3', 'alfa.html')">ISI FORM ➔</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="motor-wrapper">
+                <img src="fox.png" class="motor-img" alt="Polytron Fox">
+                <div class="motor-shadow"></div>
+            </div>
+
+            <span class="badge bg-red">SEWA MILIK</span>
+            <h2>POLYTRON FOX 350</h2>
+            
+            <div class="specs-row">
+                <div class="spec-item"><span class="spec-val">130 KM</span><span>Jarak</span></div>
+                <div class="spec-item"><span class="spec-val">95 KM/H</span><span>Speed</span></div>
+                <div class="spec-item"><span class="spec-val">3000W</span><span>Power</span></div>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn btn-outline" onclick="openModal('modalPoly')">ℹ️ DETAIL</button>
+                <button class="btn btn-danger" onclick="konfirmasiPilih('POLYTRON FOX', 'polytron.html')">ISI FORM ➔</button>
+            </div>
+        </div>
+
+    </div>
+
+    <div style="margin-top:50px; text-align:center; font-size:12px; color:#475569;">
+        &copy; 2026 Pasukan Senyap
+    </div>
+
+
+    <div id="modalAlfa" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h2 class="modal-title" style="color:#60a5fa">ALVA N3</h2>
+                <button class="close-btn" onclick="closeModal('modalAlfa')">×</button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="scroll-hint">⬇ SCROLL UNTUK INFO LENGKAP ⬇</div>
+
+                <div class="price-box" style="border-color:#3b82f6; background:rgba(59,130,246,0.1)">
+                    <span class="main-price" style="color:#60a5fa">Rp 60.000 / HARI</span>
+                    <span class="sub-price">DP 200rb | Tenor 3 Tahun | Libur 2x/Bulan</span>
+                </div>
+                
+                <h3>✅ Keunggulan Utama</h3>
+                <ul>
+                    <li><b>BOOST CHARGING:</b> Isi 10-50% cuma < 25 menit.</li>
+                    <li><b>TANPA BI CHECKING</b></li>
+                    <li>Gratis Helm</li>
+                </ul>
+
+                <h3>⚡ Spesifikasi Gahar</h3>
+                <ul>
+                    <li>Jarak Tempuh: <b>140 km</b> (2 Baterai).</li>
+                    <li>Kecepatan: 80 km/jam.</li>
+                    <li>Torsi: 125 Nm (Sangat Kuat).</li>
+                    <li>Fitur: USB Port A&C, Bagasi Luas, Reverse Mode.</li>
+                </ul>
+
+                <h3>🛡️ Garansi Resmi</h3>
+                <ul>
+                    <li>Baterai: 3 Tahun / 150.000 km.</li>
+                    <li>Kelistrikan: 3 Tahun / 100.000 km.</li>
+                    <li>Ban: Garansi 1x Depan & 1x Belakang (Per tahun).</li>
+                </ul>
+
+                <h3>📝 Syarat Wajib (Ketat)</h3>
+                <ul>
+                    <li style="color:#ef4444"><b>KTP WAJIB:</b> DKI, Bekasi Kota, Depok Kota, Tangerang Kota, Tangsel.</li>
+                    <li style="color:#ef4444"><b>SIM C:</b> WAJIB HIDUP (Aktif).</li>
+                    <li>Surat Domisili RT (Wajib).</li>
+                    <li>Pendapatan Min. 3 Juta (Bukti 3 bulan).</li>
+                    <li>KTP Pasangan (Jika menikah) & Kontak Darurat.</li>
+                </ul>
+
+                <div class="disclaimer-box">
+                    ⚠ DISCLAIMER:<br>Persyaratan dapat berubah sewaktu-waktu.
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button class="btn-full btn-primary" onclick="konfirmasiPilih('ALVA N3', 'alfa.html')">AJUKAN SEKARANG</button>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="modalPoly" class="modal-overlay">
+        <div class="modal-box" style="border-color: #9f1239;">
+            <div class="modal-header">
+                <h2 class="modal-title" style="color:#fb7185">POLYTRON FOX 350</h2>
+                <button class="close-btn" onclick="closeModal('modalPoly')">×</button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="scroll-hint" style="color:#fb7185; border-color:#fb7185">⬇ SCROLL UNTUK INFO LENGKAP ⬇</div>
+
+                <div class="price-box" style="border-color:#e11d48; background:rgba(225,29,72,0.1)">
+                    <span class="main-price" style="color:#fb7185">Rp 70.000 / HARI</span>
+                    <span class="sub-price">DP 410rb + Admin 150rb | Tenor 2 Tahun</span>
+                </div>
+                
+                <h3 style="border-color:#e11d48">🚀 Performa Tinggi</h3>
+                <ul>
+                    <li><b>Power:</b> 3000 Watt (Peak 6400W).</li>
+                    <li><b>Top Speed:</b> 95 km/jam.</li>
+                    <li><b>Jarak:</b> Hingga 130 km (Speed rata-rata 40km/j).</li>
+                    <li><b>Fitur:</b> Hill Start Assist (Anti mundur di tanjakan), Cruise Control, Keyless.</li>
+                </ul>
+
+                <h3 style="border-color:#e11d48">💎 Info Sewa Milik</h3>
+                <ul>
+                    <li><b>Tanpa Survey</b>, Proses Cepat (3-4 Hari Kerja).</li>
+                    <li>Gratis Sewa Baterai selama masa semil.</li>
+                    <li>Libur bayar 2 hari tiap akhir bulan (jika lancar).</li>
+                </ul>
+
+                <h3 style="border-color:#e11d48">📝 Persyaratan</h3>
+                <ul>
+                    <li>KTP, KK, SIM C (Mati tidak apa-apa).</li>
+                    <li style="color:#ef4444"><b>Wajib ada Penjamin (1 KK).</b></li>
+                    <li>Surat Domisili RT & Bukti Listrik/Token.</li>
+                    <li>Screenshot Akun Ojol & Pendapatan.</li>
+                </ul>
+
+                <div class="disclaimer-box">
+                    ⚠ DISCLAIMER:<br>Persyaratan dapat berubah sewaktu-waktu.
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button class="btn-full btn-danger" onclick="konfirmasiPilih('POLYTRON FOX', 'polytron.html')">AJUKAN SEKARANG</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="customAlertBox">
+        <div class="alert-content">
+            <div class="alert-title" id="alertTitle">Judul</div>
+            <div class="alert-msg" id="alertMsg">Pesan konfirmasi disini.</div>
+            <div class="alert-btn-row">
+                <button class="alert-btn btn-no" onclick="closeAlert()">Batal</button>
+                <button class="alert-btn btn-yes" id="btnConfirmAction">Ya, Lanjut</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+    function openModal(id) {
+        document.getElementById(id).classList.add('active');
+        document.body.style.overflow = 'hidden'; 
+    }
+
+    function closeModal(id) {
+        document.getElementById(id).classList.remove('active');
+        document.body.style.overflow = 'auto'; 
+    }
+
+    let targetUrl = "";
+
+    function konfirmasiPilih(unitName, url) {
+        document.getElementById('alertTitle').innerText = "Konfirmasi Pilihan";
+        document.getElementById('alertMsg').innerHTML = "Anda memilih unit <b style='color:#fff'>" + unitName + "</b>.<br>Lanjut ke formulir pengajuan?";
+        targetUrl = url;
+        document.getElementById('customAlertBox').style.display = 'flex';
+        document.querySelectorAll('.modal-overlay').forEach(el => el.classList.remove('active'));
+    }
+
+    document.getElementById('btnConfirmAction').addEventListener('click', function() {
+        document.getElementById('customAlertBox').style.display = 'none';
+        window.location.href = targetUrl;
+    });
+
+    function closeAlert() {
+        document.getElementById('customAlertBox').style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+
+    window.onclick = function(event) {
+        if (event.target.classList.contains('modal-overlay')) {
+            closeModal(event.target.id);
+        }
+        if (event.target.id === 'customAlertBox') {
+            closeAlert();
+        }
+    }
+</script>
+
+</body>
+</html>
