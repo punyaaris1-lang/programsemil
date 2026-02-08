@@ -65,7 +65,7 @@ if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
 // LINK DETAIL SAMA
-const LINK_DETAIL_ASLI = "https://punyaaris1-lang.github.io/semilalfan3/detail.html"; 
+const LINK_DETAIL_ASLI = "https://punyaaris1-lang.github.io/programsemil/detail.html"; 
 
 db.collection("pendaftaran_v3").orderBy("timestamp", "desc").onSnapshot(snap => {
     const div = document.getElementById('container');
