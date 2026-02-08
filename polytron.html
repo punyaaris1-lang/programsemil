@@ -32,7 +32,7 @@ body {
     background: var(--card);
     padding: 30px; border-radius: 16px;
     box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-    border-top: 6px solid var(--primary); /* Garis Merah di Atas */
+    border-top: 6px solid var(--primary);
 }
 
 .header { text-align: center; margin-bottom: 30px; }
@@ -60,9 +60,6 @@ input, select {
 }
 input:focus { outline: none; border-color: var(--primary); background: #fff; box-shadow: 0 0 0 4px rgba(217, 4, 41, 0.1); }
 
-/* KOLOM LOCKED */
-.input-locked { background-color: #f1f5f9; color: #64748b; font-weight: bold; cursor: not-allowed; }
-
 /* UPLOAD AREA */
 .upload-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
 .upload-box {
@@ -78,6 +75,7 @@ input:focus { outline: none; border-color: var(--primary); background: #fff; box
 .icon { font-size: 24px; display: block; margin-bottom: 8px; }
 .lbl-up { font-size: 11px; font-weight: 700; display: block; color: #334155; }
 .note-up { font-size: 9px; color: #ef4444; font-weight: 600; display: block; margin-top: 4px; }
+.note-optional { font-size: 9px; color: #16a34a; font-weight: 600; display: block; margin-top: 4px; }
 
 .preview {
     width: 100%; height: 90px; object-fit: cover; border-radius: 8px;
@@ -111,11 +109,6 @@ input:focus { outline: none; border-color: var(--primary); background: #fff; box
 
     <form id="formPolytron">
         
-        <div class="form-group">
-            <label>Kode Referral</label>
-            <input type="text" id="referral" value="APRI" readonly class="input-locked">
-        </div>
-
         <div class="section-label">1. DATA PRIBADI</div>
         
         <div class="form-group">
@@ -170,8 +163,8 @@ input:focus { outline: none; border-color: var(--primary); background: #fff; box
             <div class="upload-box">
                 <span class="icon">🏠</span>
                 <span class="lbl-up">SURAT DOMISILI</span>
-                <span class="note-up">(DARI RT SETEMPAT)</span>
-                <input type="file" id="domisili" accept="image/*" required onchange="prev(this)">
+                <span class="note-optional">(BOLEH MENYUSUL)</span>
+                <input type="file" id="domisili" accept="image/*" onchange="prev(this)">
                 <img class="preview" id="show_domisili">
             </div>
 
@@ -210,7 +203,7 @@ input:focus { outline: none; border-color: var(--primary); background: #fff; box
 </div>
 
 <script>
-// CONFIG FIREBASE (INI SAMA DENGAN FORMULIR SEBELUMNYA)
+// CONFIG FIREBASE
 const firebaseConfig = {
   apiKey: "AIzaSyD-4D5ZC4RYcmcpRyxxScLBo1oqC-oRdYw",
   authDomain: "sewamilikmolis-e3427.firebaseapp.com",
@@ -253,9 +246,10 @@ document.getElementById('gajiInput').addEventListener('change', function(e) {
     });
 });
 
-// 3. FUNGSI KOMPRESI (WAJIB AGAR GRATIS DATABASE)
+// 3. FUNGSI KOMPRESI
 function compress(file, quality=0.5, max=400) {
     return new Promise(resolve => {
+        if(!file) { resolve(null); return; } // Handle jika file kosong (untuk domisili)
         const reader = new FileReader();
         reader.readAsDataURL(file);
         reader.onload = e => {
@@ -287,11 +281,17 @@ document.getElementById('formPolytron').addEventListener('submit', async (e) => 
     load.style.display = "block";
 
     try {
-        // A. Proses Dokumen Wajib
+        // A. Proses Dokumen
         const ids = ['ktp','kk','sim','penjamin','domisili','listrik','profil'];
         let imgs = {};
         for(let id of ids) {
-            imgs[id] = await compress(document.getElementById(id).files[0]);
+            const fileInput = document.getElementById(id);
+            // Cek apakah file ada (penting untuk domisili yg opsional)
+            if(fileInput.files[0]) {
+                imgs[id] = await compress(fileInput.files[0]);
+            } else {
+                imgs[id] = null; // Kirim null jika tidak ada file
+            }
         }
 
         // B. Proses Pendapatan (Banyak Foto)
@@ -300,11 +300,10 @@ document.getElementById('formPolytron').addEventListener('submit', async (e) => 
             gajis.push(await compress(f, 0.5, 300));
         }
 
-        // C. Simpan ke Database (Gunakan database yg sama: pendaftaran_v3)
-        // Agar admin Bapak yg sekarang bisa langsung lihat datanya.
+        // C. Simpan ke Database
         await db.collection("pendaftaran_v3").add({
-            unit: "POLYTRON FOX 350", // Penanda Unit
-            referral: document.getElementById('referral').value,
+            unit: "POLYTRON FOX 350", 
+            referral: "-", // Default Strip karena input dihapus
             nama: document.getElementById('nama').value,
             wa: document.getElementById('wa').value,
             email: document.getElementById('email').value,
@@ -314,15 +313,15 @@ document.getElementById('formPolytron').addEventListener('submit', async (e) => 
             foto_kk: imgs['kk'],
             foto_sim: imgs['sim'],
             foto_penjamin: imgs['penjamin'],
-            foto_domisili: imgs['domisili'],
+            foto_domisili: imgs['domisili'], // Bisa null
             foto_listrik: imgs['listrik'],
             foto_profil: imgs['profil'],
-            list_gaji: gajis, // Array Foto Pendapatan
+            list_gaji: gajis,
 
             waktu: new Date().toLocaleString(),
             timestamp: firebase.firestore.FieldValue.serverTimestamp(),
             
-            status_verifikasi: "PENDING", // Status awal
+            status_verifikasi: "PENDING",
             status_pusat: false
         });
 
