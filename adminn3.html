@@ -3,63 +3,103 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ADMIN LOKAL</title>
+<title>ADMIN DASHBOARD</title>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-    body { font-family: 'Inter', sans-serif; background: #f8fafc; padding: 20px; color: #334155; }
+    :root {
+        --primary: #2563eb; --success: #16a34a; --warning: #d97706; 
+        --bg: #f1f5f9; --card-bg: #ffffff; --text: #1e293b;
+    }
     
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); margin: 0; padding: 20px; color: var(--text); padding-bottom: 50px; }
+    
+    /* NAVBAR STICKY */
     .navbar { 
-        background: #fff; padding: 15px 25px; border-radius: 12px; margin-bottom: 25px; 
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); display: flex; justify-content: space-between; align-items: center;
-        border-bottom: 3px solid #3b82f6;
+        position: sticky; top: 0; z-index: 100;
+        background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px);
+        padding: 15px 20px; border-radius: 12px; margin-bottom: 25px; 
+        box-shadow: 0 4px 20px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;
+        display: flex; justify-content: space-between; align-items: center;
     }
-    
+    .badge-count { background: var(--primary); color: white; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; }
+
+    /* PEMISAH TANGGAL (DATE DIVIDER) */
+    .date-divider {
+        display: flex; align-items: center; justify-content: center;
+        margin: 25px 0 15px; position: relative;
+    }
+    .date-pill {
+        background: #e2e8f0; color: #475569; padding: 6px 16px; 
+        border-radius: 20px; font-size: 12px; font-weight: 700;
+        border: 1px solid #cbd5e1; z-index: 2;
+    }
+    .date-line {
+        position: absolute; width: 100%; height: 1px; background: #cbd5e1; z-index: 1;
+    }
+
+    /* CARD DESIGN */
     .card { 
-        background: #fff; border-radius: 12px; padding: 20px; margin-bottom: 15px; 
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; flex-wrap: wrap; gap: 15px; justify-content: space-between; align-items: center;
-        border-left: 5px solid #cbd5e1; transition: 0.3s;
+        background: var(--card-bg); border-radius: 12px; padding: 20px; margin-bottom: 12px; 
+        box-shadow: 0 2px 5px rgba(0,0,0,0.03); border: 1px solid #e2e8f0;
+        display: grid; grid-template-columns: 1fr auto; gap: 15px; align-items: center;
+        transition: transform 0.2s;
     }
-    .card.sent { border-left-color: #22c55e; background: #f0fdf4; } 
-
-    .info h3 { margin: 0 0 5px 0; font-size: 16px; color: #1e293b; }
-    .date { font-size: 12px; color: #64748b; margin-bottom: 4px; }
+    .card:hover { transform: translateY(-2px); box-shadow: 0 10px 15px rgba(0,0,0,0.05); }
     
-    .action-group { display: flex; gap: 8px; align-items: center; }
+    /* Warna Status Kiri */
+    .card.sent { border-left: 5px solid var(--success); }
+    .card.pending { border-left: 5px solid #cbd5e1; }
 
+    /* INFO SECTION */
+    .driver-name { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+    .driver-meta { font-size: 13px; color: #64748b; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    .meta-item { display: flex; align-items: center; gap: 4px; }
+    .ref-badge { background: #eff6ff; color: var(--primary); padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: bold; }
+
+    /* ACTION BUTTONS */
+    .actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+    
     .btn {
-        border: none; padding: 8px 12px; border-radius: 6px; font-weight: 600; 
-        cursor: pointer; font-size: 12px; text-decoration: none; display: flex; align-items: center; gap: 5px;
+        border: none; padding: 8px 14px; border-radius: 8px; font-size: 12px; font-weight: 600; 
+        cursor: pointer; display: flex; align-items: center; gap: 6px; text-decoration: none;
         transition: 0.2s;
     }
-    .btn-view { background: #e2e8f0; color: #334155; border: 1px solid #cbd5e1; }
-    .btn-view:hover { background: #cbd5e1; }
+    .btn-view { background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; }
+    .btn-view:hover { background: #e2e8f0; }
 
-    .btn-share { background: #2563eb; color: white; }
-    .btn-share:hover { background: #1d4ed8; }
+    .btn-wa { background: var(--primary); color: white; box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2); }
+    .btn-wa:hover { background: #1d4ed8; transform: translateY(-1px); }
 
-    .status-badge {
-        font-size: 10px; padding: 4px 8px; border-radius: 20px; font-weight: bold; 
-        background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0; cursor: pointer;
+    /* STATUS TOGGLE */
+    .status-pill {
+        padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; cursor: pointer;
+        display: flex; align-items: center; gap: 5px; user-select: none;
     }
-    .status-badge.sent { background: #dcfce7; color: #166534; border-color: #86efac; }
+    .status-pill.sent { background: #dcfce7; color: var(--success); border: 1px solid #86efac; }
+    .status-pill.pending { background: #f1f5f9; color: #64748b; border: 1px solid #cbd5e1; }
 
     @media (max-width: 600px) {
-        .card { flex-direction: column; align-items: flex-start; }
-        .action-group { width: 100%; justify-content: space-between; margin-top: 10px; }
-        .btn { flex: 1; justify-content: center; }
+        .card { grid-template-columns: 1fr; }
+        .actions { justify-content: flex-start; width: 100%; margin-top: 10px; border-top: 1px dashed #e2e8f0; padding-top: 15px; }
+        .btn, .status-pill { flex: 1; justify-content: center; }
     }
 </style>
 </head>
 <body>
 
 <div class="navbar">
-    <div><b>ADMIN PANEL</b><br><small>Verifikasi & Kirim Data</small></div>
-    <span style="font-size:12px; font-weight:bold">Total: <span id="total">0</span></span>
+    <div>
+        <div style="font-weight:700; font-size:16px;">ADMIN PANEL</div>
+        <div style="font-size:11px; color:#64748b;">Control Center Driver</div>
+    </div>
+    <span class="badge-count" id="total">0 Data</span>
 </div>
 
-<div id="container">Memuat data...</div>
+<div id="container">
+    <p style="text-align:center; color:#64748b; margin-top:50px;">Sedang memuat data...</p>
+</div>
 
 <script>
 // CONFIG FIREBASE
@@ -75,46 +115,65 @@ const firebaseConfig = {
 if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-// ======================================================
-// ⚠️ LINK INI SUDAH SAYA PERBAIKI SESUAI ALAMAT WEBSITE KAMU
-// ======================================================
+// ==========================================
+// ⚠️ PASTIKAN LINK INI BENAR ⚠️
 const LINK_DETAIL_ASLI = "https://punyaaris1-lang.github.io/semilalfan3/detail.html"; 
+// ==========================================
 
 db.collection("pendaftaran_v3").orderBy("timestamp", "desc").onSnapshot(snap => {
     const div = document.getElementById('container');
-    document.getElementById('total').innerText = snap.size;
+    document.getElementById('total').innerText = snap.size + " Data";
     div.innerHTML = "";
 
     if(snap.empty) { div.innerHTML = "<p style='text-align:center'>Belum ada data.</p>"; return; }
+
+    let lastDate = ""; // Variabel untuk menyimpan tanggal sebelumnya
 
     snap.forEach(doc => {
         const d = doc.data();
         const id = doc.id;
         const isSent = d.status_pusat === true; 
-        
-        // DISINI KITA GABUNGKAN ALAMAT WEBSITE + ID DRIVER
-        // Hasilnya jadi: .../detail.html?uid=KODE_UNIK_DRIVER
         const finalLink = LINK_DETAIL_ASLI + "?uid=" + id;
+
+        // --- LOGIC GROUPING TANGGAL ---
+        // Ambil Tanggal saja (DD/MM/YYYY) dari string waktu
+        // Format d.waktu biasanya "10/02/2026, 10:30:00" -> Kita ambil bagian depan koma
+        let currentDate = d.waktu.split(',')[0]; 
         
+        // Jika tanggal berubah, tampilkan Header Pemisah
+        if(currentDate !== lastDate) {
+            div.innerHTML += `
+            <div class="date-divider">
+                <div class="date-line"></div>
+                <div class="date-pill">📅 ${currentDate}</div>
+            </div>`;
+            lastDate = currentDate;
+        }
+        // ------------------------------
+
         div.innerHTML += `
-        <div class="card ${isSent ? 'sent' : ''}">
-            <div class="info">
-                <h3>${d.nama}</h3>
-                <div class="date">📅 ${d.waktu}</div> 
-                <div class="date">👤 Ref: <b>${d.referral}</b> | 📞 ${d.wa}</div>
+        <div class="card ${isSent ? 'sent' : 'pending'}">
+            <div>
+                <div class="driver-name">${d.nama}</div>
+                <div class="driver-meta">
+                    <span class="meta-item">🕒 ${d.waktu.split(',')[1] || ''}</span>
+                    <span class="meta-item">•</span>
+                    <span class="ref-badge">Ref: ${d.referral}</span>
+                    <span class="meta-item">• 📞 ${d.wa}</span>
+                </div>
             </div>
 
-            <div class="action-group">
-                <a href="${finalLink}" target="_blank" class="btn btn-view">
-                    👁️ CEK DATA
-                </a>
-
-                <div class="status-badge ${isSent ? 'sent' : ''}" onclick="updateStatus('${id}', ${!isSent})">
+            <div class="actions">
+                <div class="status-pill ${isSent ? 'sent' : 'pending'}" onclick="updateStatus('${id}', ${!isSent})">
                     ${isSent ? '✅ TERKIRIM' : '⏳ BELUM'}
                 </div>
 
-                <button class="btn btn-share" onclick="shareWA('${id}', '${d.nama}', '${finalLink}')">
-                    🚀 KIRIM
+                <a href="${finalLink}" target="_blank" class="btn btn-view">
+                    👁️ Cek
+                </a>
+
+                <button class="btn btn-wa" onclick="shareWA('${id}', '${d.nama}', '${finalLink}')">
+                    🚀 Kirim
                 </button>
             </div>
         </div>`;
@@ -127,7 +186,6 @@ function updateStatus(id, stat) {
 
 function shareWA(id, nama, link) {
     updateStatus(id, true);
-    // Pesan WA akan otomatis terisi Link yang VALID
     const text = `*DATA DRIVER BARU*\n\nNama: ${nama}\nLink Data: ${link}\n\nMohon segera diproses.`;
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
 }
