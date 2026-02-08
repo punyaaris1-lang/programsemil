@@ -3,79 +3,206 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TES DIAGNOSA ERROR</title>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+<title>Formulir Pendaftaran (Mode Hemat)</title>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
 <style>
-    body{font-family:sans-serif;padding:20px;text-align:center}
-    button{padding:15px 30px;background:red;color:white;border:none;font-size:18px;border-radius:5px;margin-top:20px}
-    #status{margin-top:20px;font-weight:bold;color:blue}
+/* TAMPILAN */
+body{font-family:'Poppins', sans-serif;background:#f0f2f5;margin:0;padding:15px}
+.container{max-width:700px;margin:auto;background:#fff;padding:25px;border-radius:12px;box-shadow: 0 2px 10px rgba(0,0,0,0.1); border-top: 5px solid #2980b9;}
+h1{text-align:center;color:#2c3e50;font-size:20px;margin-bottom:10px;}
+p.sub{text-align:center; font-size:12px; color:#666; margin-bottom:20px;}
+
+label{font-size:13px;font-weight:600;display:block;margin-bottom:5px;color:#333;}
+input,textarea,select{width:100%;padding:10px;border:1px solid #ccc;border-radius:5px;box-sizing:border-box;margin-bottom:15px;}
+input:focus{border-color:#2980b9;outline:none;}
+
+.upload-area{background:#fafafa; padding:15px; border-radius:8px; border:1px dashed #bbb;}
+.grid{display:grid; grid-template-columns: 1fr 1fr; gap:10px;}
+@media(max-width:500px){.grid{grid-template-columns:1fr;}}
+
+.card{background:#fff; padding:10px; border:1px solid #eee; border-radius:5px;}
+.prev{width:100%; height:80px; object-fit:cover; display:none; margin-top:5px; border-radius:4px;}
+
+.btn{background:#2980b9;color:#fff;padding:15px;width:100%;border:none;border-radius:6px;font-weight:bold;cursor:pointer;margin-top:20px;}
+.btn:hover{background:#1f618d;}
+.btn:disabled{background:#bdc3c7;}
+
+#msg{display:none; text-align:center; padding:10px; margin-top:15px; border-radius:5px; font-size:13px;}
 </style>
 </head>
+
 <body>
 
-    <h2>TES UPLOAD SATU FILE</h2>
-    <p>Pilih file kecil saja untuk tes:</p>
-    <input type="file" id="fileInput">
-    <br>
-    <button onclick="uploadTes()">UPLOAD SEKARANG</button>
-    <div id="status">Menunggu...</div>
+<div class="container">
+    <h1>FORMULIR DRIVER</h1>
+    <p class="sub">Server Jalur Hemat (Tanpa Upgrade)</p>
+
+    <form id="formDriver">
+        <label>Referral</label><input id="referral" value="Apri" readonly style="background:#eee">
+        <label>Nama Lengkap</label><input id="nama" required>
+        <label>No WhatsApp</label><input type="tel" id="wa" required>
+        <label>Tempat, Tgl Lahir</label><input id="ttl" required>
+        <label>Status</label>
+        <select id="statusNikah" required>
+            <option value="">- Pilih -</option>
+            <option>Belum Menikah</option><option>Menikah</option><option>Cerai</option>
+        </select>
+        <label>Alamat KTP</label><textarea id="alamatKtp" required rows="2"></textarea>
+        <label>Alamat Domisili</label><textarea id="alamatDomisili" required rows="2"></textarea>
+        <label>Email</label><input type="email" id="email" required>
+        <label>Kontak Darurat (Nama & HP)</label><input id="darurat" required>
+        <label>Link Maps</label><input id="maps">
+
+        <div class="upload-area">
+            <p style="text-align:center; font-weight:bold; font-size:14px; margin-top:0;">DOKUMEN FOTO</p>
+            <div class="grid" id="gridUpload"></div>
+        </div>
+
+        <div id="msg"></div>
+        <button class="btn" id="btnKirim">KIRIM DATA SEKARANG</button>
+    </form>
+</div>
 
 <script>
-    // --- KONFIGURASI SAYA UBAH PAKAI 'appspot.com' (LEBIH STABIL DI HP) ---
-    const firebaseConfig = {
-      apiKey: "AIzaSyCvgr6tqDSX0BRKxRAf3ylxFQkOtaeBGsI",
-      projectId: "semil-d907b",
-      storageBucket: "semil-d907b.appspot.com", // <-- SAYA GANTI INI
-      appId: "1:1014876558020:web:ecf05933a7b2e852b2ef91"
-    };
+/* ================= CONFIG (PROJECT e3427) ================= */
+const firebaseConfig = {
+  apiKey: "AIzaSyD-4D5ZC4RYcmcpRyxxScLBo1oqC-oRdYw",
+  authDomain: "sewamilikmolis-e3427.firebaseapp.com",
+  projectId: "sewamilikmolis-e3427",
+  storageBucket: "sewamilikmolis-e3427.firebasestorage.app",
+  messagingSenderId: "934998664118",
+  appId: "1:934998664118:web:602d8ef8053099aa329717"
+};
 
-    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-    const storage = firebase.storage();
+if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 
-    function uploadTes() {
-        const file = document.getElementById('fileInput').files[0];
-        const status = document.getElementById('status');
+// Daftar Dokumen
+const docs = [
+    {id:'ktp', t:'KTP Asli'}, {id:'sim', t:'SIM C'}, 
+    {id:'kk', t:'Kartu Keluarga'}, {id:'selfie', t:'Foto Selfie'},
+    {id:'ojol', t:'Profil Ojol'}, {id:'gaji1', t:'Gaji Bln 1'}
+    // Saya kurangi sedikit agar database tidak kepenuhan
+];
 
-        if (!file) { alert("Pilih file dulu!"); return; }
+// Buat Form Upload
+const grid = document.getElementById("gridUpload");
+docs.forEach(d => {
+    grid.innerHTML += `
+    <div class="card">
+        <label style="font-size:11px">${d.t}</label>
+        <input type="file" id="${d.id}" accept="image/*" onchange="preview(this, '${d.id}')" style="font-size:11px; width:100%">
+        <img id="img_${d.id}" class="prev">
+    </div>`;
+});
 
-        status.innerText = "Mencoba Upload...";
-        
-        // Nama file acak biar gak bentrok
-        const namaFile = "tes_" + Date.now() + ".jpg";
-        const ref = storage.ref(namaFile);
-
-        const task = ref.put(file);
-
-        task.on('state_changed', 
-            (snapshot) => {
-                var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                status.innerText = "Progress: " + Math.floor(progress) + "%";
-            }, 
-            (error) => {
-                // --- INI BAGIAN PENTINGNYA ---
-                console.error(error);
-                let pesan = "ERROR: " + error.code + "\n" + error.message;
-                
-                if(error.code === 'storage/unauthorized') {
-                    pesan = "GAGAL: IZIN DITOLAK (RULES FIREBASE MASIH SALAH)\nCek Tab Rules di Console!";
-                } else if(error.code === 'storage/object-not-found' || error.code === 'storage/bucket-not-found') {
-                    pesan = "GAGAL: BUCKET TIDAK DITEMUKAN\nNama storageBucket salah.";
-                } else if(error.code === 'storage/retry-limit-exceeded') {
-                    pesan = "GAGAL: KONEKSI LEMAH";
-                }
-
-                alert(pesan); // MUNCULKAN POPUP
-                status.innerText = "GAGAL TOTAL";
-                status.style.color = "red";
-            }, 
-            () => {
-                alert("BERHASIL! Masalah selesai. Config 'appspot.com' adalah kuncinya.");
-                status.innerText = "SUKSES TERUPLOAD!";
-                status.style.color = "green";
-            }
-        );
+function preview(el, id){
+    if(el.files[0]){
+        document.getElementById(`img_${id}`).src = URL.createObjectURL(el.files[0]);
+        document.getElementById(`img_${id}`).style.display="block";
     }
+}
+
+// === FUNGSI SULAP GAMBAR JADI TEKS (KOMPRESI EKSTREM) ===
+function processImage(file) {
+    return new Promise((resolve) => {
+        if(!file) return resolve(null);
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (e) => {
+            const img = new Image();
+            img.src = e.target.result;
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                // Kecilkan ukuran max 400px agar muat di Database
+                const max = 400; 
+                let w = img.width, h = img.height;
+                if(w>h && w>max){ h*=max/w; w=max; }
+                else if(h>max){ w*=max/h; h=max; }
+                
+                canvas.width = w; canvas.height = h;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img,0,0,w,h);
+                // Ubah jadi string Base64 kualitas rendah (0.5)
+                resolve(canvas.toDataURL('image/jpeg', 0.5));
+            };
+        };
+    });
+}
+
+// === LOGIC KIRIM ===
+document.getElementById('formDriver').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    if(!confirm("Kirim data sekarang?")) return;
+
+    const btn = document.getElementById('btnKirim');
+    const msg = document.getElementById('msg');
+    btn.disabled = true;
+    btn.innerText = "SEDANG MEMPROSES GAMBAR...";
+    msg.style.display = "block";
+    msg.style.background = "#fff3cd";
+    msg.innerText = "Jangan keluar! Sedang mengubah gambar menjadi data...";
+
+    try {
+        let dataFoto = {};
+        
+        // Loop proses gambar jadi teks
+        for(let d of docs){
+            const file = document.getElementById(d.id).files[0];
+            if(file){
+                // Simpan sebagai string panjang
+                dataFoto[d.id] = await processImage(file);
+            }
+        }
+
+        msg.innerText = "Menyimpan ke Database...";
+
+        // Simpan ke Firestore (Bukan Storage)
+        await db.collection("pendaftaran_hemat").add({
+            referral: document.getElementById('referral').value,
+            nama: document.getElementById('nama').value,
+            wa: document.getElementById('wa').value,
+            ttl: document.getElementById('ttl').value,
+            status: document.getElementById('statusNikah').value,
+            alamatKtp: document.getElementById('alamatKtp').value,
+            alamatDomisili: document.getElementById('alamatDomisili').value,
+            email: document.getElementById('email').value,
+            darurat: document.getElementById('darurat').value,
+            maps: document.getElementById('maps').value,
+            ...dataFoto, // Data gambar masuk di sini
+            waktu: new Date().toLocaleString()
+        });
+
+        msg.style.background = "#d4edda";
+        msg.style.color = "green";
+        msg.innerText = "✅ SUKSES! Data Terkirim.";
+        alert("Berhasil! Data Anda sudah kami terima.");
+        window.location.reload();
+
+    } catch (err) {
+        console.error(err);
+        btn.disabled = false;
+        btn.innerText = "COBA LAGI";
+        msg.style.background = "#f8d7da";
+        msg.style.color = "red";
+        msg.innerText = "Gagal: " + err.message;
+        
+        if(err.code === 'permission-denied') {
+            alert("GAGAL: Izin Database ditolak. Pastikan Rules Firestore sudah dibuka (allow read, write: if true;)");
+        } else if (err.message.includes("exceeded")) {
+            alert("GAGAL: File terlalu besar. Coba kurangi jumlah foto.");
+        } else {
+            alert("Terjadi kesalahan. Cek koneksi internet.");
+        }
+    }
+});
 </script>
+
 </body>
 </html>
