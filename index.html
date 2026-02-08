@@ -110,8 +110,8 @@ input:focus, select:focus {
 
 <div class="container">
     <div class="header">
-        <h2>PROGRAM SEMIL ALFA N3</h2>
-        <p>Lengkapi biodata dan dokumen Anda</p>
+        <h2>ALVA N3</h2>
+        <p>Program Sewa Milik</p>
     </div>
 
     <form id="formDaftar">
@@ -198,7 +198,7 @@ input:focus, select:focus {
 
         <div style="margin-top: 20px; background: #f0f9ff; padding: 15px; border-radius: 8px; border: 1px dashed #60a5fa;">
             <label style="color:#1e3a8a">Bukti Pendapatan (Bisa upload banyak)</label>
-            <p style="font-size:11px; color:#64748b; margin-bottom:10px">Pilih semua screenshot pendapatan (Minggu 1, 2, dst) sekaligus.</p>
+            <p style="font-size:11px; color:#64748b; margin-bottom:10px">Pilih screenshot pendapatan (Minggu 1, 2, dst) sekaligus. <b>(Maksimal 8 Foto)</b></p>
             <input type="file" id="gajiInput" multiple accept="image/*" style="background:#fff">
             <div class="multi-preview" id="gajiBox"></div>
         </div>
@@ -232,17 +232,17 @@ function prev(input) {
     }
 }
 
-// PREVIEW IMAGE BANYAK (GAJI)
+// PREVIEW IMAGE BANYAK (GAJI) - MAX 8
 let gajiFiles = [];
 document.getElementById('gajiInput').addEventListener('change', function(e) {
     const box = document.getElementById('gajiBox');
     box.innerHTML = ""; 
     gajiFiles = Array.from(e.target.files);
     
-    // Batasi maks 5 file biar database gak berat
-    if(gajiFiles.length > 5) {
-        alert("Maksimal 5 foto gaji.");
-        gajiFiles = gajiFiles.slice(0,5);
+    // UPDATE: Batasi maks 8 file
+    if(gajiFiles.length > 8) {
+        alert("Maksimal 8 foto gaji.");
+        gajiFiles = gajiFiles.slice(0,8);
     }
 
     gajiFiles.forEach(f => {
