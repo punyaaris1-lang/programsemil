@@ -3,265 +3,79 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Registrasi Semil Alfa N3</title>
-
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
-
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-
+<title>TES DIAGNOSA ERROR</title>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
 <style>
-:root { --primary:#2c3e50; --bg:#ecf0f1; --success:#27ae60; --bar:#2980b9 }
-body{font-family:Poppins, sans-serif;background:var(--bg);margin:0;padding:20px}
-.container{max-width:700px;margin:auto;background:#fff;padding:20px;border-radius:12px;border-top:5px solid var(--primary); box-shadow: 0 4px 10px rgba(0,0,0,0.1);}
-.header h1{text-align:center;color:var(--primary);font-size:22px}
-.form-group{margin-bottom:15px}
-label{font-size:13px;font-weight:600; display:block; margin-bottom:5px;}
-input,textarea,select{width:100%;padding:10px;border:1px solid #ccc;border-radius:5px;box-sizing: border-box;}
-.upload-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.upload-card{border:1px solid #ddd;border-radius:8px;padding:10px;position:relative;background:#f9f9f9;}
-.preview-img{width:100%;height:80px;object-fit:cover;display:none;margin-top:5px;border-radius:4px;border:1px solid #eee;}
-.progress-wrapper{height:8px;background:#ddd;border-radius:4px;margin-top:5px;display:none; overflow:hidden;}
-.progress-fill{height:100%;width:0%;background:var(--bar);transition: width 0.3s;}
-.status-text{font-size:11px;font-weight:bold;margin-top:4px;display:block;}
-.badge-ok{position:absolute;top:5px;right:5px;background:var(--success);color:#fff;font-size:10px;padding:2px 8px;border-radius:4px;display:none; font-weight:bold;}
-.btn-submit{background:var(--primary);color:#fff;padding:15px;width:100%;border:none;border-radius:6px;font-size:16px;font-weight:bold;cursor:pointer;margin-top:20px;}
-.btn-submit:disabled{background:#7f8c8d;cursor:not-allowed;}
-#totalProgress{display:none;margin-top:15px;text-align:center;font-weight:bold;color:#d35400; padding:10px; background:#fff3cd; border:1px solid #ffeeba; border-radius:5px;}
+    body{font-family:sans-serif;padding:20px;text-align:center}
+    button{padding:15px 30px;background:red;color:white;border:none;font-size:18px;border-radius:5px;margin-top:20px}
+    #status{margin-top:20px;font-weight:bold;color:blue}
 </style>
 </head>
-
 <body>
-<div class="container">
-<div class="header"><h1>FORMULIR ALFA N3</h1></div>
 
-<form id="alfaForm">
-<div class="form-group"><label>Referral</label><input id="referral" value="Apri" readonly style="background:#eee"></div>
-
-<div class="form-group"><label>Nama Lengkap</label><input id="nama" required placeholder="Sesuai KTP"></div>
-<div class="form-group"><label>No WhatsApp</label><input type="number" id="wa" required placeholder="08xxx"></div>
-<div class="form-group"><label>Tempat, Tgl Lahir</label><input id="ttl" required></div>
-<div class="form-group"><label>Status</label>
-<select id="statusNikah" required>
-<option value="">-- Pilih --</option>
-<option>Belum Menikah</option>
-<option>Menikah</option>
-<option>Cerai</option>
-</select>
-</div>
-
-<div class="form-group"><label>Alamat KTP</label><textarea id="alamatKtp" required rows="2"></textarea></div>
-<div class="form-group"><label>Alamat Domisili</label>
-<div style="margin-bottom:5px;">
-    <input type="checkbox" id="checkSama" onchange="copyAlamat()" style="width:auto;"> <span style="font-size:13px">Sama dgn KTP</span>
-</div>
-<textarea id="alamatDomisili" required rows="2"></textarea>
-</div>
-
-<div class="form-group"><label>Email</label><input id="email" type="email" required></div>
-<div class="form-group"><label>Nama Kontak Darurat</label><input id="emergencyName" required></div>
-<div class="form-group"><label>No HP Darurat</label><input type="number" id="emergencyPhone" required></div>
-<div class="form-group"><label>Shareloc (Google Maps)</label><textarea id="locationLink"></textarea></div>
-
-<div class="upload-grid" id="uploadContainer"></div>
-
-<div id="totalProgress"></div>
-<button class="btn-submit" id="btnKirim">KIRIM DATA</button>
-</form>
-</div>
+    <h2>TES UPLOAD SATU FILE</h2>
+    <p>Pilih file kecil saja untuk tes:</p>
+    <input type="file" id="fileInput">
+    <br>
+    <button onclick="uploadTes()">UPLOAD SEKARANG</button>
+    <div id="status">Menunggu...</div>
 
 <script>
-/* ================= KONFIGURASI BARU (semil-d907b) ================= */
-const firebaseConfig = {
-  apiKey: "AIzaSyCvgr6tqDSX0BRKxRAf3ylxFQkOtaeBGsI",
-  authDomain: "semil-d907b.firebaseapp.com",
-  projectId: "semil-d907b",
-  storageBucket: "semil-d907b.firebasestorage.app", // Pastikan ini sesuai di console
-  messagingSenderId: "1014876558020",
-  appId: "1:1014876558020:web:ecf05933a7b2e852b2ef91"
-};
+    // --- KONFIGURASI SAYA UBAH PAKAI 'appspot.com' (LEBIH STABIL DI HP) ---
+    const firebaseConfig = {
+      apiKey: "AIzaSyCvgr6tqDSX0BRKxRAf3ylxFQkOtaeBGsI",
+      projectId: "semil-d907b",
+      storageBucket: "semil-d907b.appspot.com", // <-- SAYA GANTI INI
+      appId: "1:1014876558020:web:ecf05933a7b2e852b2ef91"
+    };
 
-// Inisialisasi Firebase
-if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
-}
-const db = firebase.firestore();
-const storage = firebase.storage();
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    const storage = firebase.storage();
 
-/* ================= LIST DOKUMEN ================= */
-const docs = [
-    {id:'ktp', label:'KTP Asli', r:true},
-    {id:'ktp_pasangan', label:'KTP Pasangan', r:true},
-    {id:'sim', label:'SIM C', r:true},
-    {id:'domisili', label:'Surat Domisili', r:false},
-    {id:'kk', label:'Kartu Keluarga', r:true},
-    {id:'selfie', label:'Foto Selfie', r:true},
-    {id:'ojol_profile', label:'Profil Ojol', r:true},
-    {id:'pendapatan1', label:'Gaji Bulan 1', r:true},
-    {id:'pendapatan2', label:'Gaji Bulan 2', r:true},
-    {id:'pendapatan3', label:'Gaji Bulan 3', r:true}
-];
+    function uploadTes() {
+        const file = document.getElementById('fileInput').files[0];
+        const status = document.getElementById('status');
 
-// Render Upload Form
-const c = document.getElementById("uploadContainer");
-docs.forEach(d => {
-    c.insertAdjacentHTML('beforeend', `
-    <div class="upload-card">
-        <span class="badge-ok" id="ok_${d.id}">TERUPLOAD</span>
-        <label style="font-size:11px; margin:0;">${d.label}</label>
-        <input type="file" id="${d.id}" ${d.r?'required':''} accept="image/*" onchange="preview(this,'img_${d.id}')">
-        <img id="img_${d.id}" class="preview-img">
-        <div class="progress-wrapper" id="wrap_${d.id}">
-            <div class="progress-fill" id="fill_${d.id}"></div>
-        </div>
-        <div class="status-text" id="stat_${d.id}"></div>
-    </div>`);
-});
+        if (!file) { alert("Pilih file dulu!"); return; }
 
-function preview(i, id){
-    const f = i.files[0];
-    if(!f) return;
-    document.getElementById(id).src = URL.createObjectURL(f);
-    document.getElementById(id).style.display = "block";
-}
-
-function copyAlamat(){
-    const ck = document.getElementById('checkSama');
-    const ad = document.getElementById('alamatDomisili');
-    const ak = document.getElementById('alamatKtp');
-    if(ck.checked){ ad.value=ak.value; ad.readOnly=true; ad.style.background="#eee"; } 
-    else { ad.value=""; ad.readOnly=false; ad.style.background="#fff"; }
-}
-
-/* ================= KOMPRESI AMAN ================= */
-function compressImage(file){
-    return new Promise(res => {
-        if(!file.type.match(/image.*/)) return res(file);
-        const img = new Image();
-        img.src = URL.createObjectURL(file);
-        img.onload = () => {
-            const canvas = document.createElement("canvas");
-            const max = 800; // Ukuran max pixel
-            let w=img.width, h=img.height;
-            if(w>h && w>max){ h*=max/w; w=max; }
-            else if(h>max){ w*=max/h; h=max; }
-            canvas.width = w; canvas.height = h;
-            const ctx = canvas.getContext("2d");
-            ctx.drawImage(img, 0, 0, w, h);
-            canvas.toBlob(b => {
-                res(b); 
-            }, "image/jpeg", 0.7); // Kualitas 70%
-        };
-        img.onerror = () => res(file);
-    });
-}
-
-/* ================= LOGIC SUBMIT ================= */
-document.getElementById('alfaForm').onsubmit = async (e) => {
-    e.preventDefault();
-    
-    const btn = document.getElementById('btnKirim');
-    const info = document.getElementById('totalProgress');
-    
-    // Validasi sederhana
-    if(!document.getElementById('nama').value) { alert("Nama wajib diisi!"); return; }
-
-    btn.disabled = true;
-    info.style.display = "block";
-    info.innerText = "Mempersiapkan Upload...";
-
-    try {
-        const nama = document.getElementById('nama').value;
-        const referral = document.getElementById('referral').value;
-        const safeName = nama.replace(/[^a-zA-Z0-9]/g,"_");
-        let urls = {};
-
-        // LOOP SEMUA FILE
-        for(let d of docs){
-            const el = document.getElementById(d.id);
-            const f = el.files[0];
-            
-            // Skip jika kosong
-            if(!f) continue; 
-            
-            const statusTxt = document.getElementById(`stat_${d.id}`);
-            document.getElementById(`wrap_${d.id}`).style.display="block";
-            
-            // 1. Kompres
-            statusTxt.innerText = "Mengompres...";
-            statusTxt.style.color = "orange";
-            const fileBlob = await compressImage(f);
-
-            // 2. Upload ke Project Baru
-            const ref = storage.ref(`data_pendaftar/${referral}_${safeName}_${d.id}.jpg`);
-            const uploadTask = ref.put(fileBlob);
-
-            statusTxt.innerText = "Mengupload 0%...";
-
-            await new Promise((resolve, reject) => {
-                uploadTask.on("state_changed",
-                    (snapshot) => {
-                        const p = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                        document.getElementById(`fill_${d.id}`).style.width = p + "%";
-                        statusTxt.innerText = "Upload: " + Math.floor(p) + "%";
-                    },
-                    (error) => {
-                        // DETEKSI ERROR SPESIFIK
-                        console.error("Upload Error:", error);
-                        let msg = "Gagal Upload.";
-                        if(error.code === 'storage/unauthorized') msg = "ERROR: Izin Ditolak (Cek Rules!)";
-                        if(error.code === 'storage/retry-limit-exceeded') msg = "Koneksi Buruk";
-                        
-                        statusTxt.innerText = msg;
-                        statusTxt.style.color = "red";
-                        alert(`GAGAL UPLOAD FILE: ${d.label}\n\nPesan: ${msg}\n\nPastikan Storage Rules di Project 'semil-d907b' sudah dibuka!`);
-                        reject(error);
-                    },
-                    async () => {
-                        urls[d.id] = await uploadTask.snapshot.ref.getDownloadURL();
-                        document.getElementById(`ok_${d.id}`).style.display="block";
-                        statusTxt.innerText = "Selesai";
-                        statusTxt.style.color = "green";
-                        resolve();
-                    }
-                );
-            });
-        }
-
-        // 3. Simpan ke Firestore
-        info.innerText = "Menyimpan Data ke Database...";
+        status.innerText = "Mencoba Upload...";
         
-        const data = {
-            referral: referral,
-            nama: nama,
-            wa: document.getElementById('wa').value,
-            ttl: document.getElementById('ttl').value,
-            statusNikah: document.getElementById('statusNikah').value,
-            alamatKtp: document.getElementById('alamatKtp').value,
-            alamatDomisili: document.getElementById('alamatDomisili').value,
-            email: document.getElementById('email').value,
-            emergencyName: document.getElementById('emergencyName').value,
-            emergencyPhone: document.getElementById('emergencyPhone').value,
-            locationLink: document.getElementById('locationLink').value,
-            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-            ...urls
-        };
+        // Nama file acak biar gak bentrok
+        const namaFile = "tes_" + Date.now() + ".jpg";
+        const ref = storage.ref(namaFile);
 
-        // Ganti nama collection jika perlu, default: 'data_semil'
-        await db.collection("data_semil").add(data);
+        const task = ref.put(file);
 
-        alert("SUKSES! Data berhasil dikirim.");
-        window.location.reload();
+        task.on('state_changed', 
+            (snapshot) => {
+                var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                status.innerText = "Progress: " + Math.floor(progress) + "%";
+            }, 
+            (error) => {
+                // --- INI BAGIAN PENTINGNYA ---
+                console.error(error);
+                let pesan = "ERROR: " + error.code + "\n" + error.message;
+                
+                if(error.code === 'storage/unauthorized') {
+                    pesan = "GAGAL: IZIN DITOLAK (RULES FIREBASE MASIH SALAH)\nCek Tab Rules di Console!";
+                } else if(error.code === 'storage/object-not-found' || error.code === 'storage/bucket-not-found') {
+                    pesan = "GAGAL: BUCKET TIDAK DITEMUKAN\nNama storageBucket salah.";
+                } else if(error.code === 'storage/retry-limit-exceeded') {
+                    pesan = "GAGAL: KONEKSI LEMAH";
+                }
 
-    } catch (err) {
-        console.error(err);
-        btn.disabled = false;
-        btn.style.background = "#e74c3c"; // Merah
-        btn.innerText = "GAGAL - KLIK UNTUK ULANGI";
-        info.innerText = "Terjadi Kesalahan: " + err.message;
+                alert(pesan); // MUNCULKAN POPUP
+                status.innerText = "GAGAL TOTAL";
+                status.style.color = "red";
+            }, 
+            () => {
+                alert("BERHASIL! Masalah selesai. Config 'appspot.com' adalah kuncinya.");
+                status.innerText = "SUKSES TERUPLOAD!";
+                status.style.color = "green";
+            }
+        );
     }
-};
 </script>
 </body>
 </html>
