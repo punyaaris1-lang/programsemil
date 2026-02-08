@@ -3,59 +3,72 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ADMIN PANEL (LOCAL)</title>
+<title>ADMIN LOKAL (CONTROL PANEL)</title>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-    body { font-family: 'Inter', sans-serif; background: #f1f5f9; padding: 20px; color: #334155; }
+    body { font-family: 'Inter', sans-serif; background: #f8fafc; padding: 20px; color: #334155; }
     
     .navbar { 
         background: #fff; padding: 15px 25px; border-radius: 12px; margin-bottom: 25px; 
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); display: flex; justify-content: space-between; align-items: center;
+        border-bottom: 3px solid #3b82f6;
     }
     
+    /* CARD STYLE */
     .card { 
         background: #fff; border-radius: 12px; padding: 20px; margin-bottom: 15px; 
         box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; flex-wrap: wrap; gap: 15px; justify-content: space-between; align-items: center;
         border-left: 5px solid #cbd5e1; transition: 0.3s;
     }
-    .card.done { border-left-color: #22c55e; background: #f0fdf4; } /* Warna Hijau kalau sudah dikirim */
+    .card.sent { border-left-color: #22c55e; background: #f0fdf4; } 
 
-    .info { flex: 1; min-width: 250px; }
     .info h3 { margin: 0 0 5px 0; font-size: 16px; color: #1e293b; }
-    .date { font-size: 12px; color: #64748b; display: flex; gap: 10px; align-items: center; }
-
-    .actions { display: flex; gap: 10px; align-items: center; }
+    .date { font-size: 12px; color: #64748b; margin-bottom: 4px; }
     
-    /* BADGE STATUS */
+    /* TOMBOL-TOMBOL */
+    .action-group { display: flex; gap: 8px; align-items: center; }
+
+    .btn {
+        border: none; padding: 8px 12px; border-radius: 6px; font-weight: 600; 
+        cursor: pointer; font-size: 12px; text-decoration: none; display: flex; align-items: center; gap: 5px;
+        transition: 0.2s;
+    }
+
+    /* Tombol Lihat Detail */
+    .btn-view { background: #e2e8f0; color: #334155; border: 1px solid #cbd5e1; }
+    .btn-view:hover { background: #cbd5e1; }
+
+    /* Tombol Kirim WA */
+    .btn-share { background: #2563eb; color: white; }
+    .btn-share:hover { background: #1d4ed8; }
+
+    /* Badge Status */
     .status-badge {
-        font-size: 11px; padding: 5px 10px; border-radius: 20px; font-weight: bold; cursor: pointer;
-        background: #e2e8f0; color: #64748b; border: 1px solid #cbd5e1;
+        font-size: 10px; padding: 4px 8px; border-radius: 20px; font-weight: bold; 
+        background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0; cursor: pointer;
     }
     .status-badge.sent { background: #dcfce7; color: #166534; border-color: #86efac; }
 
-    /* TOMBOL SHARE */
-    .btn-share {
-        background: #2563eb; color: white; border: none; padding: 8px 15px;
-        border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 13px;
-        display: flex; align-items: center; gap: 5px;
+    @media (max-width: 600px) {
+        .card { flex-direction: column; align-items: flex-start; }
+        .action-group { width: 100%; justify-content: space-between; margin-top: 10px; }
+        .btn { flex: 1; justify-content: center; }
     }
-    .btn-share:hover { background: #1d4ed8; }
-
 </style>
 </head>
 <body>
 
 <div class="navbar">
-    <b>ADMIN PANEL (CONTROL)</b>
-    <span style="font-size:12px">Total Data: <span id="total">0</span></span>
+    <div><b>ADMIN PANEL</b><br><small>Verifikasi & Kirim Data</small></div>
+    <span style="font-size:12px; font-weight:bold">Total: <span id="total">0</span></span>
 </div>
 
 <div id="container">Memuat data...</div>
 
 <script>
-// CONFIG FIREBASE (Sama seperti form)
+// CONFIG FIREBASE
 const firebaseConfig = {
   apiKey: "AIzaSyD-4D5ZC4RYcmcpRyxxScLBo1oqC-oRdYw",
   authDomain: "sewamilikmolis-e3427.firebaseapp.com",
@@ -68,9 +81,19 @@ const firebaseConfig = {
 if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-// GANTI URL INI DENGAN LINK GITHUB KAMU NANTI
-// Contoh: https://username.github.io/detail.html
-const BASE_URL_DETAIL = window.location.href.replace('admin.html', 'detail.html');
+// === FUNGSI GENERATE URL DETAIL YANG BENAR ===
+function getDetailUrl() {
+    let url = window.location.href;
+    // Hapus nama file 'admin.html' jika ada, ganti dengan 'detail.html'
+    if (url.indexOf('admin.html') > -1) {
+        return url.replace('admin.html', 'detail.html');
+    } 
+    // Jika url berakhir dengan slash /, tambahkan detail.html
+    if (url.endsWith('/')) return url + 'detail.html';
+    
+    // Fallback default
+    return url + '/detail.html';
+}
 
 db.collection("pendaftaran_v3").orderBy("timestamp", "desc").onSnapshot(snap => {
     const div = document.getElementById('container');
@@ -82,51 +105,49 @@ db.collection("pendaftaran_v3").orderBy("timestamp", "desc").onSnapshot(snap => 
     snap.forEach(doc => {
         const d = doc.data();
         const id = doc.id;
-        const isSent = d.status_pusat === true; // Cek status apakah sudah dikirim
+        const isSent = d.status_pusat === true; 
+        
+        // Buat link menuju halaman detail untuk ID ini
+        const linkDetail = getDetailUrl() + "?uid=" + id;
         
         div.innerHTML += `
-        <div class="card ${isSent ? 'done' : ''}">
+        <div class="card ${isSent ? 'sent' : ''}">
             <div class="info">
                 <h3>${d.nama}</h3>
-                <div class="date">
-                    <span>📅 ${d.waktu}</span>
-                    <span>• Ref: <b>${d.referral}</b></span>
-                </div>
-                <div style="font-size:12px; margin-top:5px; color:#475569">WA: ${d.wa}</div>
+                <div class="date">📅 ${d.waktu}</div> 
+                <div class="date">👤 Ref: <b>${d.referral}</b> | 📞 ${d.wa}</div>
             </div>
 
-            <div class="actions">
-                <div class="status-badge ${isSent ? 'sent' : ''}" onclick="toggleStatus('${id}', ${!isSent})">
-                    ${isSent ? '✅ SUDAH DIKIRIM' : '⏳ BELUM DIKIRIM'}
+            <div class="action-group">
+                <a href="${linkDetail}" target="_blank" class="btn btn-view">
+                    👁️ CEK DATA
+                </a>
+
+                <div class="status-badge ${isSent ? 'sent' : ''}" onclick="updateStatus('${id}', ${!isSent})">
+                    ${isSent ? '✅ TERKIRIM' : '⏳ BELUM'}
                 </div>
 
-                <button class="btn-share" onclick="shareToPusat('${id}', '${d.nama}')">
-                    🚀 Kirim ke Pusat
+                <button class="btn btn-share" onclick="shareWA('${id}', '${d.nama}', '${linkDetail}')">
+                    🚀 KIRIM
                 </button>
             </div>
         </div>`;
     });
 });
 
-// FUNGSI UBAH STATUS
-function toggleStatus(id, newStatus) {
-    db.collection("pendaftaran_v3").doc(id).update({
-        status_pusat: newStatus
-    });
+function updateStatus(id, stat) {
+    db.collection("pendaftaran_v3").doc(id).update({ status_pusat: stat });
 }
 
-// FUNGSI SHARE KE WA
-function shareToPusat(id, nama) {
-    // 1. Update status jadi dikirim dulu
-    toggleStatus(id, true);
+function shareWA(id, nama, link) {
+    // 1. Ubah status jadi 'Sudah Dikirim'
+    updateStatus(id, true);
 
-    // 2. Buat Link Khusus
-    const link = `${BASE_URL_DETAIL}?uid=${id}`;
-    
-    // 3. Buat Teks WA
+    // 2. Pesan WA
+    // Kita gunakan link yang sudah di-generate di atas
     const text = `*DATA DRIVER BARU*\n\nNama: ${nama}\nLink Data: ${link}\n\nMohon segera diproses.`;
     
-    // 4. Buka WA
+    // 3. Buka WA
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
 }
 </script>
