@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Formulir Polytron Fox 350</title>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+/* TEMA KHUSUS POLYTRON (MERAH/HITAM) */
+:root {
+    --primary: #d90429; /* Merah */
+    --bg: #f8fafc;
+    --card: #ffffff;
+    --text: #0f172a;
+    --border: #e2e8f0;
+}
+
+body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background: var(--bg);
+    margin: 0; padding: 20px;
+    color: var(--text);
+}
+
+.container {
+    max-width: 550px; margin: 0 auto;
+    background: var(--card);
+    padding: 30px; border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    border-top: 6px solid var(--primary); /* Garis Merah di Atas */
+}
+
+.header { text-align: center; margin-bottom: 30px; }
+.header h2 { margin: 0; font-size: 26px; font-weight: 800; color: #1e293b; letter-spacing: -0.5px; }
+.header .badge { 
+    background: #d90429; color: white; padding: 5px 15px; 
+    border-radius: 20px; font-size: 12px; font-weight: 700;
+    display: inline-block; margin-top: 10px;
+}
+
+.section-label {
+    font-size: 11px; font-weight: 800; text-transform: uppercase;
+    color: var(--primary); letter-spacing: 1px;
+    margin: 30px 0 15px; border-bottom: 2px solid #f1f5f9; padding-bottom: 5px;
+}
+
+.form-group { margin-bottom: 15px; }
+label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 8px; color: #334155; }
+
+input, select {
+    width: 100%; padding: 14px;
+    border: 1px solid var(--border); border-radius: 10px;
+    font-size: 14px; box-sizing: border-box; font-family: inherit;
+    transition: 0.2s; background: #f8fafc;
+}
+input:focus { outline: none; border-color: var(--primary); background: #fff; box-shadow: 0 0 0 4px rgba(217, 4, 41, 0.1); }
+
+/* KOLOM LOCKED */
+.input-locked { background-color: #f1f5f9; color: #64748b; font-weight: bold; cursor: not-allowed; }
+
+/* UPLOAD AREA */
+.upload-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+.upload-box {
+    border: 1px dashed #cbd5e1; background: #fff;
+    border-radius: 10px; padding: 20px 10px; text-align: center;
+    position: relative; transition: 0.2s;
+}
+.upload-box:hover { border-color: var(--primary); background: #fff5f5; }
+.upload-box input {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    opacity: 0; cursor: pointer;
+}
+.icon { font-size: 24px; display: block; margin-bottom: 8px; }
+.lbl-up { font-size: 11px; font-weight: 700; display: block; color: #334155; }
+.note-up { font-size: 9px; color: #ef4444; font-weight: 600; display: block; margin-top: 4px; }
+
+.preview {
+    width: 100%; height: 90px; object-fit: cover; border-radius: 8px;
+    display: none; margin-top: 10px; border: 1px solid #e2e8f0;
+}
+
+/* MULTI UPLOAD GAJI */
+.multi-box { background: #fff5f5; padding: 20px; border-radius: 12px; border: 1px dashed #fb7185; }
+.multi-preview { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 15px; }
+.thumb { width: 60px; height: 60px; object-fit: cover; border-radius: 6px; border: 1px solid #fecdd3; }
+
+.btn {
+    width: 100%; padding: 18px; background: var(--primary);
+    color: white; border: none; border-radius: 12px;
+    font-size: 16px; font-weight: 800; cursor: pointer;
+    margin-top: 30px; transition: 0.2s; box-shadow: 0 4px 15px rgba(217, 4, 41, 0.3);
+}
+.btn:hover { background: #b90323; transform: translateY(-2px); }
+.btn:disabled { background: #cbd5e1; cursor: not-allowed; box-shadow: none; transform: none; }
+
+#loading { display: none; text-align: center; margin-top: 20px; font-size: 13px; color: #d90429; font-weight: 700; }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h2>SEWA MILIK</h2>
+        <div class="badge">POLYTRON FOX 350</div>
+    </div>
+
+    <form id="formPolytron">
+        
+        <div class="form-group">
+            <label>Kode Referral</label>
+            <input type="text" id="referral" value="APRI" readonly class="input-locked">
+        </div>
+
+        <div class="section-label">1. DATA PRIBADI</div>
+        
+        <div class="form-group">
+            <label>Nama Lengkap (Sesuai KTP)</label>
+            <input type="text" id="nama" required placeholder="Ketik nama lengkap...">
+        </div>
+
+        <div class="form-group">
+            <label>Nomor WhatsApp</label>
+            <input type="tel" id="wa" required placeholder="08xxxxxxxxxx">
+        </div>
+
+        <div class="form-group">
+            <label>Alamat Email</label>
+            <input type="email" id="email" required placeholder="contoh@gmail.com">
+        </div>
+
+        <div class="section-label">2. DOKUMEN PERSYARATAN</div>
+
+        <div class="upload-grid">
+            <div class="upload-box">
+                <span class="icon">🪪</span>
+                <span class="lbl-up">FOTO KTP</span>
+                <span class="note-up">(ASLI)</span>
+                <input type="file" id="ktp" accept="image/*" required onchange="prev(this)">
+                <img class="preview" id="show_ktp">
+            </div>
+
+            <div class="upload-box">
+                <span class="icon">📄</span>
+                <span class="lbl-up">KARTU KELUARGA</span>
+                <input type="file" id="kk" accept="image/*" required onchange="prev(this)">
+                <img class="preview" id="show_kk">
+            </div>
+
+            <div class="upload-box">
+                <span class="icon">💳</span>
+                <span class="lbl-up">SIM C</span>
+                <span class="note-up">(MATI TIDAK APA-APA)</span>
+                <input type="file" id="sim" accept="image/*" required onchange="prev(this)">
+                <img class="preview" id="show_sim">
+            </div>
+
+            <div class="upload-box">
+                <span class="icon">👥</span>
+                <span class="lbl-up">KTP PENJAMIN</span>
+                <span class="note-up">(WAJIB 1 KK)</span>
+                <input type="file" id="penjamin" accept="image/*" required onchange="prev(this)">
+                <img class="preview" id="show_penjamin">
+            </div>
+
+            <div class="upload-box">
+                <span class="icon">🏠</span>
+                <span class="lbl-up">SURAT DOMISILI</span>
+                <span class="note-up">(DARI RT SETEMPAT)</span>
+                <input type="file" id="domisili" accept="image/*" required onchange="prev(this)">
+                <img class="preview" id="show_domisili">
+            </div>
+
+            <div class="upload-box">
+                <span class="icon">⚡</span>
+                <span class="lbl-up">BUKTI LISTRIK</span>
+                <span class="note-up">(TOKEN / METERAN)</span>
+                <input type="file" id="listrik" accept="image/*" required onchange="prev(this)">
+                <img class="preview" id="show_listrik">
+            </div>
+            
+            <div class="upload-box" style="grid-column: span 2">
+                <span class="icon">📱</span>
+                <span class="lbl-up">SCREENSHOT PROFIL OJOL</span>
+                <input type="file" id="profil" accept="image/*" required onchange="prev(this)">
+                <img class="preview" id="show_profil">
+            </div>
+        </div>
+
+        <div class="section-label">3. BUKTI PENDAPATAN</div>
+
+        <div class="multi-box">
+            <label style="color:#9f1239">Pendapatan 3 Bulan Terakhir</label>
+            <p style="font-size:12px; color:#64748b; margin-bottom:15px; line-height:1.5">
+                Silakan upload screenshot riwayat pendapatan selama 3 bulan.<br>
+                <b>Bisa pilih banyak foto sekaligus.</b>
+            </p>
+            <input type="file" id="gajiInput" multiple accept="image/*" style="width:100%; background:white">
+            <div class="multi-preview" id="gajiBox"></div>
+        </div>
+
+        <div id="loading">Sedang mengirim data... Mohon tunggu...</div>
+        <button type="submit" class="btn" id="btnKirim">AJUKAN SEKARANG</button>
+
+    </form>
+</div>
+
+<script>
+// CONFIG FIREBASE (INI SAMA DENGAN FORMULIR SEBELUMNYA)
+const firebaseConfig = {
+  apiKey: "AIzaSyD-4D5ZC4RYcmcpRyxxScLBo1oqC-oRdYw",
+  authDomain: "sewamilikmolis-e3427.firebaseapp.com",
+  projectId: "sewamilikmolis-e3427",
+  storageBucket: "sewamilikmolis-e3427.firebasestorage.app",
+  messagingSenderId: "934998664118",
+  appId: "1:934998664118:web:602d8ef8053099aa329717"
+};
+
+if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+// 1. PREVIEW FOTO SATUAN
+function prev(input) {
+    if(input.files && input.files[0]) {
+        const id = input.id;
+        document.getElementById('show_' + id).src = URL.createObjectURL(input.files[0]);
+        document.getElementById('show_' + id).style.display = "block";
+    }
+}
+
+// 2. PREVIEW FOTO BANYAK (PENDAPATAN)
+let gajiFiles = [];
+document.getElementById('gajiInput').addEventListener('change', function(e) {
+    const box = document.getElementById('gajiBox');
+    box.innerHTML = ""; 
+    gajiFiles = Array.from(e.target.files);
+    
+    // Batasi Maksimal 20 Foto (Untuk 3 Bulan)
+    if(gajiFiles.length > 20) {
+        alert("Maksimal 20 screenshot.");
+        gajiFiles = gajiFiles.slice(0,20);
+    }
+
+    gajiFiles.forEach(f => {
+        const img = document.createElement('img');
+        img.src = URL.createObjectURL(f);
+        img.className = "thumb";
+        box.appendChild(img);
+    });
+});
+
+// 3. FUNGSI KOMPRESI (WAJIB AGAR GRATIS DATABASE)
+function compress(file, quality=0.5, max=400) {
+    return new Promise(resolve => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = e => {
+            const img = new Image();
+            img.src = e.target.result;
+            img.onload = () => {
+                const cvs = document.createElement('canvas');
+                let w = img.width, h = img.height;
+                if(w>h && w>max) { h*=max/w; w=max; }
+                else if(h>max) { w*=max/h; h=max; }
+                cvs.width = w; cvs.height = h;
+                const ctx = cvs.getContext('2d');
+                ctx.drawImage(img,0,0,w,h);
+                resolve(cvs.toDataURL('image/jpeg', quality));
+            };
+        };
+    });
+}
+
+// 4. KIRIM DATA
+document.getElementById('formPolytron').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if(gajiFiles.length === 0) { alert("Wajib upload bukti pendapatan."); return; }
+    if(!confirm("Kirim pengajuan Polytron Fox 350?")) return;
+
+    const btn = document.getElementById('btnKirim');
+    const load = document.getElementById('loading');
+    btn.disabled = true; btn.innerText = "Mengirim...";
+    load.style.display = "block";
+
+    try {
+        // A. Proses Dokumen Wajib
+        const ids = ['ktp','kk','sim','penjamin','domisili','listrik','profil'];
+        let imgs = {};
+        for(let id of ids) {
+            imgs[id] = await compress(document.getElementById(id).files[0]);
+        }
+
+        // B. Proses Pendapatan (Banyak Foto)
+        let gajis = [];
+        for(let f of gajiFiles) {
+            gajis.push(await compress(f, 0.5, 300));
+        }
+
+        // C. Simpan ke Database (Gunakan database yg sama: pendaftaran_v3)
+        // Agar admin Bapak yg sekarang bisa langsung lihat datanya.
+        await db.collection("pendaftaran_v3").add({
+            unit: "POLYTRON FOX 350", // Penanda Unit
+            referral: document.getElementById('referral').value,
+            nama: document.getElementById('nama').value,
+            wa: document.getElementById('wa').value,
+            email: document.getElementById('email').value,
+            
+            // Simpan Gambar
+            foto_ktp: imgs['ktp'],
+            foto_kk: imgs['kk'],
+            foto_sim: imgs['sim'],
+            foto_penjamin: imgs['penjamin'],
+            foto_domisili: imgs['domisili'],
+            foto_listrik: imgs['listrik'],
+            foto_profil: imgs['profil'],
+            list_gaji: gajis, // Array Foto Pendapatan
+
+            waktu: new Date().toLocaleString(),
+            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+            
+            status_verifikasi: "PENDING", // Status awal
+            status_pusat: false
+        });
+
+        load.innerText = "✅ BERHASIL!";
+        alert("Pengajuan Polytron Berhasil Dikirim!");
+        window.location.reload();
+
+    } catch(err) {
+        console.error(err);
+        btn.disabled = false; btn.innerText = "COBA LAGI";
+        load.innerText = "Gagal: " + err.message;
+        alert("Gagal mengirim. Cek koneksi internet.");
+    }
+});
+</script>
+
+</body>
+</html>
