@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Poster Mobile</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #000;
+            font-family: 'Inter', sans-serif;
+            color: white;
+            height: 100vh;
+            overflow: hidden; /* Supaya pas satu layar */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Container Poster Full Layar HP */
+        .poster-mobile {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(160deg, #1a1a1a 0%, #000000 100%);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            padding: 20px;
+        }
+
+        /* Hiasan background */
+        .glow {
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(255, 87, 34, 0.2) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        /* 1. Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            z-index: 2;
+        }
+
+        .tag {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: #ccc;
+        }
+
+        .title {
+            text-align: right;
+            font-weight: 800;
+            font-size: 22px;
+            line-height: 1.1;
+        }
+        .title span { color: #ff5722; }
+
+        /* 2. Gambar Motor */
+        .hero-img-container {
+            flex: 1; /* Mengisi ruang kosong */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            max-height: 35vh; /* Batasi tinggi gambar biar text muat */
+        }
+
+        .hero-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));
+        }
+
+        /* 3. Harga Utama */
+        .price-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+            text-align: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .price-big {
+            font-size: 42px;
+            font-weight: 800;
+            color: #fff;
+            line-height: 1;
+        }
+        .price-big small {
+            font-size: 14px;
+            font-weight: 400;
+            color: #ff5722;
+        }
+
+        .sub-price {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 10px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 10px;
+        }
+        .sub-item h4 { font-size: 10px; color: #aaa; font-weight: 400; }
+        .sub-item p { font-size: 14px; font-weight: 700; }
+
+        /* 4. Syarat List */
+        .req-box {
+            margin-bottom: 15px;
+        }
+        .req-title {
+            font-size: 12px;
+            color: #ff5722;
+            font-weight: 700;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .req-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+        }
+
+        .req-item {
+            font-size: 11px;
+            color: #ddd;
+            display: flex;
+            align-items: center;
+        }
+        .icon { color: #ff5722; margin-right: 5px; font-weight: bold;}
+        
+        .highlight {
+            color: #fff;
+            background: rgba(255, 87, 34, 0.2);
+            padding: 3px 6px;
+            border-radius: 4px;
+        }
+
+        /* 5. Footer CTA */
+        .footer {
+            text-align: center;
+        }
+        .cta-btn {
+            background: #ff5722;
+            color: white;
+            padding: 12px;
+            width: 100%;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 14px;
+            text-transform: uppercase;
+            box-shadow: 0 4px 15px rgba(255, 87, 34, 0.3);
+            border: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="poster-mobile">
+        <div class="glow"></div>
+
+        <div class="header">
+            <div class="tag">SEWA MILIK</div>
+            <div class="title">POLYTRON<br><span>FOX 350</span></div>
+        </div>
+
+        <div class="hero-img-container">
+            <img src="fox.jpg" alt="Motor" class="hero-img">
+        </div>
+
+        <div class="price-card">
+            <div class="price-big">70rb <small>/ HARI</small></div>
+            <div class="sub-price">
+                <div class="sub-item">
+                    <h4>TENOR</h4>
+                    <p>2 TAHUN</p>
+                </div>
+                <div class="sub-item">
+                    <h4>DP AWAL</h4>
+                    <p>410 RB</p>
+                </div>
+                <div class="sub-item">
+                    <h4>ADMIN</h4>
+                    <p>150 RB</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="req-box">
+            <div class="req-title">PERSYARATAN:</div>
+            <div class="req-grid">
+                <div class="req-item"><span class="icon">✓</span> KTP & KK (Asli)</div>
+                <div class="req-item"><span class="icon">✓</span> KTP Penjamin</div>
+                <div class="req-item highlight"><span class="icon">✓</span> SIM C (Mati GPP)</div>
+                <div class="req-item"><span class="icon">✓</span> Bukti Listrik</div>
+                <div class="req-item"><span class="icon">✓</span> SS Akun Ojol</div>
+                <div class="req-item"><span class="icon">✓</span> Domisili RT</div>
+                <div class="req-item"><span class="icon">✓</span> SS Pendapatan</div>
+                <div class="req-item"><span class="icon">✓</span> WA & Email</div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <button class="cta-btn">WA 0821 2561 1740 </button>
+        </div>
+    </div>
+
+</body>
+</html>
