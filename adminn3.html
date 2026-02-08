@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ADMIN LOKAL (CONTROL PANEL)</title>
+<title>ADMIN LOKAL</title>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
@@ -16,7 +16,6 @@
         border-bottom: 3px solid #3b82f6;
     }
     
-    /* CARD STYLE */
     .card { 
         background: #fff; border-radius: 12px; padding: 20px; margin-bottom: 15px; 
         box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; flex-wrap: wrap; gap: 15px; justify-content: space-between; align-items: center;
@@ -27,7 +26,6 @@
     .info h3 { margin: 0 0 5px 0; font-size: 16px; color: #1e293b; }
     .date { font-size: 12px; color: #64748b; margin-bottom: 4px; }
     
-    /* TOMBOL-TOMBOL */
     .action-group { display: flex; gap: 8px; align-items: center; }
 
     .btn {
@@ -35,16 +33,12 @@
         cursor: pointer; font-size: 12px; text-decoration: none; display: flex; align-items: center; gap: 5px;
         transition: 0.2s;
     }
-
-    /* Tombol Lihat Detail */
     .btn-view { background: #e2e8f0; color: #334155; border: 1px solid #cbd5e1; }
     .btn-view:hover { background: #cbd5e1; }
 
-    /* Tombol Kirim WA */
     .btn-share { background: #2563eb; color: white; }
     .btn-share:hover { background: #1d4ed8; }
 
-    /* Badge Status */
     .status-badge {
         font-size: 10px; padding: 4px 8px; border-radius: 20px; font-weight: bold; 
         background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0; cursor: pointer;
@@ -81,19 +75,10 @@ const firebaseConfig = {
 if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-// === FUNGSI GENERATE URL DETAIL YANG BENAR ===
-function getDetailUrl() {
-    let url = window.location.href;
-    // Hapus nama file 'admin.html' jika ada, ganti dengan 'detail.html'
-    if (url.indexOf('admin.html') > -1) {
-        return url.replace('admin.html', 'detail.html');
-    } 
-    // Jika url berakhir dengan slash /, tambahkan detail.html
-    if (url.endsWith('/')) return url + 'detail.html';
-    
-    // Fallback default
-    return url + '/detail.html';
-}
+// ======================================================
+// ⚠️ LINK INI SUDAH SAYA PERBAIKI SESUAI ALAMAT WEBSITE KAMU
+// ======================================================
+const LINK_DETAIL_ASLI = "https://punyaaris1-lang.github.io/semilalfan3/detail.html"; 
 
 db.collection("pendaftaran_v3").orderBy("timestamp", "desc").onSnapshot(snap => {
     const div = document.getElementById('container');
@@ -107,8 +92,9 @@ db.collection("pendaftaran_v3").orderBy("timestamp", "desc").onSnapshot(snap => 
         const id = doc.id;
         const isSent = d.status_pusat === true; 
         
-        // Buat link menuju halaman detail untuk ID ini
-        const linkDetail = getDetailUrl() + "?uid=" + id;
+        // DISINI KITA GABUNGKAN ALAMAT WEBSITE + ID DRIVER
+        // Hasilnya jadi: .../detail.html?uid=KODE_UNIK_DRIVER
+        const finalLink = LINK_DETAIL_ASLI + "?uid=" + id;
         
         div.innerHTML += `
         <div class="card ${isSent ? 'sent' : ''}">
@@ -119,7 +105,7 @@ db.collection("pendaftaran_v3").orderBy("timestamp", "desc").onSnapshot(snap => 
             </div>
 
             <div class="action-group">
-                <a href="${linkDetail}" target="_blank" class="btn btn-view">
+                <a href="${finalLink}" target="_blank" class="btn btn-view">
                     👁️ CEK DATA
                 </a>
 
@@ -127,7 +113,7 @@ db.collection("pendaftaran_v3").orderBy("timestamp", "desc").onSnapshot(snap => 
                     ${isSent ? '✅ TERKIRIM' : '⏳ BELUM'}
                 </div>
 
-                <button class="btn btn-share" onclick="shareWA('${id}', '${d.nama}', '${linkDetail}')">
+                <button class="btn btn-share" onclick="shareWA('${id}', '${d.nama}', '${finalLink}')">
                     🚀 KIRIM
                 </button>
             </div>
@@ -140,14 +126,9 @@ function updateStatus(id, stat) {
 }
 
 function shareWA(id, nama, link) {
-    // 1. Ubah status jadi 'Sudah Dikirim'
     updateStatus(id, true);
-
-    // 2. Pesan WA
-    // Kita gunakan link yang sudah di-generate di atas
+    // Pesan WA akan otomatis terisi Link yang VALID
     const text = `*DATA DRIVER BARU*\n\nNama: ${nama}\nLink Data: ${link}\n\nMohon segera diproses.`;
-    
-    // 3. Buka WA
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
 }
 </script>
