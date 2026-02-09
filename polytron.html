@@ -11,10 +11,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
 
 <style>
-/* TEMA POLYTRON (Sesuai Request) */
+/* TEMA POLYTRON (MERAH) */
 :root { --primary: #d90429; --bg: #f8fafc; --card: #ffffff; --text: #0f172a; --border: #e2e8f0; }
 body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); margin: 0; padding: 20px; color: var(--text); }
-
 .container {
     max-width: 550px; margin: 0 auto; background: var(--card);
     padding: 30px; border-radius: 16px;
@@ -33,11 +32,12 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); marg
 }
 .form-group { margin-bottom: 15px; }
 label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 8px; color: #334155; }
-input, select, textarea {
+input, select {
     width: 100%; padding: 14px; border: 1px solid var(--border); border-radius: 10px;
     font-size: 14px; box-sizing: border-box; font-family: inherit; transition: 0.2s; background: #f8fafc;
 }
-input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); background: #fff; }
+input:focus, select:focus { outline: none; border-color: var(--primary); background: #fff; }
+.input-locked { background-color: #f1f5f9; color: #475569; font-weight: bold; cursor: not-allowed; border-color: #cbd5e1; }
 
 /* UPLOAD AREA */
 .upload-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
@@ -78,23 +78,27 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--p
     </div>
 
     <form id="formPolytron">
-        <div class="section-label">1. DATA PRIBADI</div>
-        <div class="form-group"><label>Nama Lengkap</label><input type="text" id="nama" required placeholder="Nama Lengkap"></div>
+        <div class="form-group"><label>Kode Referral</label><input type="text" id="referral" value="APRI" readonly class="input-locked"></div>
+
+        <div class="section-label">DATA PRIBADI</div>
+        <div class="form-group"><label>Nama Lengkap (Sesuai KTP)</label><input type="text" id="nama" required placeholder="Nama Lengkap"></div>
         <div class="form-group"><label>Nomor WhatsApp</label><input type="tel" id="wa" required placeholder="08xxxxxxxxxx"></div>
-        <div class="form-group"><label>Email</label><input type="email" id="email" required placeholder="email@contoh.com"></div>
-        <div class="form-group"><label>Domisili</label><textarea id="alamat" rows="2" placeholder="Alamat Lengkap..." required></textarea></div>
-        <div class="form-group"><label>Pekerjaan</label>
-            <select id="pekerjaan" required>
-                <option value="">-- Pilih Pekerjaan --</option>
-                <option value="Ojol">Ojek Online</option>
-                <option value="Kurir">Kurir Ekspedisi</option>
-                <option value="Wiraswasta">Wiraswasta</option>
-                <option value="Karyawan">Karyawan Swasta</option>
-                <option value="Lainnya">Lainnya</option>
+        <div class="form-group"><label>Alamat Email</label><input type="email" id="email" required placeholder="email@contoh.com"></div>
+
+        <div class="section-label">KONTAK PENJAMIN</div>
+        <div class="form-group"><label>Nama Kontak Penjamin</label><input type="text" id="daruratNama" required></div>
+        <div class="form-group"><label>Nomor Kontak Penjamin</label><input type="tel" id="daruratNo" required></div>
+        <div class="form-group"><label>Hubungan</label>
+            <select id="daruratHubungan" required>
+                <option value="">-- Pilih Hubungan --</option>
+                <option>Orang Tua</option>
+                <option>Suami / Istri</option>
+                <option>Saudara Kandung</option>
+                <option>Kerabat Lain</option>
             </select>
         </div>
 
-        <div class="section-label">2. DOKUMEN PERSYARATAN</div>
+        <div class="section-label">DOKUMEN PERSYARATAN</div>
         <div class="upload-grid">
             <div class="upload-box">
                 <span class="icon">🪪</span><span class="lbl-up">KTP ASLI</span>
@@ -122,7 +126,7 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--p
             </div>
         </div>
 
-        <div class="section-label">3. BUKTI PENDAPATAN</div>
+        <div class="section-label">BUKTI PENDAPATAN</div>
         <div class="multi-box">
             <label style="color:#9f1239">Screenshot Pendapatan (Bisa Banyak)</label>
             <input type="file" id="gajiInput" multiple accept="image/*" style="width:100%; background:white">
@@ -132,11 +136,11 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--p
         <div id="loading">Sedang mengirim data...</div>
         <button type="submit" class="btn" id="btnKirim">AJUKAN SEKARANG</button>
     </form>
-    <a href="index.html" class="back-link">← Kembali ke Menu</a>
+    <a href="index.html" class="back-link">← Kembali ke Menu Utama</a>
 </div>
 
 <script>
-// 1. CONFIG FIREBASE (DATABASE UTAMA)
+// 1. FIREBASE CONFIG
 const firebaseConfig = {
   apiKey: "AIzaSyD-4D5ZC4RYcmcpRyxxScLBo1oqC-oRdYw",
   authDomain: "sewamilikmolis-e3427.firebaseapp.com",
@@ -148,7 +152,7 @@ const firebaseConfig = {
 if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-// 2. CONFIG TELEGRAM (HANYA NOTIFIKASI)
+// 2. TELEGRAM CONFIG
 const BOT_TOKEN = "8235411301:AAE9bUwgg4eYS1M_e5_F30SAmNPgPs5zlF0";
 const CHAT_ID = "1902240448";
 const UNIT_NAME = "POLYTRON FOX 350";
@@ -169,7 +173,7 @@ document.getElementById('gajiInput').addEventListener('change', function(e) {
     });
 });
 
-// FUNGSI KOMPRES (SOLUSI BLUR: Max 1000px, Quality 0.7)
+// KOMPRES HD (1000px)
 function compress(file) {
     return new Promise(resolve => {
         if(!file) resolve(null);
@@ -178,17 +182,17 @@ function compress(file) {
             const img = new Image(); img.src = e.target.result;
             img.onload = () => {
                 const cvs = document.createElement('canvas');
-                let w=img.width, h=img.height, max=1000; // SAYA NAIKKAN JADI 1000px BIAR JELAS
+                let w=img.width, h=img.height, max=1000;
                 if(w>h && w>max) { h*=max/w; w=max; } else if(h>max) { w*=max/h; h=max; }
                 cvs.width=w; cvs.height=h;
                 cvs.getContext('2d').drawImage(img,0,0,w,h);
-                resolve(cvs.toDataURL('image/jpeg', 0.7)); // Quality 70%
+                resolve(cvs.toDataURL('image/jpeg', 0.7));
             };
         };
     });
 }
 
-// SUBMIT DATA
+// SUBMIT
 document.getElementById('formPolytron').addEventListener('submit', async (e) => {
     e.preventDefault();
     if(gajiFiles.length === 0) { alert("Wajib upload bukti pendapatan."); return; }
@@ -198,24 +202,25 @@ document.getElementById('formPolytron').addEventListener('submit', async (e) => 
     btn.disabled = true; load.style.display = "block";
 
     try {
-        // A. KOMPRES GAMBAR (Biar masuk DB Jelas tapi gak kegedean)
-        load.innerText = "Memproses Gambar (Agar Tidak Blur)...";
+        load.innerText = "1/3 Memproses Foto...";
         const ids = ['ktp','kk','sim','penjamin','domisili','profil'];
         let imgs = {};
         for(let id of ids) imgs[id] = await compress(document.getElementById(id).files[0]);
         let gajis = [];
         for(let f of gajiFiles) gajis.push(await compress(f));
 
-        // B. SIMPAN KE FIREBASE
-        load.innerText = "Menyimpan ke Database...";
+        load.innerText = "2/3 Menyimpan Database...";
         await db.collection("pendaftaran_v3").add({
+            referral: "APRI",
             unit: UNIT_NAME,
             nama: document.getElementById('nama').value,
             wa: document.getElementById('wa').value,
             email: document.getElementById('email').value,
-            alamat: document.getElementById('alamat').value,
-            pekerjaan: document.getElementById('pekerjaan').value,
-            // Simpan gambar (Base64 HD)
+            // Sesuai script asli: Tidak ada pekerjaan, tapi ada Kontak Darurat
+            darurat_nama: document.getElementById('daruratNama').value,
+            darurat_no: document.getElementById('daruratNo').value,
+            darurat_hub: document.getElementById('daruratHubungan').value,
+            // Foto
             foto_ktp: imgs['ktp'], foto_kk: imgs['kk'], foto_sim: imgs['sim'],
             foto_penjamin: imgs['penjamin'], foto_domisili: imgs['domisili'],
             foto_profil: imgs['profil'], list_gaji: gajis,
@@ -223,13 +228,11 @@ document.getElementById('formPolytron').addEventListener('submit', async (e) => 
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
         });
 
-        // C. KIRIM NOTIFIKASI TEKS KE TELEGRAM (CUMA TEXT)
-        load.innerText = "Mengirim Notif Admin...";
-        let text = `🔔 *ADA ORDER BARU!* 🔔\n\n` +
-                   `🏍️ *Unit:* ${UNIT_NAME}\n` +
-                   `👤 *Nama:* ${document.getElementById('nama').value}\n` +
-                   `📱 *WA:* ${document.getElementById('wa').value}\n` +
-                   `👉 _Silakan cek detail & foto di Firebase Database._`;
+        load.innerText = "3/3 Mengirim Notif Admin...";
+        let text = `🔥 *ORDER MASUK: ${UNIT_NAME}* 🔥\n` +
+                   `👤 ${document.getElementById('nama').value}\n` +
+                   `📱 ${document.getElementById('wa').value}\n` +
+                   `_Data tersimpan di Firebase._`;
 
         await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
             method: 'POST',
@@ -238,14 +241,14 @@ document.getElementById('formPolytron').addEventListener('submit', async (e) => 
         });
 
         load.innerText = "✅ SUKSES!";
-        alert("Pengajuan Berhasil! Data tersimpan aman.");
+        alert("Data Berhasil Dikirim!");
         window.location.href = "index.html";
 
     } catch(err) {
         console.error(err);
-        btn.disabled = false;
-        load.innerText = "Gagal. Coba lagi.";
-        alert("Gagal mengirim data: " + err.message);
+        btn.disabled = false; btn.innerText = "COBA LAGI";
+        load.innerText = "Gagal: " + err.message;
+        alert("Gagal mengirim data.");
     }
 });
 </script>
