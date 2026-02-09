@@ -2,148 +2,336 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Formulir Pengajuan - Alva N3</title>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Formulir Pendaftaran Alva N3</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-    :root {
-        --primary: #3b82f6; --dark-bg: #0f172a; --card-bg: #1e293b; --text: #f8fafc;
-    }
-    body {
-        font-family: 'Plus Jakarta Sans', sans-serif;
-        background: var(--dark-bg); color: var(--text);
-        margin: 0; padding: 20px;
-        min-height: 100vh; display: flex; align-items: center; justify-content: center;
-    }
-    .container {
-        width: 100%; max-width: 500px;
-        background: var(--card-bg);
-        padding: 30px; border-radius: 20px;
-        box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-        border: 1px solid rgba(255,255,255,0.1);
-    }
-    h2 { text-align: center; color: #60a5fa; margin-top: 0; }
-    .sub-title { text-align: center; font-size: 13px; color: #94a3b8; margin-bottom: 30px; }
-    
-    .form-group { margin-bottom: 20px; }
-    label { display: block; margin-bottom: 8px; font-size: 13px; font-weight: 600; color: #cbd5e1; }
-    input, select, textarea {
-        width: 100%; padding: 12px;
-        background: #0f172a; border: 1px solid #334155;
-        border-radius: 10px; color: white; font-size: 14px; outline: none;
-        box-sizing: border-box; /* Agar padding tidak melebar */
-    }
-    input:focus { border-color: var(--primary); }
+/* STYLE MODERN CLEAN (Sesuai File Asli Bapak) */
+:root {
+    --primary: #2563eb; 
+    --bg: #f8fafc;
+    --card: #ffffff;
+    --text: #0f172a;
+    --border: #e2e8f0;
+}
 
-    .btn-submit {
-        width: 100%; padding: 15px;
-        background: linear-gradient(to right, #2563eb, #3b82f6);
-        color: white; border: none; border-radius: 12px;
-        font-weight: 800; font-size: 16px; cursor: pointer;
-        margin-top: 10px; transition: 0.3s;
-    }
-    .btn-submit:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(37, 99, 235, 0.4); }
-    .btn-submit:disabled { background: #475569; cursor: not-allowed; }
+body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    margin: 0; padding: 20px;
+    color: var(--text);
+}
 
-    .back-link { display: block; text-align: center; margin-top: 20px; color: #64748b; text-decoration: none; font-size: 12px; }
+.container {
+    max-width: 550px; margin: 0 auto;
+    background: var(--card);
+    padding: 30px; border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    border: 1px solid var(--border);
+}
+
+.header { text-align: center; margin-bottom: 30px; }
+.header h2 { margin: 0; font-size: 22px; font-weight: 700; color: var(--text); }
+.header p { margin: 5px 0 0; font-size: 13px; color: #64748b; }
+
+.section-label {
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    color: var(--primary); letter-spacing: 0.5px;
+    margin: 25px 0 10px; border-bottom: 1px solid var(--border); padding-bottom: 5px;
+}
+
+.form-group { margin-bottom: 15px; }
+label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+
+input, select {
+    width: 100%; padding: 12px;
+    border: 1px solid var(--border); border-radius: 8px;
+    font-size: 14px; box-sizing: border-box; font-family: inherit;
+    transition: 0.2s;
+}
+input:focus, select:focus {
+    outline: none; border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* REFERRAL KHUSUS */
+.input-locked {
+    background-color: #f1f5f9; color: #475569;
+    font-weight: bold; cursor: not-allowed;
+    border-color: #cbd5e1;
+}
+
+/* UPLOAD GRID */
+.upload-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.upload-box {
+    border: 1px dashed #cbd5e1; background: #f8fafc;
+    border-radius: 8px; padding: 15px; text-align: center;
+    position: relative; transition: 0.2s; cursor: pointer;
+}
+.upload-box:hover { border-color: var(--primary); background: #eff6ff; }
+.upload-box input {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    opacity: 0; cursor: pointer;
+}
+.icon { font-size: 20px; display: block; margin-bottom: 5px; }
+.lbl-up { font-size: 11px; font-weight: 600; display: block; }
+.preview {
+    width: 100%; height: 80px; object-fit: cover; border-radius: 6px;
+    display: none; margin-top: 8px; border: 1px solid #e2e8f0;
+}
+
+/* MULTI UPLOAD */
+.multi-preview { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+.thumb { width: 50px; height: 50px; object-fit: cover; border-radius: 4px; border: 1px solid #ddd; }
+
+.btn {
+    width: 100%; padding: 15px; background: var(--primary);
+    color: white; border: none; border-radius: 10px;
+    font-size: 15px; font-weight: 600; cursor: pointer;
+    margin-top: 25px; transition: 0.2s;
+}
+.btn:hover { background: #1d4ed8; }
+.btn:disabled { background: #94a3b8; cursor: not-allowed; }
+
+#loading { 
+    display: none; text-align: center; margin-top: 15px; font-size: 13px; 
+    color: #059669; background: #d1fae5; padding: 10px; border-radius: 8px;
+}
+.back-link { display: block; text-align: center; margin-top: 20px; color: #64748b; text-decoration: none; font-size: 12px; }
 </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>⚡ FORMULIR ALVA N3</h2>
-    <p class="sub-title">Isi data diri Anda dengan benar untuk proses cepat.</p>
+    <div class="header">
+        <h2>ALVA N3 (NEW)</h2>
+        <p>Formulir Pengajuan Sewa Milik</p>
+    </div>
 
-    <form id="orderForm">
+    <form id="formDaftar">
+        
+        <div class="form-group">
+            <label>Kode Referral</label>
+            <input type="text" id="referral" value="APRI" readonly class="input-locked">
+        </div>
+
+        <div class="section-label">DATA PRIBADI</div>
+        
         <div class="form-group">
             <label>Nama Lengkap (Sesuai KTP)</label>
-            <input type="text" id="nama" placeholder="Contoh: Budi Santoso" required>
+            <input type="text" id="nama" required placeholder="Contoh: Budi Santoso">
         </div>
 
         <div class="form-group">
-            <label>Nomor WhatsApp (Aktif)</label>
-            <input type="tel" id="wa" placeholder="08xxxxxxxxxx" required>
+            <label>No. WhatsApp</label>
+            <input type="tel" id="wa" required placeholder="08xxxxxxxxxx">
         </div>
 
         <div class="form-group">
-            <label>Alamat Domisili Saat Ini</label>
-            <textarea id="alamat" rows="3" placeholder="Jalan, RT/RW, Kelurahan..." required></textarea>
+            <label>Alamat Email</label>
+            <input type="email" id="email" required placeholder="nama@email.com">
         </div>
 
         <div class="form-group">
-            <label>Pekerjaan Utama</label>
-            <select id="pekerjaan">
-                <option value="Ojol (Gojek/Grab/Shopee)">Ojol (Gojek/Grab/Shopee/Lalamove)</option>
-                <option value="Kurir Ekspedisi">Kurir Ekspedisi</option>
-                <option value="Wiraswasta">Wiraswasta / Dagang</option>
-                <option value="Karyawan Swasta">Karyawan Swasta</option>
+            <label>Alamat Domisili Lengkap</label>
+            <input type="text" id="alamat" required placeholder="Jalan, RT/RW, Kelurahan...">
+        </div>
+
+        <div class="form-group">
+            <label>Pekerjaan</label>
+            <select id="pekerjaan" required>
+                <option value="">-- Pilih Pekerjaan --</option>
+                <option value="Ojol">Ojol (Gojek/Grab/Shopee)</option>
+                <option value="Kurir">Kurir Ekspedisi</option>
+                <option value="Wiraswasta">Wiraswasta</option>
+                <option value="Karyawan">Karyawan Swasta</option>
                 <option value="Lainnya">Lainnya</option>
             </select>
         </div>
 
-        <button type="submit" class="btn-submit" id="btnKirim">🚀 KIRIM PENGAJUAN</button>
-    </form>
+        <div class="section-label">KONTAK DARURAT</div>
 
+        <div class="form-group">
+            <label>Nama Kontak Darurat</label>
+            <input type="text" id="daruratNama" required>
+        </div>
+
+        <div class="form-group">
+            <label>Nomor Kontak Darurat</label>
+            <input type="tel" id="daruratNo" required>
+        </div>
+
+        <div class="form-group">
+            <label>Hubungan</label>
+            <select id="daruratHubungan" required>
+                <option value="">-- Pilih Hubungan --</option>
+                <option>Orang Tua</option>
+                <option>Suami / Istri</option>
+                <option>Saudara Kandung</option>
+                <option>Kerabat Lain</option>
+            </select>
+        </div>
+
+        <div class="section-label">DOKUMEN PENDUKUNG</div>
+
+        <div class="upload-grid">
+            <div class="upload-box">
+                <span class="icon">📷</span>
+                <span class="lbl-up">KTP ASLI</span>
+                <input type="file" id="ktp" accept="image/*" required onchange="prev(this)">
+                <img class="preview" id="show_ktp">
+            </div>
+            <div class="upload-box">
+                <span class="icon">💳</span>
+                <span class="lbl-up">SIM C</span>
+                <input type="file" id="sim" accept="image/*" required onchange="prev(this)">
+                <img class="preview" id="show_sim">
+            </div>
+            <div class="upload-box">
+                <span class="icon">📄</span>
+                <span class="lbl-up">KARTU KELUARGA</span>
+                <input type="file" id="kk" accept="image/*" required onchange="prev(this)">
+                <img class="preview" id="show_kk">
+            </div>
+            <div class="upload-box">
+                <span class="icon">🤳</span>
+                <span class="lbl-up">FOTO SELFIE</span>
+                <input type="file" id="selfie" accept="image/*" required onchange="prev(this)">
+                <img class="preview" id="show_selfie">
+            </div>
+            <div class="upload-box" style="grid-column: span 2">
+                <span class="icon">📱</span>
+                <span class="lbl-up">SCREENSHOT PROFIL OJOL</span>
+                <input type="file" id="profil" accept="image/*" required onchange="prev(this)">
+                <img class="preview" id="show_profil">
+            </div>
+        </div>
+
+        <div style="margin-top: 20px; background: #f0f9ff; padding: 15px; border-radius: 8px; border: 1px dashed #60a5fa;">
+            <label style="color:#1e3a8a">Bukti Pendapatan (Bisa upload banyak)</label>
+            <p style="font-size:11px; color:#64748b; margin-bottom:10px">Pilih screenshot pendapatan sekaligus. <b>(Maksimal 5 Foto)</b></p>
+            <input type="file" id="gajiInput" multiple accept="image/*" style="background:#fff">
+            <div class="multi-preview" id="gajiBox"></div>
+        </div>
+
+        <div id="loading">Sedang mengirim data ke Admin, mohon tunggu...</div>
+        <button type="submit" class="btn" id="btnKirim">🚀 KIRIM PENGAJUAN</button>
+
+    </form>
+    
     <a href="index.html" class="back-link">← Kembali ke Menu Utama</a>
 </div>
 
 <script>
-    // --- SETTING BOT TELEGRAM BAPAK ---
-    const BOT_TOKEN = "8235411301:AAE9bUwgg4eYS1M_e5_F30SAmNPgPs5zlF0";
-    const CHAT_ID = "1902240448"; 
-    const UNIT_NAME = "ALVA N3 (NEW)"; // Ganti jadi POLYTRON FOX untuk file satunya
+// --- SETTING BOT TELEGRAM BAPAK ---
+const BOT_TOKEN = "8235411301:AAE9bUwgg4eYS1M_e5_F30SAmNPgPs5zlF0";
+const CHAT_ID = "1902240448";
+const UNIT_NAME = "ALVA N3"; 
 
-    document.getElementById('orderForm').addEventListener('submit', function(e) {
-        e.preventDefault(); // Mencegah reload halaman
+// PREVIEW IMAGE SATUAN
+function prev(input) {
+    if(input.files && input.files[0]) {
+        const id = input.id;
+        document.getElementById('show_' + id).src = URL.createObjectURL(input.files[0]);
+        document.getElementById('show_' + id).style.display = "block";
+    }
+}
 
-        // Ambil data dari input
-        let nama = document.getElementById('nama').value;
-        let wa = document.getElementById('wa').value;
-        let alamat = document.getElementById('alamat').value;
-        let pekerjaan = document.getElementById('pekerjaan').value;
-        let btn = document.getElementById('btnKirim');
+// PREVIEW IMAGE BANYAK (GAJI)
+let gajiFiles = [];
+document.getElementById('gajiInput').addEventListener('change', function(e) {
+    const box = document.getElementById('gajiBox');
+    box.innerHTML = ""; 
+    let files = Array.from(e.target.files);
+    
+    if(files.length > 5) {
+        alert("Maksimal 5 foto pendapatan.");
+        files = files.slice(0,5);
+    }
+    gajiFiles = files; // Simpan file asli
 
-        // Ubah tombol jadi loading
-        btn.innerHTML = "⏳ Sedang Mengirim...";
-        btn.disabled = true;
+    files.forEach(f => {
+        const img = document.createElement('img');
+        img.src = URL.createObjectURL(f);
+        img.className = "thumb";
+        box.appendChild(img);
+    });
+});
 
-        // Format Pesan Telegram
-        let text = `🔔 *PENGAJUAN BARU MASUK!* 🔔\n\n` +
-                   `🏍️ *Unit:* ${UNIT_NAME}\n` +
-                   `👤 *Nama:* ${nama}\n` +
-                   `💼 *Pekerjaan:* ${pekerjaan}\n` +
-                   `🏠 *Domisili:* ${alamat}\n` +
-                   `📱 *WhatsApp:* wa.me/${wa.replace(/^0/, '62')}\n\n` +
-                   `👉 _Segera hubungi customer ini!_`;
+// SUBMIT KE TELEGRAM
+document.getElementById('formDaftar').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if(gajiFiles.length === 0) { alert("Wajib upload minimal 1 bukti pendapatan."); return; }
+    
+    const btn = document.getElementById('btnKirim');
+    const load = document.getElementById('loading');
+    
+    btn.disabled = true; 
+    btn.innerText = "MENGHUBUNGKAN...";
+    load.style.display = "block";
 
-        // Kirim ke Telegram API
-        fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+    // 1. SIAPKAN PESAN TEKS
+    let pesan = `🔥 *ORDER VIA WEBSITE (KODE: APRI)* 🔥\n\n` +
+                `🏍️ *Unit:* ${UNIT_NAME}\n` +
+                `👤 *Nama:* ${document.getElementById('nama').value}\n` +
+                `📱 *WA:* wa.me/${document.getElementById('wa').value.replace(/^0/,'62')}\n` +
+                `📧 *Email:* ${document.getElementById('email').value}\n` +
+                `🏠 *Alamat:* ${document.getElementById('alamat').value}\n` +
+                `💼 *Kerja:* ${document.getElementById('pekerjaan').value}\n\n` +
+                `🆘 *Darurat:* ${document.getElementById('daruratNama').value} (${document.getElementById('daruratHubungan').value})\n` +
+                `📞 *No Darurat:* ${document.getElementById('daruratNo').value}\n\n` +
+                `_Foto dokumen akan masuk satu per satu..._`;
+
+    try {
+        // KIRIM TEXT
+        await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                chat_id: CHAT_ID,
-                text: text,
-                parse_mode: 'Markdown'
-            })
-        })
-        .then(response => {
-            if (response.ok) {
-                alert("✅ Data Berhasil Terkirim! Admin kami akan segera menghubungi WhatsApp Anda.");
-                // Redirect ke WA Admin (Opsional, biar langsung chat)
-                window.location.href = "https://wa.me/6281283628762?text=Halo+min+saya+sudah+isi+form+Alva+N3+atas+nama+" + nama; 
-            } else {
-                alert("❌ Gagal mengirim. Cek koneksi internet Anda.");
-                btn.innerHTML = "🚀 KIRIM PENGAJUAN";
-                btn.disabled = false;
-            }
-        })
-        .catch(error => {
-            console.error(error);
-            alert("❌ Terjadi kesalahan jaringan.");
-            btn.innerHTML = "🚀 KIRIM PENGAJUAN";
-            btn.disabled = false;
+            body: JSON.stringify({ chat_id: CHAT_ID, text: pesan, parse_mode: 'Markdown' })
         });
-    });
+
+        // 2. KIRIM DOKUMEN UTAMA
+        const docs = [
+            {id: 'ktp', cap: 'KTP Asli'},
+            {id: 'sim', cap: 'SIM C'},
+            {id: 'kk', cap: 'Kartu Keluarga'},
+            {id: 'selfie', cap: 'Foto Selfie'},
+            {id: 'profil', cap: 'Profil Ojol'}
+        ];
+
+        for(let d of docs) {
+            let fileInput = document.getElementById(d.id);
+            if(fileInput.files.length > 0) {
+                load.innerText = `Mengupload ${d.cap}...`;
+                let fd = new FormData();
+                fd.append('chat_id', CHAT_ID);
+                fd.append('photo', fileInput.files[0]);
+                fd.append('caption', `${d.cap} - ${document.getElementById('nama').value}`);
+                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: 'POST', body: fd });
+            }
+        }
+
+        // 3. KIRIM BUKTI GAJI (LOOP)
+        for(let i=0; i<gajiFiles.length; i++) {
+            load.innerText = `Mengupload Bukti Gaji ke-${i+1}...`;
+            let fd = new FormData();
+            fd.append('chat_id', CHAT_ID);
+            fd.append('photo', gajiFiles[i]);
+            fd.append('caption', `Bukti Pendapatan ${i+1} - ${document.getElementById('nama').value}`);
+            await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: 'POST', body: fd });
+        }
+
+        load.innerText = "✅ SELESAI!";
+        alert("Data Berhasil Dikirim ke Admin!");
+        window.location.href = "index.html";
+
+    } catch(err) {
+        console.error(err);
+        btn.disabled = false; btn.innerText = "COBA KIRIM LAGI";
+        load.innerText = "Gagal mengirim. Periksa internet Anda.";
+        alert("Gagal mengirim data.");
+    }
+});
 </script>
 
 </body>
