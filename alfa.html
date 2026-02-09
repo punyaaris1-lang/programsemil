@@ -10,10 +10,8 @@
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-/* STYLE MODERN CLEAN (Sesuai File Asli) */
-:root {
-    --primary: #2563eb; --bg: #f8fafc; --card: #ffffff; --text: #0f172a; --border: #e2e8f0;
-}
+/* STYLE MODERN CLEAN */
+:root { --primary: #2563eb; --bg: #f8fafc; --card: #ffffff; --text: #0f172a; --border: #e2e8f0; }
 body { font-family: 'Inter', sans-serif; background: var(--bg); margin: 0; padding: 20px; color: var(--text); }
 .container {
     max-width: 550px; margin: 0 auto; background: var(--card);
@@ -33,8 +31,7 @@ label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
 input, select {
     width: 100%; padding: 12px;
     border: 1px solid var(--border); border-radius: 8px;
-    font-size: 14px; box-sizing: border-box; font-family: inherit;
-    transition: 0.2s;
+    font-size: 14px; box-sizing: border-box; font-family: inherit; transition: 0.2s;
 }
 input:focus, select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
 .input-locked { background-color: #f1f5f9; color: #475569; font-weight: bold; cursor: not-allowed; border-color: #cbd5e1; }
@@ -49,6 +46,7 @@ input:focus, select:focus { outline: none; border-color: var(--primary); box-sha
 .upload-box input { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
 .icon { font-size: 20px; display: block; margin-bottom: 5px; }
 .lbl-up { font-size: 11px; font-weight: 600; display: block; }
+.note-up { font-size: 9px; color: #2563eb; font-weight: 700; display: block; margin-top: 3px; }
 .preview { width: 100%; height: 80px; object-fit: cover; border-radius: 6px; display: none; margin-top: 8px; border: 1px solid #e2e8f0; }
 /* MULTI UPLOAD */
 .multi-preview { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
@@ -78,30 +76,25 @@ input:focus, select:focus { outline: none; border-color: var(--primary); box-sha
         </div>
 
         <div class="section-label">DATA PRIBADI</div>
-        <div class="form-group">
-            <label>Nama Lengkap</label>
-            <input type="text" id="nama" required placeholder="Contoh: Budi Santoso">
-        </div>
-        <div class="form-group">
-            <label>No. WhatsApp</label>
-            <input type="tel" id="wa" required placeholder="08xxxxxxxxxx">
-        </div>
-        <div class="form-group">
-            <label>Alamat Email</label>
-            <input type="email" id="email" required placeholder="nama@email.com">
+        <div class="form-group"><label>Nama Lengkap</label><input type="text" id="nama" required placeholder="Contoh: Budi Santoso"></div>
+        <div class="form-group"><label>No. WhatsApp</label><input type="tel" id="wa" required placeholder="08xxxxxxxxxx"></div>
+        <div class="form-group"><label>Alamat Email</label><input type="email" id="email" required placeholder="nama@email.com"></div>
+        <div class="form-group"><label>Alamat Domisili</label><textarea id="alamat" rows="2" placeholder="Jalan, RT/RW, Kelurahan..." required></textarea></div>
+        <div class="form-group"><label>Pekerjaan</label>
+            <select id="pekerjaan" required>
+                <option value="">-- Pilih Pekerjaan --</option>
+                <option value="Ojol">Ojol (Gojek/Grab/Shopee)</option>
+                <option value="Kurir">Kurir Ekspedisi</option>
+                <option value="Wiraswasta">Wiraswasta</option>
+                <option value="Karyawan">Karyawan Swasta</option>
+                <option value="Lainnya">Lainnya</option>
+            </select>
         </div>
 
         <div class="section-label">KONTAK DARURAT</div>
-        <div class="form-group">
-            <label>Nama Kontak Darurat</label>
-            <input type="text" id="daruratNama" required>
-        </div>
-        <div class="form-group">
-            <label>Nomor Kontak Darurat</label>
-            <input type="tel" id="daruratNo" required>
-        </div>
-        <div class="form-group">
-            <label>Hubungan</label>
+        <div class="form-group"><label>Nama Kontak Darurat</label><input type="text" id="daruratNama" required></div>
+        <div class="form-group"><label>Nomor Kontak Darurat</label><input type="tel" id="daruratNo" required></div>
+        <div class="form-group"><label>Hubungan</label>
             <select id="daruratHubungan" required>
                 <option value="">-- Pilih Hubungan --</option>
                 <option>Orang Tua</option>
@@ -118,18 +111,25 @@ input:focus, select:focus { outline: none; border-color: var(--primary); box-sha
                 <input type="file" id="ktp" accept="image/*" required onchange="prev(this)"><img class="preview" id="show_ktp">
             </div>
             <div class="upload-box">
-                <span class="icon">💳</span><span class="lbl-up">SIM C</span>
-                <input type="file" id="sim" accept="image/*" required onchange="prev(this)"><img class="preview" id="show_sim">
-            </div>
-            <div class="upload-box">
                 <span class="icon">📄</span><span class="lbl-up">KARTU KELUARGA</span>
                 <input type="file" id="kk" accept="image/*" required onchange="prev(this)"><img class="preview" id="show_kk">
             </div>
             <div class="upload-box">
+                <span class="icon">💳</span><span class="lbl-up">SIM C</span>
+                <input type="file" id="sim" accept="image/*" required onchange="prev(this)"><img class="preview" id="show_sim">
+            </div>
+            
+            <div class="upload-box" style="border-color:#2563eb; background:#eff6ff">
+                <span class="icon">👥</span><span class="lbl-up" style="color:#2563eb">KTP PENJAMIN</span>
+                <span class="note-up">(WAJIB 1 KK)</span>
+                <input type="file" id="penjamin" accept="image/*" required onchange="prev(this)"><img class="preview" id="show_penjamin">
+            </div>
+
+            <div class="upload-box">
                 <span class="icon">🤳</span><span class="lbl-up">FOTO SELFIE</span>
                 <input type="file" id="selfie" accept="image/*" required onchange="prev(this)"><img class="preview" id="show_selfie">
             </div>
-            <div class="upload-box" style="grid-column: span 2">
+            <div class="upload-box">
                 <span class="icon">📱</span><span class="lbl-up">PROFIL OJOL</span>
                 <input type="file" id="profil" accept="image/*" required onchange="prev(this)"><img class="preview" id="show_profil">
             </div>
@@ -148,7 +148,7 @@ input:focus, select:focus { outline: none; border-color: var(--primary); box-sha
 </div>
 
 <script>
-// 1. CONFIG FIREBASE (WAJIB ADA)
+// CONFIG FIREBASE
 const firebaseConfig = {
   apiKey: "AIzaSyD-4D5ZC4RYcmcpRyxxScLBo1oqC-oRdYw",
   authDomain: "sewamilikmolis-e3427.firebaseapp.com",
@@ -160,7 +160,7 @@ const firebaseConfig = {
 if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-// 2. CONFIG TELEGRAM
+// CONFIG TELEGRAM
 const BOT_TOKEN = "8235411301:AAE9bUwgg4eYS1M_e5_F30SAmNPgPs5zlF0";
 const CHAT_ID = "1902240448";
 const UNIT_NAME = "ALVA N3";
@@ -172,40 +172,37 @@ function prev(input) {
         document.getElementById('show_' + input.id).style.display = "block";
     }
 }
-
 let gajiFiles = [];
 document.getElementById('gajiInput').addEventListener('change', function(e) {
-    const box = document.getElementById('gajiBox');
-    box.innerHTML = ""; 
-    gajiFiles = Array.from(e.target.files).slice(0,8); // Max 8
+    const box = document.getElementById('gajiBox'); box.innerHTML = ""; 
+    gajiFiles = Array.from(e.target.files).slice(0,8);
     gajiFiles.forEach(f => {
-        const img = document.createElement('img');
-        img.src = URL.createObjectURL(f); img.className = "thumb";
-        box.appendChild(img);
+        const img = document.createElement('img'); img.src = URL.createObjectURL(f); img.className = "thumb"; box.appendChild(img);
     });
 });
 
-function compress(file, q=0.5, max=400) {
+// FUNGSI KOMPRES (HD 1000px)
+function compress(file) {
     return new Promise(resolve => {
         const reader = new FileReader(); reader.readAsDataURL(file);
         reader.onload = e => {
             const img = new Image(); img.src = e.target.result;
             img.onload = () => {
                 const cvs = document.createElement('canvas');
-                let w=img.width, h=img.height;
+                let w=img.width, h=img.height, max=1000;
                 if(w>h && w>max) { h*=max/w; w=max; } else if(h>max) { w*=max/h; h=max; }
                 cvs.width=w; cvs.height=h;
                 cvs.getContext('2d').drawImage(img,0,0,w,h);
-                resolve(cvs.toDataURL('image/jpeg', q));
+                resolve(cvs.toDataURL('image/jpeg', 0.7)); 
             };
         };
     });
 }
 
-// SUBMIT: FIREBASE + TELEGRAM
+// SUBMIT DATA
 document.getElementById('formDaftar').addEventListener('submit', async (e) => {
     e.preventDefault();
-    if(gajiFiles.length === 0) { alert("Wajib upload minimal 1 bukti gaji."); return; }
+    if(gajiFiles.length === 0) { alert("Wajib upload bukti pendapatan."); return; }
     if(!confirm("Kirim data sekarang?")) return;
 
     const btn = document.getElementById('btnKirim');
@@ -213,40 +210,42 @@ document.getElementById('formDaftar').addEventListener('submit', async (e) => {
     btn.disabled = true; load.style.display = "block";
 
     try {
-        load.innerText = "1/3 Mengkompres Foto...";
-        // Proses Foto untuk Firebase
-        const ids = ['ktp','sim','kk','selfie','profil'];
+        load.innerText = "1/3 Memproses Foto HD...";
+        
+        // A. FIREBASE: Kompres 1000px (Jelas)
+        const ids = ['ktp','sim','kk','penjamin','selfie','profil']; // Ada Penjamin
         let imgs = {};
         for(let id of ids) imgs[id] = await compress(document.getElementById(id).files[0]);
-        
         let gajis = [];
-        for(let f of gajiFiles) gajis.push(await compress(f, 0.5, 300));
+        for(let f of gajiFiles) gajis.push(await compress(f));
 
-        // A. SIMPAN KE FIREBASE
-        load.innerText = "2/3 Menyimpan ke Database...";
+        load.innerText = "2/3 Menyimpan Database...";
         await db.collection("pendaftaran_v3").add({
             referral: "APRI",
             unit: UNIT_NAME,
             nama: document.getElementById('nama').value,
             wa: document.getElementById('wa').value,
             email: document.getElementById('email').value,
+            alamat: document.getElementById('alamat').value,
+            pekerjaan: document.getElementById('pekerjaan').value,
             darurat_nama: document.getElementById('daruratNama').value,
             darurat_no: document.getElementById('daruratNo').value,
             darurat_hub: document.getElementById('daruratHubungan').value,
+            // Foto
             foto_ktp: imgs['ktp'], foto_sim: imgs['sim'], foto_kk: imgs['kk'],
+            foto_penjamin: imgs['penjamin'], // Masuk Database
             foto_selfie: imgs['selfie'], foto_profil: imgs['profil'],
             list_gaji: gajis,
             waktu: new Date().toLocaleString(),
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
         });
 
-        // B. KIRIM NOTIF TELEGRAM (TEKS)
+        // B. TELEGRAM (NOTIF TEKS SAJA)
         load.innerText = "3/3 Mengirim Notif Admin...";
         let text = `🔥 *ORDER MASUK: ${UNIT_NAME}* 🔥\n` +
                    `👤 ${document.getElementById('nama').value}\n` +
                    `📱 ${document.getElementById('wa').value}\n` +
-                   `_Data lengkap & foto tersimpan di Firebase._\n` +
-                   `_Sedang mengirim bukti utama..._`;
+                   `_Data & Foto Penjamin tersimpan di Firebase._`;
 
         await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
             method: 'POST',
@@ -254,22 +253,9 @@ document.getElementById('formDaftar').addEventListener('submit', async (e) => {
             body: JSON.stringify({ chat_id: CHAT_ID, text: text, parse_mode: 'Markdown' })
         });
 
-        // C. KIRIM FOTO UTAMA KE TELEGRAM (Biar Admin gak usah buka Firebase terus)
-        const docs = [{id:'ktp', c:'KTP'}, {id:'sim', c:'SIM'}, {id:'kk', c:'KK'}, {id:'profil', c:'Profil'}];
-        for(let d of docs) {
-            let fileInput = document.getElementById(d.id);
-            if(fileInput.files[0]) {
-                let fd = new FormData();
-                fd.append('chat_id', CHAT_ID);
-                fd.append('photo', fileInput.files[0]);
-                fd.append('caption', `${d.c} - ${document.getElementById('nama').value}`);
-                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: 'POST', body: fd });
-            }
-        }
-
         load.innerText = "✅ SUKSES!";
         alert("Data Berhasil Dikirim!");
-        window.location.reload();
+        window.location.href = "index.html";
 
     } catch(err) {
         console.error(err);
