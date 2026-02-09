@@ -3,61 +3,31 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Formulir Pendaftaran Alva N3</title>
+<title>Formulir Alva N3</title>
 
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
-/* STYLE MODERN CLEAN */
+/* STYLE CLEAN */
 :root { --primary: #2563eb; --bg: #f8fafc; --card: #ffffff; --text: #0f172a; --border: #e2e8f0; }
-body { font-family: 'Inter', sans-serif; background: var(--bg); margin: 0; padding: 20px; color: var(--text); }
-.container {
-    max-width: 550px; margin: 0 auto; background: var(--card);
-    padding: 30px; border-radius: 16px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.05); border: 1px solid var(--border);
-}
+body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); margin: 0; padding: 20px; color: var(--text); }
+.container { max-width: 550px; margin: 0 auto; background: var(--card); padding: 30px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border-top: 6px solid var(--primary); }
 .header { text-align: center; margin-bottom: 30px; }
-.header h2 { margin: 0; font-size: 22px; font-weight: 700; color: var(--text); }
-.header p { margin: 5px 0 0; font-size: 13px; color: #64748b; }
-.section-label {
-    font-size: 11px; font-weight: 700; text-transform: uppercase;
-    color: var(--primary); letter-spacing: 0.5px;
-    margin: 25px 0 10px; border-bottom: 1px solid var(--border); padding-bottom: 5px;
-}
+.header h2 { margin: 0; font-size: 26px; font-weight: 800; color: #1e293b; }
+.section-label { font-size: 11px; font-weight: 800; text-transform: uppercase; color: var(--primary); letter-spacing: 1px; margin: 30px 0 15px; border-bottom: 2px solid #f1f5f9; padding-bottom: 5px; }
 .form-group { margin-bottom: 15px; }
-label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
-input, select, textarea {
-    width: 100%; padding: 12px;
-    border: 1px solid var(--border); border-radius: 8px;
-    font-size: 14px; box-sizing: border-box; font-family: inherit; transition: 0.2s;
-}
-input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
-.input-locked { background-color: #f1f5f9; color: #475569; font-weight: bold; cursor: not-allowed; border-color: #cbd5e1; }
-/* UPLOAD */
-.upload-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.upload-box {
-    border: 1px dashed #cbd5e1; background: #f8fafc;
-    border-radius: 8px; padding: 15px; text-align: center;
-    position: relative; transition: 0.2s; cursor: pointer;
-}
-.upload-box:hover { border-color: var(--primary); background: #eff6ff; }
+label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 8px; color: #334155; }
+input, select, textarea { width: 100%; padding: 14px; border: 1px solid var(--border); border-radius: 10px; font-size: 14px; box-sizing: border-box; background: #f8fafc; }
+.upload-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+.upload-box { border: 1px dashed #cbd5e1; background: #fff; border-radius: 10px; padding: 20px 10px; text-align: center; position: relative; }
 .upload-box input { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
-.icon { font-size: 20px; display: block; margin-bottom: 5px; }
-.lbl-up { font-size: 11px; font-weight: 600; display: block; }
-.note-up { font-size: 9px; color: #2563eb; font-weight: 700; display: block; margin-top: 3px; }
-.preview { width: 100%; height: 80px; object-fit: cover; border-radius: 6px; display: none; margin-top: 8px; border: 1px solid #e2e8f0; }
-/* MULTI UPLOAD */
-.multi-preview { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
-.thumb { width: 50px; height: 50px; object-fit: cover; border-radius: 4px; border: 1px solid #ddd; }
-.btn {
-    width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 10px;
-    font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 25px; transition: 0.2s;
-}
-.btn:hover { background: #1d4ed8; }
-.btn:disabled { background: #94a3b8; cursor: not-allowed; }
-#loading { display: none; text-align: center; margin-top: 15px; font-size: 13px; color: #059669; background: #d1fae5; padding: 10px; border-radius: 8px; }
+.icon { font-size: 24px; display: block; margin-bottom: 8px; }
+.lbl-up { font-size: 11px; font-weight: 700; display: block; color: #334155; }
+.preview { width: 100%; height: 90px; object-fit: cover; border-radius: 8px; display: none; margin-top: 10px; border: 1px solid #e2e8f0; }
+.btn { width: 100%; padding: 18px; background: var(--primary); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 800; cursor: pointer; margin-top: 30px; }
+.btn:disabled { background: #cbd5e1; cursor: not-allowed; }
+#loading { display: none; text-align: center; margin-top: 20px; font-size: 13px; color: #2563eb; font-weight: 700; }
 .back-link { display: block; text-align: center; margin-top: 20px; color: #64748b; text-decoration: none; font-size: 12px; }
 </style>
 </head>
@@ -69,22 +39,19 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--p
         <p>Formulir Pengajuan Sewa Milik</p>
     </div>
 
-    <form id="formDaftar">
-        <div class="form-group">
-            <label>Kode Referral</label>
-            <input type="text" id="referral" value="APRI" readonly class="input-locked">
-        </div>
+    <form id="formAlfa">
+        <div class="form-group"><label>Kode Referral</label><input type="text" id="referral" value="APRI" readonly style="background:#f1f5f9; cursor:not-allowed;"></div>
 
         <div class="section-label">DATA PRIBADI</div>
-        <div class="form-group"><label>Nama Lengkap (Sesuai KTP)</label><input type="text" id="nama" required placeholder="Contoh: Budi Santoso"></div>
-        <div class="form-group"><label>No. WhatsApp</label><input type="tel" id="wa" required placeholder="08xxxxxxxxxx"></div>
-        <div class="form-group"><label>Alamat Email</label><input type="email" id="email" required placeholder="nama@email.com"></div>
-        <div class="form-group"><label>Alamat Domisili Lengkap</label><textarea id="alamat" rows="2" placeholder="Jalan, RT/RW, Kelurahan..." required></textarea></div>
-        
+        <div class="form-group"><label>Nama Lengkap</label><input type="text" id="nama" required placeholder="Sesuai KTP"></div>
+        <div class="form-group"><label>WhatsApp</label><input type="tel" id="wa" required placeholder="08xxxxxxxxxx"></div>
+        <div class="form-group"><label>Email</label><input type="email" id="email" required placeholder="email@contoh.com"></div>
+        <div class="form-group"><label>Alamat Domisili</label><textarea id="alamat" rows="2" placeholder="Alamat Lengkap..." required></textarea></div>
+
         <div class="section-label">DATA PENJAMIN (WAJIB SATU KK)</div>
         <div class="form-group"><label>Nama Penjamin</label><input type="text" id="penjaminNama" required></div>
-        <div class="form-group"><label>Nomor WhatsApp Penjamin</label><input type="tel" id="penjaminNo" required></div>
-        <div class="form-group"><label>Hubungan dengan Penjamin</label>
+        <div class="form-group"><label>No. WA Penjamin</label><input type="tel" id="penjaminNo" required></div>
+        <div class="form-group"><label>Hubungan</label>
             <select id="penjaminHubungan" required>
                 <option value="">-- Pilih Hubungan --</option>
                 <option>Orang Tua</option>
@@ -108,15 +75,12 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--p
                 <span class="icon">💳</span><span class="lbl-up">SIM C</span>
                 <input type="file" id="sim" accept="image/*" required onchange="prev(this)"><img class="preview" id="show_sim">
             </div>
-            
             <div class="upload-box" style="border-color:#2563eb; background:#eff6ff">
                 <span class="icon">👥</span><span class="lbl-up" style="color:#2563eb">KTP PENJAMIN</span>
-                <span class="note-up">(WAJIB 1 KK)</span>
                 <input type="file" id="foto_penjamin" accept="image/*" required onchange="prev(this)"><img class="preview" id="show_foto_penjamin">
             </div>
-
             <div class="upload-box">
-                <span class="icon">🤳</span><span class="lbl-up">FOTO SELFIE</span>
+                <span class="icon">🤳</span><span class="lbl-up">SELFIE</span>
                 <input type="file" id="selfie" accept="image/*" required onchange="prev(this)"><img class="preview" id="show_selfie">
             </div>
             <div class="upload-box">
@@ -125,138 +89,131 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--p
             </div>
         </div>
 
-        <div style="margin-top: 20px; background: #f0f9ff; padding: 15px; border-radius: 8px; border: 1px dashed #60a5fa;">
-            <label style="color:#1e3a8a">Bukti Pendapatan (Max 8 Foto)</label>
-            <input type="file" id="gajiInput" multiple accept="image/*" style="background:#fff">
-            <div class="multi-preview" id="gajiBox"></div>
+        <div class="section-label">BUKTI PENDAPATAN</div>
+        <div style="background:#fff5f5; padding:20px; border-radius:12px; border:1px dashed #fb7185;">
+            <label style="color:#9f1239">Screenshot Gaji (Bisa Banyak)</label>
+            <input type="file" id="gajiInput" multiple accept="image/*" style="width:100%; background:white">
+            <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:15px" id="gajiBox"></div>
         </div>
 
-        <div id="loading">Sedang mengirim data, mohon tunggu...</div>
-        <button type="submit" class="btn" id="btnKirim">KIRIM DATA SEKARANG</button>
+        <div id="loading">⏳ Sedang Membuat PDF...<br>Mohon tunggu, jangan tutup halaman.</div>
+        <button type="submit" class="btn" id="btnKirim">AJUKAN SEKARANG</button>
     </form>
-    <a href="index.html" class="back-link">← Kembali ke Menu Utama</a>
+    <a href="index.html" class="back-link">← Kembali ke Menu</a>
 </div>
 
 <script>
-// CONFIG FIREBASE
-const firebaseConfig = {
-  apiKey: "AIzaSyD-4D5ZC4RYcmcpRyxxScLBo1oqC-oRdYw",
-  authDomain: "sewamilikmolis-e3427.firebaseapp.com",
-  projectId: "sewamilikmolis-e3427",
-  storageBucket: "sewamilikmolis-e3427.firebasestorage.app",
-  messagingSenderId: "934998664118",
-  appId: "1:934998664118:web:602d8ef8053099aa329717"
-};
-if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-
 // CONFIG TELEGRAM
 const BOT_TOKEN = "8235411301:AAE9bUwgg4eYS1M_e5_F30SAmNPgPs5zlF0";
 const CHAT_ID = "1902240448";
 const UNIT_NAME = "ALVA N3";
 
-// FUNGSI PENDUKUNG
 function prev(input) {
     if(input.files && input.files[0]) {
-        // Handle ID khusus untuk penjamin
         let id = input.id;
-        if(id === 'foto_penjamin') { 
-            document.getElementById('show_foto_penjamin').src = URL.createObjectURL(input.files[0]);
-            document.getElementById('show_foto_penjamin').style.display = "block";
-        } else {
-            document.getElementById('show_' + id).src = URL.createObjectURL(input.files[0]);
-            document.getElementById('show_' + id).style.display = "block";
-        }
+        let imgId = id === 'foto_penjamin' ? 'show_foto_penjamin' : 'show_' + id;
+        document.getElementById(imgId).src = URL.createObjectURL(input.files[0]);
+        document.getElementById(imgId).style.display = "block";
     }
 }
+
 let gajiFiles = [];
 document.getElementById('gajiInput').addEventListener('change', function(e) {
     const box = document.getElementById('gajiBox'); box.innerHTML = ""; 
-    gajiFiles = Array.from(e.target.files).slice(0,8);
+    gajiFiles = Array.from(e.target.files).slice(0,12);
     gajiFiles.forEach(f => {
-        const img = document.createElement('img'); img.src = URL.createObjectURL(f); img.className = "thumb"; box.appendChild(img);
+        const img = document.createElement('img'); img.src = URL.createObjectURL(f); 
+        img.style.width="50px"; img.style.height="50px"; img.style.objectFit="cover"; img.style.borderRadius="4px";
+        box.appendChild(img);
     });
 });
 
-// KOMPRES HD (1000px)
-function compress(file) {
-    return new Promise(resolve => {
-        const reader = new FileReader(); reader.readAsDataURL(file);
-        reader.onload = e => {
-            const img = new Image(); img.src = e.target.result;
-            img.onload = () => {
-                const cvs = document.createElement('canvas');
-                let w=img.width, h=img.height, max=1000;
-                if(w>h && w>max) { h*=max/w; w=max; } else if(h>max) { w*=max/h; h=max; }
-                cvs.width=w; cvs.height=h;
-                cvs.getContext('2d').drawImage(img,0,0,w,h);
-                resolve(cvs.toDataURL('image/jpeg', 0.7)); 
-            };
-        };
-    });
-}
+const toBase64 = file => new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+});
 
-// SUBMIT
-document.getElementById('formDaftar').addEventListener('submit', async (e) => {
+document.getElementById('formAlfa').addEventListener('submit', async (e) => {
     e.preventDefault();
     if(gajiFiles.length === 0) { alert("Wajib upload bukti pendapatan."); return; }
-    if(!confirm("Kirim data sekarang?")) return;
 
     const btn = document.getElementById('btnKirim');
     const load = document.getElementById('loading');
+    const namaUser = document.getElementById('nama').value;
+    
     btn.disabled = true; load.style.display = "block";
 
     try {
-        load.innerText = "1/3 Memproses Foto...";
-        const ids = ['ktp','sim','kk','foto_penjamin','selfie','profil']; // Foto Penjamin masuk sini
-        let imgs = {};
-        for(let id of ids) imgs[id] = await compress(document.getElementById(id).files[0]);
-        let gajis = [];
-        for(let f of gajiFiles) gajis.push(await compress(f));
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
 
-        load.innerText = "2/3 Menyimpan Database...";
-        await db.collection("pendaftaran_v3").add({
-            referral: "APRI",
-            unit: UNIT_NAME,
-            nama: document.getElementById('nama').value,
-            wa: document.getElementById('wa').value,
-            email: document.getElementById('email').value,
-            alamat: document.getElementById('alamat').value,
-            // Data Penjamin
-            penjamin_nama: document.getElementById('penjaminNama').value,
-            penjamin_no: document.getElementById('penjaminNo').value,
-            penjamin_hub: document.getElementById('penjaminHubungan').value,
-            // Foto
-            foto_ktp: imgs['ktp'], foto_sim: imgs['sim'], foto_kk: imgs['kk'],
-            foto_penjamin: imgs['foto_penjamin'], 
-            foto_selfie: imgs['selfie'], foto_profil: imgs['profil'],
-            list_gaji: gajis,
-            waktu: new Date().toLocaleString(),
-            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        // 1. HALAMAN BIODATA KHUSUS ALFA
+        load.innerText = "Membuat PDF Halaman 1...";
+        doc.setFontSize(18); doc.text(`PENGAJUAN: ${UNIT_NAME}`, 20, 20);
+        doc.setFontSize(12);
+        doc.text(`Referral: ${document.getElementById('referral').value}`, 20, 35);
+        doc.text(`Nama: ${namaUser}`, 20, 45);
+        doc.text(`WhatsApp: ${document.getElementById('wa').value}`, 20, 55);
+        doc.text(`Email: ${document.getElementById('email').value}`, 20, 65);
+        doc.text(`Domisili: ${document.getElementById('alamat').value}`, 20, 75);
+        
+        doc.text(`---------------------------------------`, 20, 90);
+        doc.text(`DATA PENJAMIN (SATU KK):`, 20, 100);
+        doc.text(`Nama: ${document.getElementById('penjaminNama').value}`, 20, 110);
+        doc.text(`No WA: ${document.getElementById('penjaminNo').value}`, 20, 120);
+        doc.text(`Hubungan: ${document.getElementById('penjaminHubungan').value}`, 20, 130);
+        
+        // FUNGSI PDF GAMBAR
+        async function addImageToPdf(file, title) {
+            if(file) {
+                doc.addPage();
+                doc.setFontSize(14); doc.text(title, 20, 20);
+                const imgData = await toBase64(file);
+                const imgProps = doc.getImageProperties(imgData);
+                const pdfWidth = doc.internal.pageSize.getWidth() - 40;
+                const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+                doc.addImage(imgData, 'JPEG', 20, 30, pdfWidth, pdfHeight);
+            }
+        }
+
+        // 2. MASUKKAN FOTO-FOTO
+        load.innerText = "Menyusun Dokumen...";
+        await addImageToPdf(document.getElementById('ktp').files[0], "KTP ASLI");
+        await addImageToPdf(document.getElementById('kk').files[0], "KARTU KELUARGA");
+        await addImageToPdf(document.getElementById('sim').files[0], "SIM C");
+        await addImageToPdf(document.getElementById('foto_penjamin').files[0], "KTP PENJAMIN"); // Foto Penjamin
+        await addImageToPdf(document.getElementById('selfie').files[0], "FOTO SELFIE");
+        await addImageToPdf(document.getElementById('profil').files[0], "PROFIL OJOL");
+
+        // 3. FOTO GAJI
+        let count = 1;
+        for (let file of gajiFiles) {
+            await addImageToPdf(file, `BUKTI PENDAPATAN #${count}`);
+            count++;
+        }
+
+        const pdfBlob = doc.output('blob');
+
+        // 4. KIRIM PDF KE TELEGRAM
+        load.innerText = "Mengirim PDF ke Admin...";
+        let formData = new FormData();
+        formData.append('chat_id', CHAT_ID);
+        formData.append('document', pdfBlob, `ALFA_${namaUser.replace(/\s+/g, '_')}.pdf`);
+        formData.append('caption', `📄 Pengajuan Alfa N3: ${namaUser}\n(Data Penjamin ada di dalam PDF)`);
+
+        await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendDocument`, {
+            method: 'POST', body: formData
         });
 
-        load.innerText = "3/3 Mengirim Notif Admin...";
-        let text = `🔥 *ORDER MASUK: ${UNIT_NAME}* 🔥\n` +
-                   `👤 ${document.getElementById('nama').value}\n` +
-                   `📱 ${document.getElementById('wa').value}\n` +
-                   `👥 Penjamin: ${document.getElementById('penjaminNama').value}\n` +
-                   `_Data tersimpan di Firebase._`;
-
-        await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ chat_id: CHAT_ID, text: text, parse_mode: 'Markdown' })
-        });
-
-        load.innerText = "✅ SUKSES!";
-        alert("Data Berhasil Dikirim!");
+        alert("✅ BERHASIL! File PDF terkirim.");
         window.location.href = "index.html";
 
     } catch(err) {
         console.error(err);
-        btn.disabled = false; btn.innerText = "KIRIM ULANG";
-        load.innerText = "Gagal: " + err.message;
-        alert("Gagal kirim. Cek koneksi.");
+        btn.disabled = false;
+        load.innerText = "Gagal. Coba lagi.";
+        alert("Gagal proses PDF. Memori HP mungkin penuh.");
     }
 });
 </script>
