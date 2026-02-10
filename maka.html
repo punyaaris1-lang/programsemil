@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Formulir Maka Cavalry</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* STYLE CLEAN MIRIP KANTOR */
+:root { --primary: #d97706; --bg: #f1f5f9; --card: #ffffff; --text: #334155; --border: #cbd5e1; }
+body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); margin: 0; padding: 20px; color: var(--text); }
+.container { max-width: 500px; margin: 0 auto; background: var(--card); padding: 25px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+.header { text-align: center; margin-bottom: 25px; border-bottom: 2px solid #f8fafc; padding-bottom: 15px; }
+.header h2 { margin: 0; font-size: 22px; color: #0f172a; }
+.header p { margin: 5px 0 0; font-size: 13px; color: #64748b; }
+
+.section-title { font-size: 14px; font-weight: 700; margin: 25px 0 15px; color: #0f172a; border-left: 4px solid var(--primary); padding-left: 10px; }
+.form-group { margin-bottom: 15px; }
+label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #475569; }
+.wajib-asli { color: #dc2626; font-size: 11px; font-weight: 800; font-style: italic; margin-left: 5px; }
+
+input, select, textarea { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; box-sizing: border-box; background: #fff; }
+input:focus { outline: none; border-color: var(--primary); ring: 2px solid #fcd34d; }
+
+/* UPLOAD BOX STYLE */
+.upload-box { border: 2px dashed #cbd5e1; border-radius: 8px; padding: 20px; text-align: center; position: relative; background: #f8fafc; transition: 0.2s; cursor: pointer; }
+.upload-box:hover { border-color: var(--primary); background: #fffbeb; }
+.upload-box input { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+.icon-up { font-size: 24px; color: var(--primary); display: block; margin-bottom: 5px; }
+.text-up { font-size: 12px; font-weight: 600; color: #b45309; }
+.preview { width: 100%; height: 120px; object-fit: cover; border-radius: 6px; display: none; margin-top: 10px; border: 1px solid #e2e8f0; }
+
+.checkbox-group { display: flex; flex-direction: column; gap: 10px; }
+.checkbox-item { display: flex; align-items: center; gap: 10px; font-size: 14px; }
+.checkbox-item input { width: 18px; height: 18px; margin: 0; }
+
+.btn { width: 100%; padding: 16px; background: #d97706; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 700; cursor: pointer; margin-top: 30px; }
+.btn:hover { background: #b45309; }
+.btn:disabled { background: #94a3b8; cursor: not-allowed; }
+#loading { display: none; text-align: center; margin-top: 15px; font-size: 13px; color: #d97706; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h2>MAKA CAVALRY</h2>
+        <p>Formulir Pengajuan Sewa Milik</p>
+    </div>
+
+    <form id="formMaka">
+        <div class="form-group"><label>Nomor NIK KTP</label><input type="number" id="nik" required placeholder="16 digit NIK"></div>
+        <div class="form-group"><label>Nama Depan Pemohon</label><input type="text" id="namaDepan" required></div>
+        <div class="form-group"><label>Nama Belakang Pemohon</label><input type="text" id="namaBelakang" required></div>
+        <div class="form-group"><label>Nomor Telepon Pemohon</label><input type="tel" id="telp" required placeholder="08..."></div>
+        <div class="form-group"><label>Nomor WhatsApp Pemohon</label><input type="tel" id="wa" required placeholder="08..."></div>
+        <div class="form-group"><label>Alamat Email Pemohon</label><input type="email" id="email" required></div>
+        <div class="form-group"><label>Alamat Domisili</label><textarea id="alamat" rows="2" required></textarea></div>
+        
+        <div class="form-group"><label>Pilih Kota / Cabang</label>
+            <select id="kota" required>
+                <option value="">-- Pilih Kota --</option>
+                <option>Jakarta</option><option>Bogor</option><option>Depok</option>
+                <option>Tangerang</option><option>Bekasi</option>
+            </select>
+        </div>
+        
+        <div class="form-group"><label>Unit yang akan Disewa</label>
+            <input type="text" value="Maka Cavalry" readonly style="background:#f1f5f9; color:#64748b; font-weight:bold">
+        </div>
+
+        <div class="section-title">DATA PENJAMIN</div>
+        <div class="form-group"><label>Nama Penjamin</label><input type="text" id="penjaminNama" required></div>
+        <div class="form-group"><label>Hubungan dengan Penjamin</label>
+            <select id="penjaminHubungan" required>
+                <option value="">-- Pilih Hubungan --</option>
+                <option>Orang Tua</option><option>Suami/Istri</option><option>Saudara Kandung</option><option>Anak</option>
+            </select>
+        </div>
+        <div class="form-group"><label>Nomor Telepon Penjamin</label><input type="tel" id="penjaminTelp" required></div>
+
+        <div class="section-title">DOKUMEN PENDUKUNG</div>
+        
+        <div class="form-group"><label>Foto KTP Pemohon <span class="wajib-asli">(HARUS ASLI)</span></label>
+            <div class="upload-box"><span class="icon-up">📷</span><span class="text-up">Tap untuk Upload KTP</span>
+            <input type="file" id="ktp" accept="image/*" required onchange="prev(this)"><img class="preview" id="show_ktp"></div>
+        </div>
+
+        <div class="form-group"><label>Foto SIM Pemohon <span class="wajib-asli">(HARUS ASLI)</span></label>
+            <div class="upload-box"><span class="icon-up">💳</span><span class="text-up">Tap untuk Upload SIM</span>
+            <input type="file" id="sim" accept="image/*" required onchange="prev(this)"><img class="preview" id="show_sim"></div>
+        </div>
+
+        <div class="form-group"><label>Foto KK Pemohon <span class="wajib-asli">(HARUS ASLI)</span></label>
+            <div class="upload-box"><span class="icon-up">📄</span><span class="text-up">Tap untuk Upload KK</span>
+            <input type="file" id="kk" accept="image/*" required onchange="prev(this)"><img class="preview" id="show_kk"></div>
+        </div>
+
+        <div class="form-group"><label>Bukti Rumah / Token Listrik <span class="wajib-asli">(HARUS ASLI)</span></label>
+            <div class="upload-box"><span class="icon-up">⚡</span><span class="text-up">Tap untuk Upload Bukti</span>
+            <input type="file" id="rumah" accept="image/*" required onchange="prev(this)"><img class="preview" id="show_rumah"></div>
+        </div>
+
+        <div class="form-group"><label>Foto KTP Penjamin <span class="wajib-asli">(HARUS ASLI)</span></label>
+            <div class="upload-box"><span class="icon-up">👥</span><span class="text-up">Tap untuk Upload KTP Penjamin</span>
+            <input type="file" id="ktp_penjamin" accept="image/*" required onchange="prev(this)"><img class="preview" id="show_ktp_penjamin"></div>
+        </div>
+
+        <div class="section-title">ADDITIONAL FORM</div>
+
+        <div class="form-group"><label>Foto Tampak Depan Rumah</label>
+            <div class="upload-box"><span class="icon-up">🏠</span><span class="text-up">Tap untuk Upload Foto Rumah</span>
+            <input type="file" id="foto_rumah_depan" accept="image/*" required onchange="prev(this)"><img class="preview" id="show_foto_rumah_depan"></div>
+        </div>
+
+        <div class="form-group"><label>Aplikasi Ride-Hailing yang Digunakan</label>
+            <div class="checkbox-group" id="ojolCheck">
+                <label class="checkbox-item"><input type="checkbox" value="Gojek/Gocar"> Gojek | Gocar</label>
+                <label class="checkbox-item"><input type="checkbox" value="Gojek/Goride"> Gojek | Goride</label>
+                <label class="checkbox-item"><input type="checkbox" value="Grab/Car"> Grab | Grab Car</label>
+                <label class="checkbox-item"><input type="checkbox" value="Grab/Ride"> Grab | Grab Ride</label>
+                <label class="checkbox-item"><input type="checkbox" value="Maxim/Indriver"> Others (Maxim/Indriver)</label>
+            </div>
+        </div>
+
+        <div class="form-group"><label>Upload Bukti Penghasilan (Screenshot)</label>
+            <div class="upload-box"><span class="icon-up">📱</span><span class="text-up">Tap untuk Upload Screenshot</span>
+            <input type="file" id="bukti_ojol" accept="image/*" required onchange="prev(this)"><img class="preview" id="show_bukti_ojol"></div>
+        </div>
+
+        <div class="form-group"><label>Surat Domisili (Jika Alamat Beda KTP)</label>
+            <div class="upload-box"><span class="icon-up">📄</span><span class="text-up">Tap untuk Upload Domisili</span>
+            <input type="file" id="surat_domisili" accept="image/*" onchange="prev(this)"><img class="preview" id="show_surat_domisili"></div>
+        </div>
+
+        <div id="loading">⏳ Sedang memproses data...</div>
+        <button type="submit" class="btn" id="btnKirim">SUBMIT</button>
+    </form>
+</div>
+
+<script>
+// --- CONFIG ADMIN ---
+const BOT_TOKEN = "8235411301:AAE9bUwgg4eYS1M_e5_F30SAmNPgPs5zlF0";
+const CHAT_ID = "1902240448"; 
+const UNIT_NAME = "MAKA CAVALRY"; 
+
+function prev(input) {
+    if(input.files && input.files[0]) {
+        let imgId = 'show_' + input.id;
+        if(document.getElementById(imgId)) {
+            document.getElementById(imgId).src = URL.createObjectURL(input.files[0]);
+            document.getElementById(imgId).style.display = "block";
+        }
+    }
+}
+
+document.querySelector('form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('btnKirim');
+    const load = document.getElementById('loading');
+    const namaUser = document.getElementById('namaDepan').value;
+    
+    // LIST FILE YG AKAN DIKIRIM
+    const fileIDs = ['ktp', 'sim', 'kk', 'rumah', 'ktp_penjamin', 'foto_rumah_depan', 'bukti_ojol', 'surat_domisili'];
+
+    btn.disabled = true; load.style.display = "block";
+
+    try {
+        // 1. KIRIM PDF RANGKUMAN
+        load.innerText = "📄 Mengirim PDF Rangkuman...";
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        
+        doc.setFontSize(16); doc.text(`DATA: ${UNIT_NAME}`, 20, 20);
+        doc.setFontSize(12); doc.text(`Nama: ${namaUser}`, 20, 30);
+        doc.text(`NIK: ${document.getElementById('nik').value}`, 20, 40);
+        doc.text(`WA: ${document.getElementById('wa').value}`, 20, 50);
+        doc.text(`*Foto Asli dikirim terpisah di bawah`, 20, 70);
+        
+        const pdfBlob = doc.output('blob');
+        let formPDF = new FormData();
+        formPDF.append('chat_id', CHAT_ID);
+        formPDF.append('document', pdfBlob, `SUMMARY_${namaUser}.pdf`);
+        formPDF.append('caption', `🔥 ORDER BARU: ${namaUser}\nUnit: ${UNIT_NAME}\n\n👇 FOTO ASLI (MENTAHAN) DI BAWAH INI 👇`);
+
+        await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendDocument`, { method: 'POST', body: formPDF });
+
+        // 2. KIRIM FOTO MENTAHAN
+        for (let id of fileIDs) {
+            let input = document.getElementById(id);
+            if (input && input.files && input.files[0]) {
+                load.innerText = `📤 Mengupload Foto: ${id.toUpperCase()}...`;
+                let formData = new FormData();
+                formData.append('chat_id', CHAT_ID);
+                formData.append('document', input.files[0]); 
+                formData.append('caption', `${id.toUpperCase()} - ${namaUser}`); 
+
+                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendDocument`, { method: 'POST', body: formData });
+            }
+        }
+
+        // 3. SELESAI
+        load.innerText = "✅ Selesai!";
+        alert("Terima kasih! Data Anda berhasil dikirim.\n\nTim Admin kami akan segera memproses pengajuan Anda ke Pusat.\nMohon tunggu konfirmasi via WhatsApp.");
+        window.location.href = "index.html"; // Balik ke Menu Utama
+
+    } catch(err) {
+        console.error(err);
+        alert("Gagal kirim. Cek koneksi internet Anda.");
+        btn.disabled = false;
+        load.style.display = "none";
+    }
+});
+</script>
+</body>
+</html>
