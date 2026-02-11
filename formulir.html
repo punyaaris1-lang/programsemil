@@ -193,7 +193,9 @@ document.querySelector('form').addEventListener('submit', async (e) => {
     
     // Ambil Data Dinamis
     const unitPilihan = document.getElementById('unit').value;
-    const namaUser = document.getElementById('namaDepan').value;
+    const namaDepan = document.getElementById('namaDepan').value;
+    const namaBelakang = document.getElementById('namaBelakang').value;
+    const namaFull = namaDepan + " " + namaBelakang;
     
     // Ambil Data Centang Ojol
     let ojolApps = [];
@@ -213,24 +215,53 @@ document.querySelector('form').addEventListener('submit', async (e) => {
     btn.disabled = true; load.style.display = "block";
 
     try {
-        // 1. KIRIM PDF RANGKUMAN
+        // 1. KIRIM PDF RANGKUMAN (SEMUA DATA LENGKAP)
         load.innerText = "📄 Mengirim PDF Rangkuman...";
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         
-        doc.setFontSize(16); doc.text(`DATA: ${unitPilihan}`, 20, 20);
+        doc.setFontSize(16); 
+        doc.text(`DATA PENGAJUAN: ${unitPilihan}`, 20, 20);
+        
         doc.setFontSize(11); 
-        doc.text(`Nama: ${namaUser}`, 20, 30);
-        doc.text(`NIK: ${document.getElementById('nik').value}`, 20, 38);
-        doc.text(`WA: ${document.getElementById('wa').value}`, 20, 46);
-        doc.text(`Aplikasi: ${ojolString}`, 20, 54);
-        doc.text(`*Semua Foto Asli dikirim terpisah di bawah`, 20, 70);
+        doc.text(`Nama Lengkap: ${namaFull}`, 20, 30);
+        doc.text(`NIK: ${document.getElementById('nik').value}`, 20, 37);
+        doc.text(`No. Telp: ${document.getElementById('telp').value}`, 20, 44);
+        doc.text(`No. WA: ${document.getElementById('wa').value}`, 20, 51);
+        doc.text(`Email: ${document.getElementById('email').value}`, 20, 58);
+        
+        // Alamat dibuat wrap agar tidak terpotong
+        const alamat = document.getElementById('alamat').value;
+        const splitAlamat = doc.splitTextToSize(`Alamat Domisili: ${alamat}`, 170);
+        doc.text(splitAlamat, 20, 65);
+        
+        // Hitung baris baru setelah alamat
+        let yPos = 65 + (splitAlamat.length * 6) + 5;
+
+        doc.setFont(undefined, 'bold');
+        doc.text(`DATA PENJAMIN`, 20, yPos);
+        doc.setFont(undefined, 'normal');
+        
+        yPos += 7; doc.text(`Nama: ${document.getElementById('penjaminNama').value}`, 20, yPos);
+        yPos += 7; doc.text(`Hubungan: ${document.getElementById('penjaminHubungan').value}`, 20, yPos);
+        yPos += 7; doc.text(`No. Telp Penjamin: ${document.getElementById('penjaminTelp').value}`, 20, yPos);
+        
+        yPos += 12;
+        doc.setFont(undefined, 'bold');
+        doc.text(`DATA TAMBAHAN`, 20, yPos);
+        doc.setFont(undefined, 'normal');
+        
+        yPos += 7; doc.text(`Aplikasi Ride-Hailing: ${ojolString}`, 20, yPos);
+
+        yPos += 15;
+        doc.setTextColor(220, 38, 38); // Warna merah
+        doc.text(`*Catatan: Semua Foto Asli dikirim terpisah di bawah.`, 20, yPos);
         
         const pdfBlob = doc.output('blob');
         let formPDF = new FormData();
         formPDF.append('chat_id', CHAT_ID);
-        formPDF.append('document', pdfBlob, `SUMMARY_${namaUser}.pdf`);
-        formPDF.append('caption', `🔥 ORDER BARU: ${namaUser}\nUnit: ${unitPilihan}\n\n👇 FOTO ASLI (MENTAHAN) DI BAWAH INI 👇`);
+        formPDF.append('document', pdfBlob, `SUMMARY_${namaDepan}.pdf`);
+        formPDF.append('caption', `🔥 ORDER BARU: ${namaFull}\nUnit: ${unitPilihan}\n\n👇 FOTO ASLI (MENTAHAN) DI BAWAH INI 👇`);
 
         await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendDocument`, { method: 'POST', body: formPDF });
 
@@ -242,7 +273,7 @@ document.querySelector('form').addEventListener('submit', async (e) => {
                 let formData = new FormData();
                 formData.append('chat_id', CHAT_ID);
                 formData.append('document', input.files[0]); 
-                formData.append('caption', `${id.toUpperCase()} - ${namaUser} (${unitPilihan})`); 
+                formData.append('caption', `${id.toUpperCase()} - ${namaFull} (${unitPilihan})`); 
 
                 await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendDocument`, { method: 'POST', body: formData });
             }
@@ -256,7 +287,7 @@ document.querySelector('form').addEventListener('submit', async (e) => {
                 let formData = new FormData();
                 formData.append('chat_id', CHAT_ID);
                 formData.append('document', ojolInput.files[i]); 
-                formData.append('caption', `BUKTI PENGHASILAN ${i+1} - ${namaUser} (${unitPilihan})`); 
+                formData.append('caption', `BUKTI PENGHASILAN ${i+1} - ${namaFull} (${unitPilihan})`); 
 
                 await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendDocument`, { method: 'POST', body: formData });
             }
