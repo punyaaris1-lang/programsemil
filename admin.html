@@ -71,7 +71,7 @@
         <table>
             <thead>
                 <tr>
-                    <th>Tanggal Masuk</th>
+                    <th>Waktu Masuk</th>
                     <th>Nama Pemohon</th>
                     <th>Tipe Motor</th>
                     <th>No WA</th>
@@ -108,11 +108,20 @@
                         <div class="info-title">Nomor WhatsApp</div>
                         <div class="info-value" id="md_wa">-</div>
                         
+                        <div class="info-title">Email</div>
+                        <div class="info-value" id="md_email">-</div>
+                        
                         <div class="info-title">Tempat, Tanggal Lahir</div>
                         <div class="info-value" id="md_ttl">-</div>
                         
+                        <div class="info-title">Status Pernikahan</div>
+                        <div class="info-value" id="md_nikah">-</div>
+                        
                         <div class="info-title">Alamat KTP</div>
                         <div class="info-value" id="md_alamatKtp">-</div>
+                        
+                        <div class="info-title">Alamat Domisili</div>
+                        <div class="info-value" id="md_alamatDom">-</div>
                         
                         <div class="info-title">Aplikasi Ojol</div>
                         <div class="info-value" style="color:var(--primary);" id="md_aplikasi">-</div>
@@ -153,40 +162,52 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    let allData = []; // Simpan data sementara
-    let currentId = ""; // ID dokumen yg sedang dibuka di modal
+    let allData = []; 
+    let currentId = ""; 
 
-    // MENGAMBIL DATA DARI FIREBASE (YANG STATUSNYA 1)
+    // MENGAMBIL DATA DARI FIREBASE (HAPUS ORDER BY BIAR GAK ERROR INDEX)
     function loadData() {
         db.collection("gadingfc22")
           .where("status_pengajuan", "==", "1_Menunggu_Admin")
-          .orderBy("submittedAt", "desc")
           .onSnapshot((querySnapshot) => {
               const tbody = document.getElementById("tableBody");
               const badge = document.getElementById("countBadge");
               
-              allData = [];
-              tbody.innerHTML = "";
-              badge.innerText = `${querySnapshot.size} Antrian`;
-
+              let tempData = [];
+              
               if(querySnapshot.empty) {
                   tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:30px; color:#999;">Tidak ada pengajuan baru.</td></tr>`;
+                  badge.innerText = `0 Antrian`;
+                  allData = [];
                   return;
               }
 
               querySnapshot.forEach((doc) => {
                   let d = doc.data();
-                  d.id = doc.id; // Simpan ID unik Firebase
-                  allData.push(d);
+                  d.id = doc.id; 
+                  tempData.push(d);
+              });
 
+              // URUTKAN DATA DI JAVASCRIPT (Terbaru di atas)
+              tempData.sort((a, b) => {
+                  let timeA = a.submittedAt ? a.submittedAt.toMillis() : 0;
+                  let timeB = b.submittedAt ? b.submittedAt.toMillis() : 0;
+                  return timeB - timeA;
+              });
+
+              allData = tempData;
+              badge.innerText = `${allData.length} Antrian`;
+              tbody.innerHTML = "";
+
+              allData.forEach((d) => {
                   // Format Tanggal
-                  let tgl = d.submittedAt ? d.submittedAt.toDate().toLocaleString('id-ID') : "Baru saja";
+                  let tgl = d.submittedAt ? d.submittedAt.toDate().toLocaleString('id-ID', {day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit'}) : "Baru saja";
 
                   tbody.innerHTML += `
                       <tr>
                           <td>${tgl}</td>
                           <td style="font-weight:bold;">${d.nama}</td>
-                          <td><span style="background:#e9ecef; padding:3px 8px; border-radius:4px; font-size:12px;">${d.motor_pilihan}</span></td>
+                          <td><span style="background:#e9ecef; padding:3px 8px; border-radius:4px; font-size:12px;">${d.motor_pilihan || '-'}</span></td>
                           <td>${d.wa}</td>
                           <td><button class="btn-lihat" onclick="bukaModal('${d.id}')">Lihat Detail</button></td>
                       </tr>
@@ -207,50 +228,65 @@
         document.getElementById("md_motor").innerText = data.motor_pilihan || "-";
         document.getElementById("md_ref").innerText = data.referral || "-";
         document.getElementById("md_nik").innerText = data.nik || "-";
-        document.getElementById("md_wa").innerHTML = `<a href="https://wa.me/62${data.wa.substring(1)}" target="_blank">${data.wa}</a>`;
+        
+        // Link WA Otomatis biar gampang dihubungi
+        let nomorWa = data.wa ? data.wa.replace(/^0/, '62') : "";
+        document.getElementById("md_wa").innerHTML = `<a href="https://wa.me/${nomorWa}" target="_blank" style="color:#0056b3; text-decoration:none; font-weight:bold;">${data.wa} 💬</a>`;
+        
+        document.getElementById("md_email").innerText = data.email || "-";
         document.getElementById("md_ttl").innerText = data.ttl || "-";
+        document.getElementById("md_nikah").innerText = data.statusNikah || "-";
         document.getElementById("md_alamatKtp").innerText = data.alamatKtp || "-";
+        document.getElementById("md_alamatDom").innerText = data.alamatDomisili || "-";
         document.getElementById("md_aplikasi").innerText = data.aplikasi_ojol || "-";
         
         document.getElementById("md_pjNama").innerText = data.penjamin_nama || "-";
         document.getElementById("md_pjHub").innerText = data.penjamin_hubungan || "-";
         document.getElementById("md_pjWa").innerText = data.penjamin_wa || "-";
 
-        // 2. Isi Data Foto Dinamis (Yang ada aja yg dimunculin)
+        // 2. Isi Data Foto Dinamis (Dari link ImgBB)
         const photoKeys = [
-            {key: 'selfie_url', label: 'Foto Selfie'},
-            {key: 'ktp_url', label: 'KTP Asli'},
-            {key: 'sim_url', label: 'SIM C'},
-            {key: 'kk_url', label: 'Kartu Keluarga'},
-            {key: 'ojol_profile_url', label: 'Profil Ojol'},
-            {key: 'token_listrik_url', label: 'Token Listrik'},
-            {key: 'ktp_penjamin_url', label: 'KTP Penjamin'},
-            {key: 'foto_rumah_url', label: 'Rumah Depan'},
-            {key: 'pendapatan1_url', label: 'Gaji Bln 1'},
-            {key: 'pendapatan2_url', label: 'Gaji Bln 2'},
-            {key: 'pendapatan3_url', label: 'Gaji Bln 3'},
-            {key: 'pendapatan4_url', label: 'Gaji Bln 4'},
-            {key: 'pendapatan5_url', label: 'Gaji Bln 5'},
-            {key: 'pendapatan6_url', label: 'Gaji Bln 6'},
-            {key: 'pendapatan7_url', label: 'Gaji Bln 7'},
-            {key: 'pendapatan8_url', label: 'Gaji Bln 8'},
-            {key: 'domisili_url', label: 'Surat Domisili'}
+            {key: 'selfie_url', label: '1. Foto Selfie'},
+            {key: 'ktp_url', label: '2. KTP Asli'},
+            {key: 'sim_url', label: '3. SIM C'},
+            {key: 'kk_url', label: '4. Kartu Keluarga'},
+            {key: 'ojol_profile_url', label: '5. Profil Ojol'},
+            {key: 'token_listrik_url', label: '6. Token Listrik'},
+            {key: 'ktp_penjamin_url', label: '7. KTP Penjamin'},
+            {key: 'foto_rumah_url', label: '8. Rumah Depan'},
+            {key: 'pendapatan1_url', label: '9a. Gaji Bln 1'},
+            {key: 'pendapatan2_url', label: '9b. Gaji Bln 2'},
+            {key: 'pendapatan3_url', label: '9c. Gaji Bln 3'},
+            {key: 'pendapatan4_url', label: '9d. Gaji Bln 4'},
+            {key: 'pendapatan5_url', label: '9e. Gaji Bln 5'},
+            {key: 'pendapatan6_url', label: '9f. Gaji Bln 6'},
+            {key: 'pendapatan7_url', label: '9g. Gaji Bln 7'},
+            {key: 'pendapatan8_url', label: '9h. Gaji Bln 8'},
+            {key: 'domisili_url', label: '10. Surat Domisili'}
         ];
 
         const pContainer = document.getElementById("photoContainer");
         pContainer.innerHTML = ""; // Bersihkan dulu
 
+        let fotoAda = false;
         photoKeys.forEach(p => {
-            if (data[p.key]) { // Kalau URL fotonya ada di database
+            if (data[p.key]) { // Munculin kalau foto beneran diupload
+                fotoAda = true;
                 pContainer.innerHTML += `
                     <div class="photo-card">
                         <span style="font-size:11px; font-weight:bold; display:block; margin-bottom:5px;">${p.label}</span>
-                        <img src="${data[p.key]}" alt="${p.label}">
-                        <a href="${data[p.key]}" target="_blank" download>Buka / Download</a>
+                        <a href="${data[p.key]}" target="_blank">
+                            <img src="${data[p.key]}" alt="${p.label}">
+                        </a>
+                        <a href="${data[p.key]}" target="_blank" download>⬇️ Download / Buka</a>
                     </div>
                 `;
             }
         });
+
+        if(!fotoAda) {
+            pContainer.innerHTML = `<div style="grid-column: 1 / -1; text-align:center; padding:20px; color:#999;">Tidak ada foto terlampir.</div>`;
+        }
 
         // Tampilkan Modal
         document.getElementById("detailModal").style.display = "flex";
@@ -261,7 +297,7 @@
         currentId = "";
     }
 
-    // --- FUNGSI EKSEKUSI (UBAH STATUS) ---
+    // --- FUNGSI EKSEKUSI (UBAH STATUS ALUR) ---
 
     // 1. DITERUSKAN KE KANTOR PUSAT
     function accData() {
@@ -287,7 +323,8 @@
         if(alasan !== null && alasan !== "") {
             db.collection("gadingfc22").doc(currentId).update({
                 status_pengajuan: "Ditolak_Admin1",
-                alasan_tolak: alasan
+                alasan_tolak: alasan,
+                waktu_tolak: firebase.firestore.FieldValue.serverTimestamp()
             }).then(() => {
                 alert("Data berhasil ditolak/dikembalikan.");
                 closeModal();
@@ -295,7 +332,7 @@
         }
     }
 
-    // Jalankan load data saat web dibuka
+    // Jalankan
     window.onload = loadData;
 </script>
 
