@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Master Dashboard - Sewa Milik</title>
+    
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root { --primary: #0056b3; --bg: #f4f6f9; --success: #28a745; --danger: #dc3545; --warning: #ffc107; --dark: #343a40; --purple: #6f42c1;}
+        body { font-family: 'Poppins', sans-serif; background: var(--bg); margin: 0; padding: 20px; color: #333; }
+        
+        /* Header & Tabs */
+        .header { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 20px; text-align: center; }
+        .header h1 { margin: 0 0 15px 0; font-size: 22px; color: var(--dark); text-transform: uppercase; }
+        
+        .tab-menu { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+        .tab-btn { padding: 10px 20px; border: none; border-radius: 30px; cursor: pointer; font-weight: bold; font-size: 14px; background: #eee; color: #555; transition: 0.3s; }
+        .tab-btn.active { background: var(--primary); color: white; box-shadow: 0 4px 10px rgba(0,86,179,0.3); }
+
+        /* Table */
+        .table-container { background: white; border-radius: 10px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); overflow-x: auto; min-height: 400px; }
+        table { width: 100%; border-collapse: collapse; min-width: 900px; }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #eee; font-size: 13px; }
+        th { background: #f8f9fa; color: #555; font-weight: 600; text-transform: uppercase; font-size: 12px; }
+        tr:hover { background: #f1f8ff; }
+        
+        .btn-lihat { background: var(--dark); color: white; border: none; padding: 6px 15px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold; }
+        
+        /* Badges */
+        .badge { padding: 5px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; color: white; display: inline-block; text-align: center; min-width: 120px; }
+        .bg-grey { background: #6c757d; } .bg-orange { background: #fd7e14; } .bg-purple { background: var(--purple); } .bg-blue { background: #007bff; } .bg-green { background: var(--success); } .bg-red { background: var(--danger); }
+
+        /* Modal Pop-up */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 20px; box-sizing: border-box; }
+        .modal-content { background: white; width: 100%; max-width: 900px; height: 90vh; border-radius: 10px; display: flex; flex-direction: column; overflow: hidden; position: relative; }
+        .modal-header { padding: 15px 20px; background: var(--dark); color: white; display: flex; justify-content: space-between; align-items: center; }
+        .modal-header h2 { margin: 0; font-size: 18px; }
+        .btn-close { background: none; border: none; color: white; font-size: 24px; cursor: pointer; }
+        
+        .modal-body { padding: 20px; overflow-y: auto; flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        @media (max-width: 768px) { .modal-body { grid-template-columns: 1fr; } }
+        
+        .info-box { background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #eee; margin-bottom: 15px; }
+        .info-title { font-size: 11px; color: #888; text-transform: uppercase; font-weight: bold; margin-bottom: 3px; }
+        .info-value { font-size: 13px; color: #333; font-weight: 600; margin-bottom: 10px; }
+        
+        .photo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .photo-card { border: 1px solid #ddd; padding: 10px; border-radius: 6px; text-align: center; }
+        .photo-card img { width: 100%; height: 100px; object-fit: cover; border-radius: 4px; margin-bottom: 5px; }
+        .photo-card a { display: block; background: #e9ecef; color: #333; text-decoration: none; font-size: 11px; padding: 5px; border-radius: 4px; font-weight: bold; }
+        
+        /* Modal Footer Buttons */
+        .modal-footer { padding: 15px 20px; background: #f8f9fa; border-top: 1px solid #eee; display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap; }
+        .btn-action { color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 13px; }
+        
+        #md_alasan_box { background: #fff3cd; border: 1px solid #ffeeba; color: #856404; padding: 15px; border-radius: 8px; margin-bottom: 15px; display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Dashboard Terpadu</h1>
+        <div class="tab-menu">
+            <button class="tab-btn active" id="tab_admin1" onclick="pindahTab('admin1')">1. Berkas Baru (Admin 1)</button>
+            <button class="tab-btn" id="tab_admin2" onclick="pindahTab('admin2')">2. Verifikasi (Admin 2)</button>
+            <button class="tab-btn" id="tab_monitor" onclick="pindahTab('monitor')">3. Semua Data (Monitor)</button>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Waktu Masuk</th>
+                    <th>Nama Pemohon</th>
+                    <th>Motor</th>
+                    <th>Status</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                <tr><td colspan="5" style="text-align:center;">Memuat data...</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="modal-overlay" id="detailModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalNama">Detail Pemohon</h2>
+                <button class="btn-close" onclick="closeModal()">&times;</button>
+            </div>
+            
+            <div class="modal-body">
+                <div>
+                    <div id="md_alasan_box">
+                        <strong style="display:block; margin-bottom:5px;">⚠️ Catatan:</strong>
+                        <span id="md_alasan_teks"></span>
+                    </div>
+
+                    <div class="info-box">
+                        <div class="info-title">Pilihan Kendaraan</div><div class="info-value" id="md_motor">-</div>
+                        <div class="info-title">NIK</div><div class="info-value" id="md_nik">-</div>
+                        <div class="info-title">Nomor WhatsApp</div><div class="info-value" id="md_wa">-</div>
+                        <div class="info-title">Alamat KTP</div><div class="info-value" id="md_alamatKtp">-</div>
+                        <div class="info-title">Alamat Domisili</div><div class="info-value" id="md_alamatDom">-</div>
+                        <div class="info-title">Aplikasi Ojol</div><div class="info-value" style="color:var(--primary);" id="md_aplikasi">-</div>
+                    </div>
+                    <h3 style="color:var(--dark); font-size:15px;">Data Penjamin</h3>
+                    <div class="info-box">
+                        <div class="info-title">Nama Penjamin</div><div class="info-value" id="md_pjNama">-</div>
+                        <div class="info-title">Hubungan</div><div class="info-value" id="md_pjHub">-</div>
+                        <div class="info-title">No WA Penjamin</div><div class="info-value" id="md_pjWa">-</div>
+                    </div>
+                </div>
+                <div>
+                    <h3 style="margin-top:0; color:var(--dark); font-size:15px;">Dokumen Pendukung</h3>
+                    <div class="photo-grid" id="photoContainer"></div>
+                </div>
+            </div>
+
+            <div class="modal-footer" id="modalFooter">
+                </div>
+        </div>
+    </div>
+
+<script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAk3G5aQUBVe_g7_peVu1F6xllP_RejGq0",
+      authDomain: "rtomaka-e67b5.firebaseapp.com",
+      projectId: "rtomaka-e67b5"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    let allData = []; 
+    let currentTab = 'admin1'; // Tab default saat web dibuka
+    let currentId = "";
+
+    // MENGAMBIL SEMUA DATA 1x SAJA
+    function loadData() {
+        db.collection("gadingfc22").onSnapshot((querySnapshot) => {
+            let tempData = [];
+            querySnapshot.forEach((doc) => {
+                let d = doc.data(); d.id = doc.id; tempData.push(d);
+            });
+            
+            // Urutkan dari yg paling baru
+            tempData.sort((a, b) => {
+                let timeA = a.submittedAt ? a.submittedAt.toMillis() : 0;
+                let timeB = b.submittedAt ? b.submittedAt.toMillis() : 0;
+                return timeB - timeA;
+            });
+
+            allData = tempData;
+            renderTable(); // Tampilkan sesuai Tab yg aktif
+        });
+    }
+
+    // PINDAH TAB
+    function pindahTab(tabName) {
+        currentTab = tabName;
+        // Ubah warna tombol tab
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.getElementById('tab_' + tabName).classList.add('active');
+        
+        renderTable(); // Refresh isi tabel
+    }
+
+    // TAMPILKAN ISI TABEL SESUAI TAB
+    function renderTable() {
+        const tbody = document.getElementById("tableBody");
+        tbody.innerHTML = "";
+
+        // Filter data sesuai Tab
+        let filteredData = [];
+        if (currentTab === 'admin1') {
+            filteredData = allData.filter(d => d.status_pengajuan === "1_Menunggu_Admin");
+        } else if (currentTab === 'admin2') {
+            filteredData = allData.filter(d => d.status_pengajuan === "2_Menunggu_Admin2" || d.status_pengajuan === "3_Sedang_Diverifikasi");
+        } else if (currentTab === 'monitor') {
+            filteredData = allData; // Tampilkan Semua
+        }
+
+        if(filteredData.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:30px; color:#999;">Tidak ada data di kategori ini.</td></tr>`;
+            return;
+        }
+
+        filteredData.forEach((d) => {
+            let tgl = d.submittedAt ? d.submittedAt.toDate().toLocaleString('id-ID', {day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit'}) : "-";
+            let statusHtml = getStatusBadge(d.status_pengajuan);
+
+            tbody.innerHTML += `
+                <tr>
+                    <td>${tgl}</td>
+                    <td style="font-weight:bold;">${d.nama}</td>
+                    <td>${d.motor_pilihan || '-'}</td>
+                    <td>${statusHtml}</td>
+                    <td><button class="btn-lihat" onclick="bukaModal('${d.id}')">Buka Berkas</button></td>
+                </tr>
+            `;
+        });
+    }
+
+    function getStatusBadge(status) {
+        switch(status) {
+            case "1_Menunggu_Admin": return `<span class="badge bg-grey">Cek Berkas</span>`;
+            case "Revisi_Kurang_Data": return `<span class="badge bg-orange">Kurang Data</span>`;
+            case "2_Menunggu_Admin2": return `<span class="badge bg-purple">Antre Analis</span>`;
+            case "3_Sedang_Diverifikasi": return `<span class="badge bg-blue">Diverifikasi</span>`;
+            case "4_Disetujui_Kantor": return `<span class="badge bg-green">ACC Final</span>`;
+            case "Ditolak_Admin1": 
+            case "Ditolak_Final": return `<span class="badge bg-red">Ditolak</span>`;
+            default: return `<span class="badge bg-grey">Belum Diproses</span>`;
+        }
+    }
+
+    // BUKA POP-UP DETAIL
+    function bukaModal(id) {
+        currentId = id;
+        const data = allData.find(item => item.id === id);
+        if(!data) return;
+
+        document.getElementById("modalNama").innerText = `Pemohon: ${data.nama}`;
+        document.getElementById("md_motor").innerText = data.motor_pilihan || "-";
+        document.getElementById("md_nik").innerText = data.nik || "-";
+        
+        let nomorWa = data.wa ? data.wa.replace(/^0/, '62') : "";
+        document.getElementById("md_wa").innerHTML = `<a href="https://wa.me/${nomorWa}" target="_blank">${data.wa} 💬</a>`;
+        
+        document.getElementById("md_alamatKtp").innerText = data.alamatKtp || "-";
+        document.getElementById("md_alamatDom").innerText = data.alamatDomisili || "-";
+        document.getElementById("md_aplikasi").innerText = data.aplikasi_ojol || "-";
+        document.getElementById("md_pjNama").innerText = data.penjamin_nama || "-";
+        document.getElementById("md_pjHub").innerText = data.penjamin_hubungan || "-";
+        document.getElementById("md_pjWa").innerText = data.penjamin_wa || "-";
+
+        const boxAlasan = document.getElementById("md_alasan_box");
+        if(data.status_pengajuan.includes("Revisi") || data.status_pengajuan.includes("Ditolak")) {
+            boxAlasan.style.display = "block";
+            document.getElementById("md_alasan_teks").innerText = data.catatan_kekurangan || data.alasan_tolak || "Ditolak oleh sistem";
+        } else {
+            boxAlasan.style.display = "none";
+        }
+
+        // FOTO
+        const photoKeys = [
+            {key: 'selfie_url', label: '1. Selfie'}, {key: 'ktp_url', label: '2. KTP'},
+            {key: 'sim_url', label: '3. SIM'}, {key: 'kk_url', label: '4. KK'},
+            {key: 'ojol_profile_url', label: '5. Ojol'}, {key: 'token_listrik_url', label: '6. Token Listrik'},
+            {key: 'ktp_penjamin_url', label: '7. KTP Penj.'}, {key: 'foto_rumah_url', label: '8. Rumah'},
+            {key: 'pendapatan1_url', label: '9a. Gaji 1'}, {key: 'pendapatan2_url', label: '9b. Gaji 2'},
+            {key: 'pendapatan3_url', label: '9c. Gaji 3'}, {key: 'pendapatan4_url', label: '9d. Gaji 4'},
+            {key: 'pendapatan5_url', label: '9e. Gaji 5'}, {key: 'pendapatan6_url', label: '9f. Gaji 6'},
+            {key: 'pendapatan7_url', label: '9g. Gaji 7'}, {key: 'pendapatan8_url', label: '9h. Gaji 8'},
+            {key: 'domisili_url', label: '10. Domisili'}
+        ];
+
+        const pContainer = document.getElementById("photoContainer");
+        pContainer.innerHTML = "";
+        photoKeys.forEach(p => {
+            if (data[p.key]) {
+                pContainer.innerHTML += `
+                    <div class="photo-card">
+                        <span style="font-size:11px; font-weight:bold; display:block; margin-bottom:5px;">${p.label}</span>
+                        <a href="${data[p.key]}" target="_blank"><img src="${data[p.key]}"></a>
+                        <a href="${data[p.key]}" target="_blank">Buka Full</a>
+                    </div>
+                `;
+            }
+        });
+
+        // ----------------------------------------------------
+        // LOGIKA TOMBOL EKSEKUSI (BERUBAH SESUAI TAB YANG DIBUKA)
+        // ----------------------------------------------------
+        const footer = document.getElementById("modalFooter");
+        footer.innerHTML = ""; // Bersihkan tombol
+
+        if (currentTab === 'admin1') {
+            footer.innerHTML = `
+                <button class="btn-action bg-red" onclick="ubahStatus('Revisi_Kurang_Data', true, 'Masukkan catatan revisi:')">TOLAK / REVISI</button>
+                <button class="btn-action bg-green" onclick="ubahStatus('2_Menunggu_Admin2', false, 'Teruskan ke Admin 2?')">✅ TERUSKAN KE ADMIN 2</button>
+            `;
+        } else if (currentTab === 'admin2') {
+            footer.innerHTML = `
+                <button class="btn-action bg-red" onclick="ubahStatus('Ditolak_Final', true, 'Alasan tolak final:')">TOLAK FINAL</button>
+                <button class="btn-action bg-orange" style="background:#ffc107; color:black;" onclick="ubahStatus('3_Sedang_Diverifikasi', false, 'Ubah status ke Sedang Diverifikasi?')">PROSES VERIFIKASI</button>
+                <button class="btn-action bg-green" onclick="ubahStatus('4_Disetujui_Kantor', false, 'Yakin ACC FINAL data ini?')">🌟 ACC FINAL (SETUJUI)</button>
+            `;
+        } else {
+            // Tab Monitor = Cuma tombol tutup (Gak bisa ngubah data)
+            footer.innerHTML = `<button class="btn-action bg-grey" onclick="closeModal()">TUTUP</button>`;
+        }
+
+        document.getElementById("detailModal").style.display = "flex";
+    }
+
+    function closeModal() { document.getElementById("detailModal").style.display = "none"; currentId = ""; }
+
+    // FUNGSI UBAH STATUS (DIPAKAI OLEH SEMUA TOMBOL)
+    function ubahStatus(statusBaru, butuhAlasan, pesanKonfirmasi) {
+        if(!currentId) return;
+
+        let payload = { status_pengajuan: statusBaru };
+
+        // Kalau tombolnya butuh alasan (Tolak / Revisi)
+        if(butuhAlasan) {
+            const alasan = prompt(pesanKonfirmasi);
+            if(alasan === null || alasan === "") return; // Batal
+            
+            if(statusBaru === "Revisi_Kurang_Data" || statusBaru === "Ditolak_Admin1") payload.catatan_kekurangan = alasan;
+            else payload.alasan_tolak = alasan;
+        } else {
+            // Kalau tombol biasa, minta konfirmasi Yes/No
+            if(!confirm(pesanKonfirmasi)) return; 
+        }
+
+        // Tembak ke database
+        db.collection("gadingfc22").doc(currentId).update(payload)
+        .then(() => {
+            alert("Status berhasil diubah!");
+            closeModal();
+        })
+        .catch(error => alert("Gagal: " + error.message));
+    }
+
+    window.onload = loadData;
+</script>
+
+</body>
+</html>
