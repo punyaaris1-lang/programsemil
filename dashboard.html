@@ -7,11 +7,13 @@
     
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 
     <style>
-        :root { --primary: #0056b3; --bg: #f4f6f9; --success: #28a745; --danger: #dc3545; --warning: #ffc107; --dark: #343a40; --purple: #6f42c1;}
+        :root { --primary: #0056b3; --bg: #f4f6f9; --success: #28a745; --danger: #dc3545; --warning: #ffc107; --dark: #343a40; --purple: #6f42c1; --info: #17a2b8;}
         body { font-family: 'Poppins', sans-serif; background: var(--bg); margin: 0; padding: 20px; color: #333; }
         
         /* Header & Tabs */
@@ -55,8 +57,12 @@
         .photo-card a { display: block; background: #e9ecef; color: #333; text-decoration: none; font-size: 11px; padding: 5px; border-radius: 4px; font-weight: bold; }
         
         /* Modal Footer Buttons */
-        .modal-footer { padding: 15px 20px; background: #f8f9fa; border-top: 1px solid #eee; display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap; }
+        .modal-footer { padding: 15px 20px; background: #f8f9fa; border-top: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .footer-left { display: flex; gap: 10px; }
+        .footer-right { display: flex; gap: 10px; }
         .btn-action { color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 13px; }
+        .btn-zip { background: var(--info); }
+        .btn-zip:hover { background: #138496; }
         
         #md_alasan_box { background: #fff3cd; border: 1px solid #ffeeba; color: #856404; padding: 15px; border-radius: 8px; margin-bottom: 15px; display: none; }
     </style>
@@ -125,7 +131,11 @@
             </div>
 
             <div class="modal-footer" id="modalFooter">
-                </div>
+                <div class="footer-left" id="footerLeft">
+                    </div>
+                <div class="footer-right" id="footerRight">
+                    </div>
+            </div>
         </div>
     </div>
 
@@ -139,7 +149,7 @@
     const db = firebase.firestore();
 
     let allData = []; 
-    let currentTab = 'admin1'; // Tab default saat web dibuka
+    let currentTab = 'admin1'; 
     let currentId = "";
 
     // MENGAMBIL SEMUA DATA 1x SAJA
@@ -150,7 +160,6 @@
                 let d = doc.data(); d.id = doc.id; tempData.push(d);
             });
             
-            // Urutkan dari yg paling baru
             tempData.sort((a, b) => {
                 let timeA = a.submittedAt ? a.submittedAt.toMillis() : 0;
                 let timeB = b.submittedAt ? b.submittedAt.toMillis() : 0;
@@ -158,37 +167,32 @@
             });
 
             allData = tempData;
-            renderTable(); // Tampilkan sesuai Tab yg aktif
+            renderTable(); 
         });
     }
 
-    // PINDAH TAB
     function pindahTab(tabName) {
         currentTab = tabName;
-        // Ubah warna tombol tab
         document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
         document.getElementById('tab_' + tabName).classList.add('active');
-        
-        renderTable(); // Refresh isi tabel
+        renderTable(); 
     }
 
-    // TAMPILKAN ISI TABEL SESUAI TAB
     function renderTable() {
         const tbody = document.getElementById("tableBody");
         tbody.innerHTML = "";
 
-        // Filter data sesuai Tab
         let filteredData = [];
         if (currentTab === 'admin1') {
             filteredData = allData.filter(d => d.status_pengajuan === "1_Menunggu_Admin");
         } else if (currentTab === 'admin2') {
             filteredData = allData.filter(d => d.status_pengajuan === "2_Menunggu_Admin2" || d.status_pengajuan === "3_Sedang_Diverifikasi");
         } else if (currentTab === 'monitor') {
-            filteredData = allData; // Tampilkan Semua
+            filteredData = allData; 
         }
 
         if(filteredData.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:30px; color:#999;">Tidak ada data di kategori ini.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:30px; color:#999;">Tidak ada data.</td></tr>`;
             return;
         }
 
@@ -221,7 +225,6 @@
         }
     }
 
-    // BUKA POP-UP DETAIL
     function bukaModal(id) {
         currentId = id;
         const data = allData.find(item => item.id === id);
@@ -249,7 +252,6 @@
             boxAlasan.style.display = "none";
         }
 
-        // FOTO
         const photoKeys = [
             {key: 'selfie_url', label: '1. Selfie'}, {key: 'ktp_url', label: '2. KTP'},
             {key: 'sim_url', label: '3. SIM'}, {key: 'kk_url', label: '4. KK'},
@@ -276,26 +278,31 @@
             }
         });
 
-        // ----------------------------------------------------
-        // LOGIKA TOMBOL EKSEKUSI (BERUBAH SESUAI TAB YANG DIBUKA)
-        // ----------------------------------------------------
-        const footer = document.getElementById("modalFooter");
-        footer.innerHTML = ""; // Bersihkan tombol
+        // --- TOMBOL DI BAWAH (KIRI & KANAN) ---
+        const footerLeft = document.getElementById("footerLeft");
+        const footerRight = document.getElementById("footerRight");
+        
+        // KIRI: Tombol Download ZIP (Selalu Muncul di Tab Manapun)
+        footerLeft.innerHTML = `
+            <button class="btn-action btn-zip" id="btnZip" onclick="downloadSemuaZIP('${data.id}')">
+                ⬇️ DOWNLOAD SEMUA (ZIP Folder)
+            </button>
+        `;
 
+        // KANAN: Tombol ACC/Tolak Sesuai Tab
         if (currentTab === 'admin1') {
-            footer.innerHTML = `
+            footerRight.innerHTML = `
                 <button class="btn-action bg-red" onclick="ubahStatus('Revisi_Kurang_Data', true, 'Masukkan catatan revisi:')">TOLAK / REVISI</button>
                 <button class="btn-action bg-green" onclick="ubahStatus('2_Menunggu_Admin2', false, 'Teruskan ke Admin 2?')">✅ TERUSKAN KE ADMIN 2</button>
             `;
         } else if (currentTab === 'admin2') {
-            footer.innerHTML = `
+            footerRight.innerHTML = `
                 <button class="btn-action bg-red" onclick="ubahStatus('Ditolak_Final', true, 'Alasan tolak final:')">TOLAK FINAL</button>
                 <button class="btn-action bg-orange" style="background:#ffc107; color:black;" onclick="ubahStatus('3_Sedang_Diverifikasi', false, 'Ubah status ke Sedang Diverifikasi?')">PROSES VERIFIKASI</button>
                 <button class="btn-action bg-green" onclick="ubahStatus('4_Disetujui_Kantor', false, 'Yakin ACC FINAL data ini?')">🌟 ACC FINAL (SETUJUI)</button>
             `;
         } else {
-            // Tab Monitor = Cuma tombol tutup (Gak bisa ngubah data)
-            footer.innerHTML = `<button class="btn-action bg-grey" onclick="closeModal()">TUTUP</button>`;
+            footerRight.innerHTML = `<button class="btn-action bg-grey" onclick="closeModal()">TUTUP</button>`;
         }
 
         document.getElementById("detailModal").style.display = "flex";
@@ -303,31 +310,117 @@
 
     function closeModal() { document.getElementById("detailModal").style.display = "none"; currentId = ""; }
 
-    // FUNGSI UBAH STATUS (DIPAKAI OLEH SEMUA TOMBOL)
     function ubahStatus(statusBaru, butuhAlasan, pesanKonfirmasi) {
         if(!currentId) return;
-
         let payload = { status_pengajuan: statusBaru };
 
-        // Kalau tombolnya butuh alasan (Tolak / Revisi)
         if(butuhAlasan) {
             const alasan = prompt(pesanKonfirmasi);
-            if(alasan === null || alasan === "") return; // Batal
+            if(alasan === null || alasan === "") return; 
             
             if(statusBaru === "Revisi_Kurang_Data" || statusBaru === "Ditolak_Admin1") payload.catatan_kekurangan = alasan;
             else payload.alasan_tolak = alasan;
         } else {
-            // Kalau tombol biasa, minta konfirmasi Yes/No
             if(!confirm(pesanKonfirmasi)) return; 
         }
 
-        // Tembak ke database
         db.collection("gadingfc22").doc(currentId).update(payload)
         .then(() => {
             alert("Status berhasil diubah!");
             closeModal();
-        })
-        .catch(error => alert("Gagal: " + error.message));
+        }).catch(error => alert("Gagal: " + error.message));
+    }
+
+    // ==========================================
+    // MESIN DOWNLOAD ZIP FOLDER
+    // ==========================================
+    async function downloadSemuaZIP(id) {
+        const data = allData.find(item => item.id === id);
+        if(!data) return;
+
+        const btnZip = document.getElementById("btnZip");
+        btnZip.disabled = true;
+        btnZip.innerText = "⏳ Sedang Memproses ZIP (Mohon Tunggu)...";
+        btnZip.style.background = "#6c757d";
+
+        try {
+            var zip = new JSZip();
+            
+            // 1. BUAT FILE TEKS BIODATA
+            let biodataText = `
+DATA PENGAJUAN SEWA MILIK
+====================================
+Nama Lengkap      : ${data.nama}
+NIK               : ${data.nik || '-'}
+Pilihan Motor     : ${data.motor_pilihan || '-'}
+Referral          : ${data.referral || '-'}
+No WhatsApp       : ${data.wa || '-'}
+Email             : ${data.email || '-'}
+Alamat KTP        : ${data.alamatKtp || '-'}
+Alamat Domisili   : ${data.alamatDomisili || '-'}
+Aplikasi Ojol     : ${data.aplikasi_ojol || '-'}
+
+DATA PENJAMIN
+====================================
+Nama Penjamin     : ${data.penjamin_nama || '-'}
+Hubungan          : ${data.penjamin_hubungan || '-'}
+No WA Penjamin    : ${data.penjamin_wa || '-'}
+            `;
+            
+            // Masukkan Biodata ke dalam ZIP
+            zip.file(`Biodata_${data.nama}.txt`, biodataText);
+
+            // 2. KUMPULKAN SEMUA FOTO
+            const photoKeys = [
+                {key: 'selfie_url', label: '1_Selfie'}, {key: 'ktp_url', label: '2_KTP'},
+                {key: 'sim_url', label: '3_SIM'}, {key: 'kk_url', label: '4_KK'},
+                {key: 'ojol_profile_url', label: '5_Profil_Ojol'}, {key: 'token_listrik_url', label: '6_Token_Listrik'},
+                {key: 'ktp_penjamin_url', label: '7_KTP_Penjamin'}, {key: 'foto_rumah_url', label: '8_Rumah'},
+                {key: 'pendapatan1_url', label: '9a_Gaji1'}, {key: 'pendapatan2_url', label: '9b_Gaji2'},
+                {key: 'pendapatan3_url', label: '9c_Gaji3'}, {key: 'pendapatan4_url', label: '9d_Gaji4'},
+                {key: 'pendapatan5_url', label: '9e_Gaji5'}, {key: 'pendapatan6_url', label: '9f_Gaji6'},
+                {key: 'pendapatan7_url', label: '9g_Gaji7'}, {key: 'pendapatan8_url', label: '9h_Gaji8'},
+                {key: 'domisili_url', label: '10_Domisili'}
+            ];
+
+            // Loop dan download fotonya dari ImgBB ke dalam ZIP
+            for (let p of photoKeys) {
+                if (data[p.key]) {
+                    try {
+                        const response = await fetch(data[p.key]);
+                        const blob = await response.blob();
+                        zip.file(`${p.label}.jpg`, blob); // Taruh di zip
+                    } catch (e) {
+                        console.error("Gagal download foto: ", p.label);
+                    }
+                }
+            }
+
+            // 3. GENERATE DAN DOWNLOAD ZIP NYA
+            zip.generateAsync({type:"blob"}).then(function(content) {
+                // Trik download otomatis
+                const link = document.createElement('a');
+                let motor = data.motor_pilihan ? data.motor_pilihan : "Pengajuan";
+                link.download = `${motor} - ${data.nama}.zip`;
+                link.href = URL.createObjectURL(content);
+                link.click();
+
+                // Kembalikan tombol seperti semula
+                btnZip.disabled = false;
+                btnZip.innerText = "✅ ZIP BERHASIL DIDOWNLOAD";
+                btnZip.style.background = "#28a745";
+                setTimeout(() => {
+                    btnZip.innerText = "⬇️ DOWNLOAD SEMUA (ZIP Folder)";
+                    btnZip.style.background = "var(--info)";
+                }, 3000);
+            });
+
+        } catch (err) {
+            alert("Terjadi kesalahan saat membuat ZIP: " + err.message);
+            btnZip.disabled = false;
+            btnZip.innerText = "⬇️ DOWNLOAD SEMUA (ZIP Folder)";
+            btnZip.style.background = "var(--info)";
+        }
     }
 
     window.onload = loadData;
