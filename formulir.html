@@ -96,6 +96,9 @@ input:disabled { background: #e2e8f0; cursor: not-allowed; }
     box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2); transition: 0.2s;
 }
 .btn:hover { background: #1d4ed8; transform: translateY(-1px); }
+.btn-wa { background: #25D366; box-shadow: 0 4px 12px rgba(37, 211, 102, 0.2); }
+.btn-wa:hover { background: #1ebc5c; }
+
 #loading { display: none; text-align: center; margin-top: 15px; font-size: 14px; color: var(--primary); font-weight: 700; }
 
 #preview_ojol { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
@@ -105,140 +108,172 @@ input:disabled { background: #e2e8f0; cursor: not-allowed; }
 <body>
 
 <div class="container">
-    <div class="header">
-        <h2>FORMULIR PENGAJUAN</h2>
-        <p>Lengkapi berkas untuk verifikasi Sewa Milik</p>
-    </div>
-
-    <form id="formUniversal">
-        
-        <div class="form-group" style="background: var(--primary-light); padding: 20px; border-radius: 15px; border: 1px solid #bfdbfe; margin-bottom: 25px;">
-            <label style="color: #1e40af;">Unit Kendaraan Pilihan</label>
-            <select id="unit" required style="border-color: #93c5fd; font-weight: 800; color: #1e3a8a; font-size: 16px;">
-                <option value="">-- Pilih Kendaraan --</option>
-                <option value="Polytron Fox 350">Polytron Fox 350</option>
-                <option value="Alva N3">Alva N3</option>
-                <option value="MAKA Cavalry">MAKA Cavalry</option>
-            </select>
+    
+    <div id="mainFormArea">
+        <div class="header">
+            <h2>FORMULIR PENGAJUAN</h2>
+            <p>Lengkapi berkas untuk verifikasi Sewa Milik</p>
         </div>
 
-        <div class="section-title">Data Pribadi Pemohon</div>
-        <div class="form-group"><label>NIK KTP</label><input type="number" id="nik" required placeholder="16 Digit Nomor Induk Kependudukan"></div>
-        <div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap:10px;">
-            <div><label>Nama Depan</label><input type="text" id="namaDepan" required></div>
-            <div><label>Nama Belakang</label><input type="text" id="namaBelakang" required></div>
-        </div>
-        <div class="form-group"><label>Nomor WhatsApp</label><input type="tel" id="wa" required placeholder="08..."></div>
-        <div class="form-group"><label>Alamat Email</label><input type="email" id="email" required></div>
-
-        <div class="section-title">Informasi Alamat</div>
-        <div class="form-group">
-            <label>Alamat KTP</label>
-            <textarea id="alamatKtp" rows="2" required placeholder="Masukkan alamat sesuai KTP..."></textarea>
-        </div>
-        
-        <div class="checkbox-item" style="margin-bottom: 15px;">
-            <input type="checkbox" id="samaKtp">
-            <label for="samaKtp" style="margin: 0; font-weight: 600; font-size: 13px; color: var(--primary); cursor: pointer;">
-                Centang jika Alamat Domisili sama dengan Alamat KTP
-            </label>
-        </div>
-
-        <div class="form-group">
-            <label>Alamat Domisili</label>
-            <textarea id="alamatDomisili" rows="2" required placeholder="Masukkan alamat tempat tinggal sekarang..."></textarea>
-        </div>
-
-        <div class="section-title">Data Penjamin</div>
-        <div class="form-group"><label>Nama Penjamin</label><input type="text" id="penjaminNama" required></div>
-        <div class="form-group"><label>Hubungan Penjamin</label>
-            <select id="penjaminHubungan" required>
-                <option value="">-- Pilih Hubungan --</option>
-                <option>Orang Tua</option><option>Suami/Istri</option><option>Saudara Kandung</option><option>Anak</option>
-            </select>
-        </div>
-        <div class="form-group"><label>WhatsApp Penjamin</label><input type="tel" id="penjaminTelp" required></div>
-
-        <div class="section-title">Dokumen Pendukung (Wajib Asli)</div>
-        
-        <div class="form-group"><label>1. Pilih Salah Satu Dokumen Tambahan</label>
-            <div class="choice-container">
-                <label class="choice-item"><input type="radio" name="dok_pilihan" value="SKCK" required> SKCK</label>
-                <label class="choice-item"><input type="radio" name="dok_pilihan" value="IJAZAH"> IJAZAH</label>
-                <label class="choice-item"><input type="radio" name="dok_pilihan" value="AKTE"> AKTE LAHIR</label>
-                <label class="choice-item"><input type="radio" name="dok_pilihan" value="NPWP"> NPWP</label>
+        <form id="formUniversal">
+            <div class="form-group" style="background: var(--primary-light); padding: 20px; border-radius: 15px; border: 1px solid #bfdbfe; margin-bottom: 25px;">
+                <label style="color: #1e40af;">Unit Kendaraan Pilihan</label>
+                <select id="unit" required style="border-color: #93c5fd; font-weight: 800; color: #1e3a8a; font-size: 16px;">
+                    <option value="">-- Pilih Kendaraan --</option>
+                    <option value="Polytron Fox 350">Polytron Fox 350</option>
+                    <option value="Alva N3">Alva N3</option>
+                    <option value="MAKA Cavalry">MAKA Cavalry</option>
+                </select>
             </div>
-            <div class="upload-box">
-                <span class="icon-up">📂</span><span class="text-up">Tap Upload Dokumen Yang Dipilih</span>
-                <input type="file" id="file_opsional" accept="image/*" required onchange="prev(this)"><img class="preview" id="show_file_opsional">
+
+            <div class="section-title">Data Pribadi Pemohon</div>
+            <div class="form-group"><label>NIK KTP</label><input type="number" id="nik" required placeholder="16 Digit Nomor Induk Kependudukan"></div>
+            <div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                <div><label>Nama Depan</label><input type="text" id="namaDepan" required></div>
+                <div><label>Nama Belakang</label><input type="text" id="namaBelakang" required></div>
             </div>
-        </div>
+            <div class="form-group"><label>Nomor WhatsApp</label><input type="tel" id="wa" required placeholder="08..."></div>
+            <div class="form-group"><label>Alamat Email</label><input type="email" id="email" required placeholder="email@contoh.com"></div>
 
-        <div class="form-group"><label>2. Foto KTP Pemohon <span class="wajib-asli">Asli</span></label>
-            <div class="upload-box"><span class="icon-up">📸</span><span class="text-up">Tap Upload KTP</span>
-            <input type="file" id="ktp" accept="image/*" required onchange="prev(this)"><img class="preview" id="show_ktp"></div>
-        </div>
+            <div class="section-title">Informasi Alamat</div>
+            <div class="form-group"><label>Alamat KTP</label><textarea id="alamatKtp" rows="2" required placeholder="Masukkan alamat sesuai KTP..."></textarea></div>
+            <div class="checkbox-item" style="margin-bottom: 15px;">
+                <input type="checkbox" id="samaKtp">
+                <label for="samaKtp" style="margin: 0; font-weight: 600; font-size: 13px; color: var(--primary); cursor: pointer;">
+                    Centang jika Alamat Domisili sama dengan Alamat KTP
+                </label>
+            </div>
+            <div class="form-group"><label>Alamat Domisili</label><textarea id="alamatDomisili" rows="2" required placeholder="Masukkan alamat tempat tinggal sekarang..."></textarea></div>
 
-        <div class="form-group"><label>3. Foto SIM Pemohon <span class="wajib-asli">Asli</span></label>
-            <div class="upload-box"><span class="icon-up">🪪</span><span class="text-up">Tap Upload SIM</span>
-            <input type="file" id="sim" accept="image/*" required onchange="prev(this)"><img class="preview" id="show_sim"></div>
-        </div>
+            <div class="section-title">Data Penjamin</div>
+            <div class="form-group"><label>Nama Penjamin</label><input type="text" id="penjaminNama" required></div>
+            <div class="form-group"><label>Hubungan Penjamin</label>
+                <select id="penjaminHubungan" required>
+                    <option value="">-- Pilih Hubungan --</option>
+                    <option>Orang Tua</option><option>Suami/Istri</option><option>Saudara Kandung</option><option>Anak</option>
+                </select>
+            </div>
+            <div class="form-group"><label>WhatsApp Penjamin</label><input type="tel" id="penjaminTelp" required></div>
 
-        <div class="form-group"><label>4. Foto Kartu Keluarga <span class="wajib-asli">Asli</span></label>
-            <div class="upload-box"><span class="icon-up">🏠</span><span class="text-up">Tap Upload KK</span>
-            <input type="file" id="kk" accept="image/*" required onchange="prev(this)"><img class="preview" id="show_kk"></div>
-        </div>
-
-        <div class="form-group"><label>5. Bukti Pembelian Token Listrik <span class="wajib-asli">Asli</span></label>
-            <div class="upload-box"><span class="icon-up">⚡</span><span class="text-up">Tap Upload Bukti</span>
-            <input type="file" id="rumah" accept="image/*" required onchange="prev(this)"><img class="preview" id="show_rumah"></div>
-        </div>
-
-        <div class="form-group"><label>6. Foto KTP Penjamin <span class="wajib-asli">Asli</span></label>
-            <div class="upload-box"><span class="icon-up">👥</span><span class="text-up">Tap Upload KTP Penjamin</span>
-            <input type="file" id="ktp_penjamin" accept="image/*" required onchange="prev(this)"><img class="preview" id="show_ktp_penjamin"></div>
-        </div>
-
-        <div class="form-group"><label>7. Surat Keterangan Domisili <span class="wajib-asli">Asli</span></label>
-            <div class="upload-box"><span class="icon-up">📍</span><span class="text-up">Tap Upload Domisili</span>
-            <input type="file" id="surat_domisili" accept="image/*" required onchange="prev(this)"><img class="preview" id="show_surat_domisili"></div>
-        </div>
-
-        <div class="form-group"><label>8. Foto Tampak Depan Rumah</label>
-            <div class="upload-box"><span class="icon-up">🏡</span><span class="text-up">Tap Upload Foto Rumah</span>
-            <input type="file" id="foto_rumah_depan" accept="image/*" required onchange="prev(this)"><img class="preview" id="show_foto_rumah_depan"></div>
-        </div>
-
-        <div class="section-title">Data Pekerjaan / Ojol</div>
-        <div class="form-group"><label>Aplikasi yang Digunakan</label>
-            <div class="checkbox-group" id="ojolCheck">
-                <label class="checkbox-item"><input type="checkbox" value="Gojek"> Gojek</label>
-                <label class="checkbox-item"><input type="checkbox" value="Grab"> Grab</label>
-                <label class="checkbox-item"><input type="checkbox" value="Maxim"> Maxim</label>
-                <div class="checkbox-item" style="display:flex; gap:10px; align-items:center;">
-                    <input type="checkbox" id="checkLainnya" value="Lainnya"> 
-                    <label for="checkLainnya" style="margin:0; cursor:pointer;">Lainnya:</label>
-                    <input type="text" id="textLainnya" placeholder="Ketik di sini..." style="padding:10px; flex:1; margin:0;" disabled required>
+            <div class="section-title">Dokumen Pendukung (Wajib Asli)</div>
+            
+            <div class="form-group"><label>1. Pilih Salah Satu Dokumen Tambahan</label>
+                <div class="choice-container">
+                    <label class="choice-item"><input type="radio" name="dok_pilihan" value="SKCK" required> SKCK</label>
+                    <label class="choice-item"><input type="radio" name="dok_pilihan" value="IJAZAH"> IJAZAH</label>
+                    <label class="choice-item"><input type="radio" name="dok_pilihan" value="AKTE"> AKTE LAHIR</label>
+                    <label class="choice-item"><input type="radio" name="dok_pilihan" value="NPWP"> NPWP</label>
+                </div>
+                <div class="upload-box">
+                    <span class="icon-up">📂</span><span class="text-up">Tap Upload Dokumen Yang Dipilih</span>
+                    <input type="file" id="file_opsional" accept="image/*,application/pdf" required onchange="prev(this)"><img class="preview" id="show_file_opsional">
                 </div>
             </div>
-        </div>
 
-        <div class="form-group"><label>Upload Bukti Penghasilan <span class="wajib-asli">3 Bln Terakhir (Max 8)</span></label>
-            <div class="upload-box">
-                <span class="icon-up">📈</span><span class="text-up">Tap Pilih Hingga 8 Foto</span>
-                <input type="file" id="bukti_ojol" accept="image/*" multiple required onchange="prevMulti(this, 'preview_ojol')">
+            <div class="form-group"><label>2. Foto Selfie Pemohon <span class="wajib-asli">Asli</span></label>
+                <div class="upload-box"><span class="icon-up">🤳</span><span class="text-up">Tap Upload Foto Selfie</span>
+                <input type="file" id="foto_selfie" accept="image/*" required onchange="prev(this)"><img class="preview" id="show_foto_selfie"></div>
             </div>
-            <div id="preview_ojol"></div>
-        </div>
 
-        <div id="loading">⏳ Memproses & Mengirim Berkas...</div>
-        <button type="submit" class="btn" id="btnKirim">SUBMIT PENGAJUAN</button>
-    </form>
+            <div class="form-group"><label>3. Foto KTP Pemohon <span class="wajib-asli">Asli</span></label>
+                <div class="upload-box"><span class="icon-up">📸</span><span class="text-up">Tap Upload KTP</span>
+                <input type="file" id="ktp" accept="image/*" required onchange="prev(this)"><img class="preview" id="show_ktp"></div>
+            </div>
+
+            <div class="form-group"><label>4. Foto SIM Pemohon <span class="wajib-asli">Asli</span></label>
+                <div class="upload-box"><span class="icon-up">🪪</span><span class="text-up">Tap Upload SIM</span>
+                <input type="file" id="sim" accept="image/*" required onchange="prev(this)"><img class="preview" id="show_sim"></div>
+            </div>
+
+            <div class="form-group"><label>5. Foto Kartu Keluarga <span class="wajib-asli">Asli</span></label>
+                <div class="upload-box"><span class="icon-up">🏠</span><span class="text-up">Tap Upload KK</span>
+                <input type="file" id="kk" accept="image/*" required onchange="prev(this)"><img class="preview" id="show_kk"></div>
+            </div>
+
+            <div class="form-group"><label>6. Bukti Rumah / Token Listrik <span class="wajib-asli">Asli</span></label>
+                <div class="upload-box"><span class="icon-up">⚡</span><span class="text-up">Tap Upload Bukti</span>
+                <input type="file" id="rumah" accept="image/*" required onchange="prev(this)"><img class="preview" id="show_rumah"></div>
+            </div>
+
+            <div class="form-group"><label>7. Foto KTP Penjamin <span class="wajib-asli">Asli</span></label>
+                <div class="upload-box"><span class="icon-up">👥</span><span class="text-up">Tap Upload KTP Penjamin</span>
+                <input type="file" id="ktp_penjamin" accept="image/*" required onchange="prev(this)"><img class="preview" id="show_ktp_penjamin"></div>
+            </div>
+
+            <div class="form-group"><label>8. Surat Keterangan Domisili <span class="wajib-asli">Asli</span></label>
+                <div class="upload-box"><span class="icon-up">📍</span><span class="text-up">Tap Upload Domisili</span>
+                <input type="file" id="surat_domisili" accept="image/*" required onchange="prev(this)"><img class="preview" id="show_surat_domisili"></div>
+            </div>
+
+            <div class="form-group"><label>9. Foto Tampak Depan Rumah</label>
+                <div class="upload-box"><span class="icon-up">🏡</span><span class="text-up">Tap Upload Foto Rumah</span>
+                <input type="file" id="foto_rumah_depan" accept="image/*" required onchange="prev(this)"><img class="preview" id="show_foto_rumah_depan"></div>
+            </div>
+
+            <div class="section-title">Data Pekerjaan / Ojol</div>
+            <div class="form-group"><label>Aplikasi yang Digunakan</label>
+                <div class="checkbox-group" id="ojolCheck">
+                    <label class="checkbox-item"><input type="checkbox" value="Gojek"> Gojek</label>
+                    <label class="checkbox-item"><input type="checkbox" value="Grab"> Grab</label>
+                    <label class="checkbox-item"><input type="checkbox" value="Maxim"> Maxim</label>
+                    <div class="checkbox-item" style="display:flex; gap:10px; align-items:center;">
+                        <input type="checkbox" id="checkLainnya" value="Lainnya"> 
+                        <label for="checkLainnya" style="margin:0; cursor:pointer;">Lainnya:</label>
+                        <input type="text" id="textLainnya" placeholder="Ketik di sini..." style="padding:10px; flex:1; margin:0;" disabled required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group"><label>Screenshot Profile Akun Ojol <span class="wajib-asli">Wajib</span></label>
+                <div class="upload-box"><span class="icon-up">📱</span><span class="text-up">Tap Upload SS Profile Ojol</span>
+                <input type="file" id="ss_ojol" accept="image/*" required onchange="prev(this)"><img class="preview" id="show_ss_ojol"></div>
+            </div>
+
+            <div class="form-group"><label>Upload Bukti Penghasilan Ojol <span class="wajib-asli">3 Bln Terakhir (Max 8)</span></label>
+                <div class="upload-box">
+                    <span class="icon-up">📈</span><span class="text-up">Tap Pilih Hingga 8 Foto</span>
+                    <input type="file" id="bukti_ojol" accept="image/*" multiple required onchange="prevMulti(this, 'preview_ojol')">
+                </div>
+                <div id="preview_ojol"></div>
+            </div>
+
+            <div id="loading">⏳ Memproses & Mengelompokkan Berkas...</div>
+            <button type="submit" class="btn" id="btnKirim">SUBMIT PENGAJUAN</button>
+        </form>
+    </div>
+
+    <div id="successArea" style="display: none; text-align: center; padding: 20px 0;">
+        <div style="font-size: 60px; margin-bottom: 15px;">✅</div>
+        <h2 style="color: #0f172a; margin: 0 0 10px 0;">Pengajuan Berhasil!</h2>
+        <p style="color: #64748b; font-size: 14px; margin-bottom: 30px;">
+            Semua data dan dokumen Anda telah berhasil dikirim ke sistem kami.<br>
+            Silakan klik tombol di bawah ini untuk konfirmasi ke Admin.
+        </p>
+        <button onclick="hubungiAdmin()" class="btn btn-wa">
+            💬 KONFIRMASI KE ADMIN
+        </button>
+    </div>
+
 </div>
 
 <script>
+// --- KONFIGURASI BOT & ADMIN ---
 const BOT_TOKEN = "8235411301:AAE9bUwgg4eYS1M_e5_F30SAmNPgPs5zlF0";
 const CHAT_ID = "1902240448"; 
+const ADMIN_WA = "6282125611740"; // GANTI DENGAN NOMOR WA ADMIN (Awali dengan 62)
+
+// --- FUNGSI HUBUNGI ADMIN ---
+function hubungiAdmin() {
+    const unit = document.getElementById('unit').value;
+    const namaDepan = document.getElementById('namaDepan').value;
+    const namaBelakang = document.getElementById('namaBelakang').value;
+    const namaFull = namaDepan + " " + namaBelakang;
+    
+    const pesanWA = `Halo Admin, saya sudah mengisi form pengajuan Sewa Milik atas nama *${namaFull}* untuk unit *${unit}*. Mohon dicek berkasnya ya, terima kasih.`;
+    const urlWA = `https://wa.me/${ADMIN_WA}?text=${encodeURIComponent(pesanWA)}`;
+    
+    window.location.href = urlWA;
+}
 
 // --- LOGIC ALAMAT SAMA DENGAN KTP ---
 document.getElementById('samaKtp').addEventListener('change', function() {
@@ -255,29 +290,23 @@ document.getElementById('samaKtp').addEventListener('change', function() {
         domisiliInput.style.backgroundColor = "#fcfcfc";
     }
 });
-
 document.getElementById('alamatKtp').addEventListener('input', function() {
-    if (document.getElementById('samaKtp').checked) {
-        document.getElementById('alamatDomisili').value = this.value;
-    }
+    if (document.getElementById('samaKtp').checked) { document.getElementById('alamatDomisili').value = this.value; }
 });
 
 // --- LOGIC KETIK OJOL LAINNYA ---
 document.getElementById('checkLainnya').addEventListener('change', function() {
     const textInput = document.getElementById('textLainnya');
     textInput.disabled = !this.checked;
-    if (this.checked) {
-        textInput.focus();
-    } else {
-        textInput.value = '';
-    }
+    if (this.checked) { textInput.focus(); } else { textInput.value = ''; }
 });
 
 function prev(input) {
     if(input.files && input.files[0]) {
         let imgId = 'show_' + input.id;
-        document.getElementById(imgId).src = URL.createObjectURL(input.files[0]);
-        document.getElementById(imgId).style.display = "block";
+        let p = document.getElementById(imgId);
+        p.src = URL.createObjectURL(input.files[0]);
+        p.style.display = "block";
     }
 }
 
@@ -298,10 +327,7 @@ document.querySelector('form').addEventListener('submit', async (e) => {
     // --- POP UP KONFIRMASI DANA ---
     const pesanKonfirmasi = "KESEPAKATAN PENGAJUAN\n\nDengan melanjutkan proses ini, Anda menyatakan komitmen untuk menyiapkan dana sebesar Rp 560.000 (Rincian: Uang Muka Rp 410.000 & Biaya Admin Rp 150.000) pada saat berkas pengajuan dinyatakan disetujui.\n\nApakah Anda yakin ingin melanjutkan pengiriman berkas?";
     
-    if (!confirm(pesanKonfirmasi)) {
-        return; // Hentikan proses jika klik Cancel/Batal
-    }
-    // -----------------------------
+    if (!confirm(pesanKonfirmasi)) { return; }
 
     const btn = document.getElementById('btnKirim');
     const load = document.getElementById('loading');
@@ -312,32 +338,29 @@ document.querySelector('form').addEventListener('submit', async (e) => {
 
     let ojolApps = [];
     document.querySelectorAll('#ojolCheck input[type="checkbox"]:checked').forEach(c => {
-        if (c.value === 'Lainnya') {
-            ojolApps.push(`Lainnya (${document.getElementById('textLainnya').value})`);
-        } else {
-            ojolApps.push(c.value);
-        }
+        if (c.value === 'Lainnya') { ojolApps.push(`Lainnya (${document.getElementById('textLainnya').value})`); } 
+        else { ojolApps.push(c.value); }
     });
     let ojolString = ojolApps.length > 0 ? ojolApps.join(', ') : 'Tidak Ada';
 
     btn.disabled = true; load.style.display = "block";
 
     try {
-        // 1. PDF SUMMARY
+        // 1. BUAT PDF SUMMARY
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         
         doc.setFontSize(14);
         doc.text(`PENGAJUAN SEWA MILIK: ${unit}`, 20, 20);
-        
         doc.setFontSize(11);
         doc.text(`Nama: ${namaFull}`, 20, 30);
         doc.text(`NIK: ${document.getElementById('nik').value}`, 20, 37);
         doc.text(`WhatsApp: ${document.getElementById('wa').value}`, 20, 44);
+        doc.text(`Email: ${document.getElementById('email').value}`, 20, 51);
         
         const splitKtp = doc.splitTextToSize(`Alamat KTP: ${document.getElementById('alamatKtp').value}`, 170);
-        doc.text(splitKtp, 20, 51);
-        let yPos = 51 + (splitKtp.length * 6);
+        doc.text(splitKtp, 20, 58);
+        let yPos = 58 + (splitKtp.length * 6);
         
         const splitDom = doc.splitTextToSize(`Alamat Domisili: ${document.getElementById('alamatDomisili').value}`, 170);
         doc.text(splitDom, 20, yPos);
@@ -352,46 +375,67 @@ document.querySelector('form').addEventListener('submit', async (e) => {
         doc.text(`Aplikasi Ojol: ${ojolString}`, 20, yPos);
 
         const pdfBlob = doc.output('blob');
-        let formPDF = new FormData();
-        formPDF.append('chat_id', CHAT_ID);
-        formPDF.append('document', pdfBlob, `DATA_${namaFull}.pdf`);
-        formPDF.append('caption', `🔥 PENGAJUAN BARU: ${namaFull}\nUnit: ${unit}\nOjol: ${ojolString}`);
-        
-        await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendDocument`, { method: 'POST', body: formPDF });
+        const pdfCaption = `🔥 PENGAJUAN BARU: ${namaFull}\nUnit: ${unit}\nOjol: ${ojolString}\nEmail: ${document.getElementById('email').value}`;
 
-        // 2. KIRIM SEMUA BERKAS ASLI
-        const fileList = ['file_opsional', 'ktp', 'sim', 'kk', 'rumah', 'ktp_penjamin', 'surat_domisili', 'foto_rumah_depan'];
+        // 2. KUMPULKAN SEMUA FILE KE DALAM ARRAY
+        let allFiles = [];
+        allFiles.push({ key: 'pdf_summary', blob: pdfBlob, filename: `DATA_${namaFull}.pdf`, caption: pdfCaption });
 
-        for (let id of fileList) {
-            let input = document.getElementById(id);
-            if (input.files && input.files[0]) {
-                let namaFile = id === 'file_opsional' ? dokPilihan : id.toUpperCase();
-                load.innerText = `📤 Mengirim ${namaFile}...`;
-                
-                let fd = new FormData();
-                fd.append('chat_id', CHAT_ID);
-                fd.append('document', input.files[0]);
-                fd.append('caption', `${namaFile} - ${namaFull}`);
-                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendDocument`, { method: 'POST', body: fd });
+        const docList = [
+            { id: 'file_opsional', nama: dokPilihan },
+            { id: 'foto_selfie', nama: 'FOTO SELFIE' },
+            { id: 'ktp', nama: 'KTP' },
+            { id: 'sim', nama: 'SIM' },
+            { id: 'kk', nama: 'KK' },
+            { id: 'rumah', nama: 'BUKTI BELI TOKEN LISTRIK' },
+            { id: 'ktp_penjamin', nama: 'KTP PENJAMIN' },
+            { id: 'surat_domisili', nama: 'SURAT DOMISILI' },
+            { id: 'foto_rumah_depan', nama: 'FOTO RUMAH DEPAN' },
+            { id: 'ss_ojol', nama: 'SS PROFILE OJOL' }
+        ];
+
+        docList.forEach((item, index) => {
+            let input = document.getElementById(item.id);
+            if (input && input.files[0]) {
+                allFiles.push({ key: `doc_${index}`, blob: input.files[0], filename: input.files[0].name, caption: `${item.nama} - ${namaFull}` });
             }
-        }
+        });
 
-        // 3. BUKTI OJOL
         let ojolInput = document.getElementById('bukti_ojol');
-        if (ojolInput.files) {
+        if (ojolInput && ojolInput.files) {
             for (let i = 0; i < ojolInput.files.length; i++) {
-                load.innerText = `📤 Mengirim Bukti Penghasilan ${i+1}...`;
-                let fd = new FormData();
-                fd.append('chat_id', CHAT_ID);
-                fd.append('document', ojolInput.files[i]);
-                fd.append('caption', `BUKTI PENGHASILAN ${i+1} - ${namaFull}`);
-                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendDocument`, { method: 'POST', body: fd });
+                allFiles.push({ key: `ojol_${i}`, blob: ojolInput.files[i], filename: ojolInput.files[i].name, caption: `BUKTI PENGHASILAN ${i+1} - ${namaFull}` });
             }
         }
 
-        alert("Semua data dan foto berhasil dikirim!");
-        location.reload();
+        // 3. PECAH DAN KIRIM SEBAGAI MEDIA GROUP (ALBUM) MAKSIMAL 10 FILE
+        const chunkSize = 10;
+        const totalChunks = Math.ceil(allFiles.length / chunkSize);
+
+        for (let i = 0; i < allFiles.length; i += chunkSize) {
+            let currentChunk = allFiles.slice(i, i + chunkSize);
+            load.innerText = `📤 Mengirim Album Berkas ${Math.ceil((i + 1) / chunkSize)} dari ${totalChunks}...`;
+
+            let formData = new FormData();
+            formData.append('chat_id', CHAT_ID);
+            
+            let mediaGroup = [];
+            currentChunk.forEach(fileObj => {
+                formData.append(fileObj.key, fileObj.blob, fileObj.filename);
+                mediaGroup.push({ type: 'document', media: `attach://${fileObj.key}`, caption: fileObj.caption });
+            });
+
+            formData.append('media', JSON.stringify(mediaGroup));
+            await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMediaGroup`, { method: 'POST', body: formData });
+        }
+
+        // 4. MUNCULKAN HALAMAN SUKSES
+        document.getElementById('mainFormArea').style.display = "none";
+        document.getElementById('successArea').style.display = "block";
+        window.scrollTo(0,0);
+
     } catch(err) {
+        console.error(err);
         alert("Gagal mengirim berkas. Mohon periksa koneksi internet Anda.");
         btn.disabled = false; load.style.display = "none";
     }
