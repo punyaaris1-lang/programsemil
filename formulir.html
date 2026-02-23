@@ -414,16 +414,23 @@ document.getElementById('kesiapanDana').addEventListener('change', function() {
     }
 });
 
-// --- PREVIEW FOTO ---
+// --- PREVIEW FOTO (UPDATE FIX BUG) ---
 function prev(input) {
+    let p = document.getElementById('show_' + input.id);
     if(input.files && input.files[0]) {
-        let p = document.getElementById('show_' + input.id);
-        p.src = URL.createObjectURL(input.files[0]); p.style.display = "block";
+        p.src = URL.createObjectURL(input.files[0]); 
+        p.style.display = "block";
+    } else {
+        p.src = "";
+        p.style.display = "none";
     }
 }
+
 function prevMulti(input, containerId) {
     const container = document.getElementById(containerId);
     container.innerHTML = ''; 
+    if(!input.files || input.files.length === 0) return; 
+    
     if(input.files.length > 8) { alert("Maksimal 8 foto!"); input.value = ""; return; }
     Array.from(input.files).forEach(file => {
         let img = document.createElement('img'); img.src = URL.createObjectURL(file); container.appendChild(img);
